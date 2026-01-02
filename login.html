@@ -1,123 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Tatak JPD – Login</title>
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tatak JPD Login</title>
   <style>
-    body{
-      margin:0;
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
-      background:#f6f6f7;
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont;
+      background:#f5f5f5;
       display:flex;
-      align-items:center;
       justify-content:center;
-      height:100vh;
+      align-items:center;
+      min-height:100vh;
+      margin:0;
+      padding:24px;
     }
-    .card{
-      background:#fff;
-      padding:28px;
-      border-radius:18px;
-      width:100%;
-      max-width:360px;
-      box-shadow:0 10px 30px rgba(0,0,0,.08);
+    .card {
+      background:white;
+      padding:24px;
+      border-radius:16px;
+      width:min(360px, 92vw);
+      box-shadow:0 10px 30px rgba(0,0,0,.10);
+      text-align:center;
     }
-    h1{margin:0 0 6px;font-size:20px;text-align:center}
-    p{margin:0 0 20px;text-align:center;font-size:13px;opacity:.7}
-    label{font-size:12px;margin-bottom:6px;display:block}
-    input{
+    label {
+      display:block;
+      text-align:left;
+      font-size:14px;
+      margin:12px 0 6px;
+    }
+    input {
       width:100%;
       padding:12px;
-      border-radius:12px;
+      border-radius:10px;
       border:1px solid #ddd;
-      margin-bottom:14px;
-      font-size:15px;
-      box-sizing:border-box;
+      font-size:16px;
     }
-    button{
+    button {
       width:100%;
       padding:12px;
+      margin-top:16px;
       border-radius:12px;
       border:none;
-      background:#111;
-      color:#fff;
-      font-weight:800;
-      font-size:15px;
-      cursor:pointer;
+      background:black;
+      color:white;
+      font-weight:700;
+      font-size:16px;
     }
-    #msg{
+    .msg {
       margin-top:12px;
-      text-align:center;
       font-size:13px;
-    }
-    .muted{
-      opacity:.7;
-      font-size:12px;
-      text-align:center;
-      margin-top:10px;
+      color:#b00020;
     }
   </style>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged }
-      from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
-
-    // 🔑 FIREBASE CONFIG (PASTE NA – OK NA ITO)
-    const firebaseConfig = {
-      apiKey: "AIzaSyA9bjM96aB_HZ3Y7UXfSxbafi3lErGDB0c",
-      authDomain: "cap-management---didreyh.firebaseapp.com",
-      projectId: "cap-management---didreyh",
-      storageBucket: "cap-management---didreyh.firebasestorage.app",
-      messagingSenderId: "647273060104",
-      appId: "1:647273060104:web:9419c250c8d06a4584febd"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-
-    // If already logged in, go to main app
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        window.location.href = "index.html";
-      }
-    });
-
-    window.login = async () => {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-      const msg = document.getElementById("msg");
-
-      msg.style.color = "#111";
-      msg.textContent = "Logging in…";
-
-      try {
-        await signInWithEmailAndPassword(auth, email, password);
-        window.location.href = "index.html";
-      } catch (e) {
-        msg.style.color = "#b00020";
-        msg.textContent = "❌ Invalid email or password";
-      }
-    };
-  </script>
 </head>
-
 <body>
+
   <div class="card">
-    <h1>🔐 Tatak JPD</h1>
+    <h2>🔐 Tatak JPD</h2>
     <p>Cap Packing & AWB Proof System</p>
 
     <label>Email</label>
-    <input id="email" type="email" placeholder="you@email.com"/>
+    <input id="email" type="email" placeholder="you@email.com" />
 
     <label>Password</label>
-    <input id="password" type="password" placeholder="••••••••"/>
+    <input id="password" type="password" placeholder="••••••••" />
 
     <button onclick="login()">Login</button>
-    <div id="msg"></div>
+    <div id="msg" class="msg"></div>
 
-    <div class="muted">Private system — login required</div>
+    <p style="font-size:12px;color:#777;margin-top:10px;">
+      Private system — login required
+    </p>
   </div>
+
+  <!-- Firebase CDN -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCMuFIBYcEWJCknOsA-hRctc6I7v4Sr_gU",
+      authDomain: "cap-proof.firebaseapp.com",
+      projectId: "cap-proof",
+      storageBucket: "cap-proof.firebasestorage.app",
+      messagingSenderId: "722260489486",
+      appId: "1:722260489486:web:e4c8111afb86586f2fd35f"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    function login() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const msg = document.getElementById("msg");
+
+      auth.signInWithEmailAndPassword(email, password)
+        .then(() => {
+          window.location.href = "index.html";
+        })
+        .catch(err => {
+          msg.textContent = err.message;
+        });
+    }
+  </script>
+
 </body>
 </html>
