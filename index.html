@@ -2,459 +2,753 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Tatak JPD - Packing Proof</title>
-
-  <!-- ZXing (barcode scan) -->
-  <script src="https://unpkg.com/@zxing/library@latest"></script>
-
-  <!-- Firebase v8 compat -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
-  <script src="./firebase.js"></script>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tatak JPD — Packing Proof</title>
   <style>
-    :root{--bg:#f3f4f6;--card:#fff;--text:#111827;--muted:#6b7280;--line:#e5e7eb;--black:#0b0b0b}
-    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text)}
-    .wrap{max-width:920px;margin:24px auto;padding:0 14px}
-    .card{background:var(--card);border-radius:22px;box-shadow:0 18px 40px rgba(0,0,0,.08);padding:18px}
-    .top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
-    .title{font-size:30px;font-weight:900;line-height:1.15}
-    .sub{color:var(--muted);margin-top:6px;font-size:14px}
-    .logout{border:0;background:var(--black);color:#fff;border-radius:16px;padding:12px 14px;font-weight:900;cursor:pointer}
-    .pill{margin-top:10px;background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46;border-radius:14px;padding:10px 12px;font-weight:800;word-break:break-word}
-    .warn{margin-top:10px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:14px;padding:10px 12px;font-weight:900}
-    .hr{height:1px;background:var(--line);margin:16px 0}
-    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-    input[type="text"]{flex:1;min-width:220px;border:1px solid var(--line);border-radius:14px;padding:14px;font-size:16px;outline:none}
-    button{border:0;border-radius:16px;padding:14px 16px;font-weight:900;cursor:pointer}
-    .btn{background:var(--black);color:#fff}
-    .btn2{background:#fff;border:1px solid var(--line);color:#111}
-    .hint{color:var(--muted);font-size:13px;margin-top:8px}
-    .hidden{display:none}
+    :root{
+      --bg:#f5f6f8;
+      --card:#ffffff;
+      --text:#0f172a;
+      --muted:#6b7280;
+      --border:#e5e7eb;
+      --shadow: 0 18px 45px rgba(0,0,0,.12);
+      --btn:#0b0b0b;
+      --soft:#f9fafb;
+      --ok:#16a34a;
+      --warn:#f59e0b;
+      --bad:#ef4444;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background: radial-gradient(1200px 700px at 50% -10%, #ffffff 0%, var(--bg) 60%);
+      color:var(--text);
+      min-height:100vh;
+      padding:24px;
+    }
+    .wrap{width:min(860px, 100%); margin:0 auto;}
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:26px;
+      box-shadow:var(--shadow);
+      padding:26px;
+    }
+    .top{
+      display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+      margin-bottom:10px;
+    }
+    .title{
+      display:flex; align-items:center; gap:10px;
+    }
+    .title h1{margin:0; font-size:34px; font-weight:900; line-height:1.05}
+    .title .emoji{font-size:28px}
+    .subtitle{margin:6px 0 0; color:var(--muted)}
+    .btn{
+      background:linear-gradient(180deg, #111 0%, #000 100%);
+      color:#fff;
+      border:none;
+      border-radius:16px;
+      padding:12px 14px;
+      font-weight:900;
+      cursor:pointer;
+      min-width:110px;
+    }
+    .btn.secondary{
+      background:#fff;
+      color:#111;
+      border:1px solid var(--border);
+      box-shadow:none;
+    }
+    .btn:disabled{opacity:.6; cursor:not-allowed}
+    .status{
+      margin:12px 0 18px;
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background:#f9fafb;
+      color:#111;
+      white-space:pre-wrap;
+    }
+    .status.ok{border-color:#bbf7d0; background:#ecfdf5;}
+    .status.warn{border-color:#fde68a; background:#fffbeb;}
+    .status.bad{border-color:#fecaca; background:#fef2f2;}
+    hr{border:none; border-top:1px solid var(--border); margin:18px 0}
+    .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+    label{display:block; font-weight:900; margin:12px 0 8px}
+    input[type="text"]{
+      width:100%;
+      padding:14px 16px;
+      border:1px solid var(--border);
+      border-radius:14px;
+      outline:none;
+      font-size:16px;
+      background:#fff;
+    }
+    input[type="text"]:focus{border-color:#c7cbd1; box-shadow:0 0 0 4px rgba(0,0,0,.06)}
+    .hint{color:var(--muted); font-size:13px; margin-top:6px}
+    .sectionTitle{
+      font-size:22px; font-weight:1000; margin:0 0 6px;
+    }
+    .pillRow{display:flex; flex-wrap:wrap; gap:10px; margin-top:8px}
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      border:1px solid var(--border);
+      background:#fff;
+      padding:10px 12px;
+      border-radius:999px;
+      cursor:pointer;
+      user-select:none;
+      font-weight:900;
+    }
+    .pill input{display:none}
+    .pill.active{
+      border-color:#111;
+      box-shadow:0 0 0 4px rgba(0,0,0,.06);
+    }
+    .orderBox{
+      border:1px dashed var(--border);
+      border-radius:18px;
+      padding:14px;
+      background:var(--soft);
+      margin-top:12px;
+    }
+    .orderHeader{
+      display:flex; justify-content:space-between; align-items:center;
+      margin-bottom:8px;
+      font-weight:1000;
+    }
+    .smallBtn{
+      border:1px solid var(--border);
+      background:#fff;
+      border-radius:12px;
+      padding:8px 10px;
+      cursor:pointer;
+      font-weight:900;
+    }
+    .grid2{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+    @media (max-width:700px){ .grid2{grid-template-columns:1fr} }
+    .preview{
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:12px;
+      background:#fff;
+    }
+    .imgWrap{
+      border:1px solid var(--border);
+      border-radius:18px;
+      overflow:hidden;
+      background:#fff;
+      min-height:220px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:var(--muted);
+    }
+    .imgWrap img{max-width:100%; display:block}
+    .copyBox{
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:14px;
+      background:#fff;
+    }
+    textarea{
+      width:100%;
+      min-height:120px;
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:12px 12px;
+      font-size:14px;
+      resize:vertical;
+    }
+    .foot{margin-top:14px; color:var(--muted); font-size:12px; text-align:center}
+    .hidden{display:none!important}
 
-    /* create form */
-    .box{background:#fafafa;border:1px solid var(--line);border-radius:18px;padding:14px;margin-top:12px}
-    .label{display:block;font-weight:900;margin-top:12px;margin-bottom:8px}
-    .chips{display:flex;flex-wrap:wrap;gap:10px}
-    .chip{border:1px solid #d1d5db;background:#fff;border-radius:14px;padding:10px 12px;font-weight:800;cursor:pointer}
-    .chip.active{background:var(--black);border-color:var(--black);color:#fff}
-    .itemCard{background:#fff;border:1px solid var(--line);border-radius:18px;padding:12px;margin-top:10px}
-    .itemTop{display:flex;justify-content:space-between;align-items:center;gap:10px}
-    .miniInput{width:120px;border:1px solid var(--line);border-radius:14px;padding:10px 12px;font-size:15px;outline:none}
-    .smallBtn{padding:10px 12px;border-radius:14px}
-
-    /* record view */
-    .previewWrap{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start;margin-top:10px}
-    .imgBox{width:340px;max-width:100%;background:#fafafa;border:1px dashed var(--line);border-radius:18px;padding:10px}
-    .imgBox img{width:100%;border-radius:14px;display:block;border:1px solid var(--line);background:#fff}
-    textarea{width:100%;min-height:150px;border:1px solid var(--line);border-radius:14px;padding:12px;font-size:14px;outline:none;resize:vertical}
-    .success{color:#0a7a2f;font-weight:900;margin-top:8px}
-    video{width:100%;border-radius:16px;background:#000}
+    /* Scanner modal */
+    .modalBack{
+      position:fixed; inset:0; background:rgba(0,0,0,.55);
+      display:none; align-items:center; justify-content:center;
+      padding:18px; z-index:9999;
+    }
+    .modal{
+      width:min(680px, 100%);
+      background:#fff; border-radius:22px; padding:16px;
+      border:1px solid var(--border); box-shadow:var(--shadow);
+    }
+    .modalTop{display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:8px}
+    .modalTop b{font-size:18px}
+    video{width:100%; border-radius:16px; background:#000}
+    .modalHint{color:var(--muted); font-size:13px; margin-top:8px}
   </style>
 </head>
-
 <body>
-<div class="wrap">
-  <div class="card">
-    <div class="top">
+  <div class="wrap">
+    <div class="card">
+      <div class="top">
+        <div>
+          <div class="title">
+            <span class="emoji">📦</span>
+            <div>
+              <h1>Tatak JPD — Packing Proof</h1>
+              <div class="subtitle">Enter/Scan AWB → if no record, create entry → upload photo → copy message</div>
+            </div>
+          </div>
+        </div>
+        <button id="btnLogout" class="btn">Logout</button>
+      </div>
+
+      <div id="status" class="status ok">Checking login...</div>
+
+      <hr>
+
+      <!-- AWB INPUT -->
       <div>
-        <div class="title">📦 Tatak JPD – Packing Proof</div>
-        <div class="sub">Enter/Scan AWB → if no record, create entry → upload photo → copy message</div>
-        <div id="userPill" class="pill">Checking login…</div>
-      </div>
-      <button id="logoutBtn" class="logout">Logout</button>
-    </div>
-
-    <div class="hr"></div>
-
-    <div class="label">AWB</div>
-    <div class="row">
-      <input id="awbInput" type="text" placeholder="Type / paste AWB then press Enter" inputmode="numeric" />
-      <button id="continueBtn" class="btn" type="button">Continue</button>
-      <button id="scanBtn" class="btn2" type="button">📷 Scan</button>
-    </div>
-    <div class="hint">Enter = Continue. Sa PC: paste AWB then Enter. Sa phone: Scan or type.</div>
-
-    <!-- Scanner -->
-    <div id="scanBox" class="box hidden">
-      <div class="hint" style="margin-top:0">Allow camera access then point to barcode.</div>
-      <video id="preview" playsinline></video>
-      <div class="row" style="margin-top:10px">
-        <button id="stopScanBtn" class="btn2 smallBtn" type="button">Stop Scan</button>
-      </div>
-    </div>
-
-    <!-- Status -->
-    <div id="statusLine" class="hidden"></div>
-
-    <!-- EXISTING RECORD VIEW -->
-    <div id="recordBox" class="hidden">
-      <div class="hr"></div>
-      <div id="doubleWarn" class="warn">⚠️ DOUBLE ENTRY: may record na sa AWB na ’to. Ito ang unang record.</div>
-
-      <div class="previewWrap">
-        <div class="imgBox">
-          <div class="hint" id="recMeta" style="margin-top:0"></div>
-          <img id="recImg" alt="Proof photo" />
-          <div class="row" style="margin-top:10px">
-            <button id="openImgBtn" class="btn2" type="button">Open image</button>
-            <button id="copyImgLinkBtn" class="btn2" type="button">Copy image link</button>
+        <div class="sectionTitle">AWB</div>
+        <div class="row">
+          <div style="flex:1; min-width:240px">
+            <input id="awbInput" type="text" placeholder="Type / paste AWB then press Enter" />
+            <div class="hint">Enter = Continue. Sa PC: paste AWB then Enter. Sa phone: Scan or type.</div>
           </div>
-          <div class="hint">PC: Open image → right-click → Copy Image (pinaka mabilis).</div>
+          <button id="btnContinue" class="btn">Continue</button>
+          <button id="btnScan" class="btn secondary">📷 Scan</button>
+        </div>
+      </div>
+
+      <hr>
+
+      <!-- CREATE FORM -->
+      <div id="createSection" class="hidden">
+        <div class="sectionTitle">Create Packing Record</div>
+        <div class="hint" style="margin-bottom:10px">If first time ng AWB na ’to, dito ka mag-e-entry ng orders + upload photo proof.</div>
+
+        <div id="ordersWrap"></div>
+
+        <div class="row" style="margin-top:10px">
+          <button id="btnAddOrder" class="smallBtn">➕ Add Order</button>
+          <button id="btnRemoveOrder" class="smallBtn">🗑️ Remove Last</button>
         </div>
 
-        <div style="flex:1;min-width:260px">
-          <div class="label" style="margin-top:0">Ready message</div>
-          <textarea id="msgText" readonly></textarea>
-          <div class="row" style="margin-top:10px">
-            <button id="copyMsgBtn" class="btn" type="button">Copy Message</button>
-            <button id="copyAwbBtn" class="btn2" type="button">Copy AWB</button>
+        <div style="margin-top:16px">
+          <label>Upload Photo Proof (JPEG/PNG)</label>
+          <input id="photoInput" type="file" accept="image/*" />
+          <div class="hint">Tip: mas mabilis kung photo muna (video mabigat). Pwede natin timelapse later.</div>
+        </div>
+
+        <div class="row" style="margin-top:14px">
+          <button id="btnSave" class="btn">Save Packing Log</button>
+          <button id="btnCancelCreate" class="btn secondary">Cancel</button>
+        </div>
+      </div>
+
+      <!-- VIEW RECORD -->
+      <div id="viewSection" class="hidden">
+        <div class="sectionTitle">Record Found</div>
+        <div id="recordMeta" class="hint"></div>
+
+        <div class="grid2" style="margin-top:12px">
+          <div class="preview">
+            <b>Photo Proof</b>
+            <div class="imgWrap" style="margin-top:10px">
+              <div id="imgPlaceholder">No image</div>
+              <img id="recordImg" class="hidden" />
+            </div>
+            <div class="row" style="margin-top:10px">
+              <a id="openImgLink" class="smallBtn" href="#" target="_blank" rel="noopener">Open image</a>
+              <button id="btnCopyImage" class="smallBtn">Copy image</button>
+            </div>
+            <div class="hint">Note: iOS minsan di supported ang “copy image”; pag ayaw, click “Open image” then long-press → Copy/Save.</div>
           </div>
-          <div id="copyHint" class="success"></div>
+
+          <div class="copyBox">
+            <b>Ready-to-copy message</b>
+            <div class="hint" style="margin:8px 0 10px">Click the button para auto-copy (no drag).</div>
+            <textarea id="messageBox" readonly></textarea>
+            <div class="row" style="margin-top:10px">
+              <button id="btnCopyMsg" class="btn">Copy Message</button>
+              <button id="btnNewEntry" class="btn secondary">Create new entry anyway</button>
+            </div>
+            <div class="hint" id="ordersPreview"></div>
+          </div>
         </div>
       </div>
+
+      <div class="foot">Private system — login required • Stored in Firebase (Auth + Firestore + Storage)</div>
     </div>
-
-    <!-- CREATE NEW ENTRY -->
-    <div id="createBox" class="hidden">
-      <div class="hr"></div>
-      <div class="pill">No record yet ✅ Fill up details then upload photo proof.</div>
-
-      <div class="box">
-        <div class="label" style="margin-top:0">AWB (auto)</div>
-        <input id="createAwb" type="text" readonly />
-
-        <div class="label">Photo proof (required)</div>
-        <input id="photoInput" type="file" accept="image/*" />
-
-        <div class="label">Items</div>
-        <div id="itemsWrap"></div>
-
-        <div class="row" style="margin-top:12px">
-          <button id="addItemBtn" class="btn2" type="button">+ Add Item</button>
-          <button id="saveBtn" class="btn" type="button">Save Entry</button>
-          <button id="cancelBtn" class="btn2" type="button">Cancel</button>
-        </div>
-
-        <div id="saveHint" class="hint"></div>
-      </div>
-    </div>
-
   </div>
-</div>
 
-<script>
-  const LEVELS = ["Kinder","Elem","SHS"];
-  const COLORS = ["White","Light Blue","Fuchsia Pink","Royal Blue","Black","Yellow Gold","Emerald Green","Red","Maroon","Apple Green"];
+  <!-- Scanner modal -->
+  <div id="scanBack" class="modalBack">
+    <div class="modal">
+      <div class="modalTop">
+        <b>Scan AWB Barcode</b>
+        <button id="btnCloseScan" class="smallBtn">Close</button>
+      </div>
+      <video id="scanVideo" playsinline></video>
+      <div class="modalHint">I-tutok sa barcode (J&T / SPX / Flash). Pag na-detect, auto-fill.</div>
+    </div>
+  </div>
 
-  const el = (id)=>document.getElementById(id);
-  const show = (x)=>x.classList.remove("hidden");
-  const hide = (x)=>x.classList.add("hidden");
-  const trim = (s)=>(s||"").toString().trim();
+  <script type="module">
+    import { firebaseConfig } from "./firebase.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+    import {
+      getAuth, onAuthStateChanged, signOut
+    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+    import {
+      getFirestore, doc, getDoc, setDoc, serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+    import {
+      getStorage, ref, uploadBytes, getDownloadURL
+    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js";
 
-  function setStatus(html, kind="pill"){
-    const box = el("statusLine");
-    box.className = kind === "warn" ? "warn" : "pill";
-    box.innerHTML = html;
-    show(box);
-  }
-  function clearStatus(){ hide(el("statusLine")); }
+    // ZXing barcode scanner
+    import { BrowserMultiFormatReader } from "https://cdn.jsdelivr.net/npm/@zxing/browser@0.1.5/+esm";
 
-  async function copyOneClick(text){
-    try{
-      await navigator.clipboard.writeText(text);
-      el("copyHint").textContent = "✅ Copied!";
-      setTimeout(()=> el("copyHint").textContent="", 1200);
-    }catch(e){
-      el("copyHint").textContent = "⚠️ Copy blocked. Try manual copy.";
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    // UI
+    const statusEl = document.getElementById("status");
+    const btnLogout = document.getElementById("btnLogout");
+
+    const awbInput = document.getElementById("awbInput");
+    const btnContinue = document.getElementById("btnContinue");
+    const btnScan = document.getElementById("btnScan");
+
+    const createSection = document.getElementById("createSection");
+    const viewSection = document.getElementById("viewSection");
+
+    const ordersWrap = document.getElementById("ordersWrap");
+    const btnAddOrder = document.getElementById("btnAddOrder");
+    const btnRemoveOrder = document.getElementById("btnRemoveOrder");
+
+    const photoInput = document.getElementById("photoInput");
+    const btnSave = document.getElementById("btnSave");
+    const btnCancelCreate = document.getElementById("btnCancelCreate");
+
+    const recordMeta = document.getElementById("recordMeta");
+    const recordImg = document.getElementById("recordImg");
+    const imgPlaceholder = document.getElementById("imgPlaceholder");
+    const openImgLink = document.getElementById("openImgLink");
+    const btnCopyImage = document.getElementById("btnCopyImage");
+    const messageBox = document.getElementById("messageBox");
+    const btnCopyMsg = document.getElementById("btnCopyMsg");
+    const btnNewEntry = document.getElementById("btnNewEntry");
+    const ordersPreview = document.getElementById("ordersPreview");
+
+    // Scanner modal
+    const scanBack = document.getElementById("scanBack");
+    const btnCloseScan = document.getElementById("btnCloseScan");
+    const scanVideo = document.getElementById("scanVideo");
+    const reader = new BrowserMultiFormatReader();
+    let scanStopper = null;
+
+    let currentUser = null;
+    let currentAWB = "";
+    let currentRecord = null;
+
+    // ---------- helpers ----------
+    function setStatus(msg, type="ok"){
+      statusEl.className = "status " + type;
+      statusEl.textContent = msg;
     }
-  }
-
-  function formatTs(ts){
-    try{
-      if(ts && typeof ts.toDate === "function") return ts.toDate().toLocaleString("en-PH");
-    }catch(_){}
-    return "";
-  }
-
-  function docRef(awb){ return db.collection("packingLogs").doc(awb); } // docId = AWB (simple!)
-
-  // ---------- Auth guard ----------
-  import { getAuth, onAuthStateChanged } from "firebase/auth";
-
-const auth = getAuth();
-
-const checkingEl = document.getElementById("checkingLogin");
-const appEl = document.getElementById("appContent"); // buong app wrapper
-
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    // ✅ LOGGED IN
-    checkingEl.style.display = "none";
-    appEl.style.display = "block";
-  } else {
-    // ❌ NOT LOGGED IN
-    window.location.href = "login.html";
-  }
-});
-
-  el("logoutBtn").onclick = async ()=>{
-    await auth.signOut();
-    location.href="./login.html";
-  };
-
-  // ---------- Create items UI ----------
-  let items = [];
-
-  function chipGroup(options, activeValue, onPick){
-    const wrap = document.createElement("div");
-    wrap.className = "chips";
-    options.forEach(v=>{
-      const b = document.createElement("button");
-      b.type = "button";
-      b.className = "chip" + (v===activeValue ? " active": "");
-      b.textContent = v;
-      b.onclick = ()=>{
-        onPick(v);
-      };
-      wrap.appendChild(b);
-    });
-    return wrap;
-  }
-
-  function renderItems(){
-    const wrap = el("itemsWrap");
-    wrap.innerHTML = "";
-
-    items.forEach((it, idx)=>{
-      const card = document.createElement("div");
-      card.className = "itemCard";
-
-      const top = document.createElement("div");
-      top.className = "itemTop";
-      top.innerHTML = `<div style="font-weight:900">Item #${idx+1}</div>`;
-      const rm = document.createElement("button");
-      rm.type="button";
-      rm.className="btn2 smallBtn";
-      rm.textContent="Remove";
-      rm.onclick = ()=>{
-        items.splice(idx,1);
-        if(items.length===0) items.push({level:"",color:"",qty:1});
-        renderItems();
-      };
-      top.appendChild(rm);
-      card.appendChild(top);
-
-      const levelLabel = document.createElement("div");
-      levelLabel.className="label";
-      levelLabel.textContent="Level";
-      card.appendChild(levelLabel);
-
-      card.appendChild(chipGroup(LEVELS, it.level, (v)=>{
-        it.level = v;
-        renderItems();
-      }));
-
-      const colorLabel = document.createElement("div");
-      colorLabel.className="label";
-      colorLabel.textContent="Cap Color (one choice)";
-      card.appendChild(colorLabel);
-
-      card.appendChild(chipGroup(COLORS, it.color, (v)=>{
-        it.color = v;
-        renderItems();
-      }));
-
-      const qtyRow = document.createElement("div");
-      qtyRow.className="row";
-      qtyRow.style.marginTop="10px";
-      qtyRow.innerHTML = `<div style="font-weight:900">Qty</div>`;
-      const qty = document.createElement("input");
-      qty.className="miniInput";
-      qty.type="number";
-      qty.min="1";
-      qty.value = it.qty || 1;
-      qty.oninput = ()=>{ it.qty = Math.max(1, Number(qty.value||1)); };
-      qtyRow.appendChild(qty);
-      card.appendChild(qtyRow);
-
-      wrap.appendChild(card);
-    });
-  }
-
-  function openCreate(awb){
-    hide(el("recordBox"));
-    clearStatus();
-    show(el("createBox"));
-    el("createAwb").value = awb;
-    el("photoInput").value = "";
-    el("saveHint").textContent = "";
-    items = [{level:"",color:"",qty:1}];
-    renderItems();
-  }
-
-  function showRecord(awb, data, isDouble){
-    hide(el("createBox"));
-    clearStatus();
-    show(el("recordBox"));
-
-    el("doubleWarn").style.display = isDouble ? "block" : "none";
-
-    const createdAt = formatTs(data.createdAt);
-    const createdBy = data.createdBy || "";
-    const photoUrl = data.photoUrl || data.imageUrl || data.photoURL || "";
-
-    el("recMeta").textContent =
-      `AWB: ${awb}` +
-      (createdAt ? ` • ${createdAt}` : "") +
-      (createdBy ? ` • ${createdBy}` : "");
-
-    if(photoUrl){
-      el("recImg").src = photoUrl;
-    }else{
-      el("recImg").src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(
-        `<svg xmlns='http://www.w3.org/2000/svg' width='800' height='520'>
-          <rect width='100%' height='100%' fill='#f3f4f6'/>
-          <text x='50%' y='50%' text-anchor='middle' dominant-baseline='middle' fill='#6b7280' font-size='26' font-family='Arial'>No photo in record</text>
-        </svg>`
-      );
+    function show(el){ el.classList.remove("hidden"); }
+    function hide(el){ el.classList.add("hidden"); }
+    function cleanAWB(s){
+      return (s || "").trim().replace(/\s+/g,"");
+    }
+    function formatDateTime(ts){
+      try{
+        const d = ts instanceof Date ? ts : new Date(ts);
+        return d.toLocaleString([], { year:"numeric", month:"short", day:"2-digit", hour:"2-digit", minute:"2-digit" });
+      }catch{ return ""; }
+    }
+    function escapeHtml(s){
+      return (s||"").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
     }
 
-    // message template (edit anytime)
-    const msg =
+    // ---------- Orders UI (boxes) ----------
+    const LEVELS = ["Kinder","Elem","SHS"];
+    const COLORS = [
+      "White","Light Blue","Fuchsia Pink","Royal Blue","Black","Yellow Gold","Emerald Green","Red","Maroon","Apple Green"
+    ];
+
+    function pillGroup(options, {multiple=false, name="group"}){
+      const wrap = document.createElement("div");
+      wrap.className = "pillRow";
+
+      options.forEach((opt, idx) => {
+        const label = document.createElement("label");
+        label.className = "pill";
+        const input = document.createElement("input");
+        input.type = multiple ? "checkbox" : "radio";
+        input.name = name;
+        input.value = opt;
+
+        label.appendChild(input);
+        label.appendChild(document.createTextNode(opt));
+
+        label.addEventListener("click", () => {
+          if (!multiple){
+            // clear all active in same group
+            wrap.querySelectorAll(".pill").forEach(p => p.classList.remove("active"));
+            label.classList.add("active");
+            input.checked = true;
+          }else{
+            input.checked = !input.checked;
+            label.classList.toggle("active", input.checked);
+          }
+        });
+
+        wrap.appendChild(label);
+      });
+      return wrap;
+    }
+
+    function createOrderBox(orderIndex){
+      const box = document.createElement("div");
+      box.className = "orderBox";
+      box.dataset.orderIndex = String(orderIndex);
+
+      const header = document.createElement("div");
+      header.className = "orderHeader";
+      header.innerHTML = `<div>Order #${orderIndex + 1}</div><div style="color:#6b7280;font-weight:900">pick level(s) + 1 color</div>`;
+      box.appendChild(header);
+
+      const grid = document.createElement("div");
+      grid.className = "grid2";
+
+      const left = document.createElement("div");
+      left.innerHTML = `<label>Level (pwede multiple)</label>`;
+      const levelGroup = pillGroup(LEVELS, { multiple:true, name:`level_${orderIndex}` });
+      left.appendChild(levelGroup);
+
+      const right = document.createElement("div");
+      right.innerHTML = `<label>Color (one choice)</label>`;
+      const colorGroup = pillGroup(COLORS, { multiple:false, name:`color_${orderIndex}` });
+      right.appendChild(colorGroup);
+
+      grid.appendChild(left);
+      grid.appendChild(right);
+      box.appendChild(grid);
+
+      // quantity
+      const qtyWrap = document.createElement("div");
+      qtyWrap.style.marginTop = "12px";
+      qtyWrap.innerHTML = `
+        <label>Quantity (pairs / pcs)</label>
+        <input type="text" inputmode="numeric" placeholder="e.g. 36" data-role="qty" />
+        <div class="hint">Optional: lagay mo ilan total sa order na ’to.</div>
+      `;
+      box.appendChild(qtyWrap);
+
+      return box;
+    }
+
+    function ensureAtLeastOneOrder(){
+      if (ordersWrap.children.length === 0){
+        ordersWrap.appendChild(createOrderBox(0));
+      }
+    }
+
+    function readOrdersFromUI(){
+      const orders = [];
+      [...ordersWrap.children].forEach((box) => {
+        const idx = Number(box.dataset.orderIndex || "0");
+        const levels = [];
+        box.querySelectorAll(`input[name="level_${idx}"]`).forEach((i) => {
+          if (i.checked) levels.push(i.value);
+        });
+
+        let color = "";
+        box.querySelectorAll(`input[name="color_${idx}"]`).forEach((i) => {
+          if (i.checked) color = i.value;
+        });
+
+        const qtyInput = box.querySelector('input[data-role="qty"]');
+        const qtyRaw = (qtyInput?.value || "").trim();
+        const qty = qtyRaw ? Number(qtyRaw.replace(/[^\d]/g,"")) : null;
+
+        orders.push({ levels, color, qty: Number.isFinite(qty) && qty > 0 ? qty : null });
+      });
+
+      return orders;
+    }
+
+    function summarizeOrders(orders){
+      // Example: "Order1: Kinder+Elem, Fuchsia Pink, qty 36 | Order2: SHS, Black"
+      if (!orders?.length) return "No order details.";
+      return orders.map((o, i) => {
+        const lvl = (o.levels?.length ? o.levels.join("+") : "No level");
+        const col = (o.color || "No color");
+        const qty = (o.qty ? `qty ${o.qty}` : "qty -");
+        return `#${i+1} ${lvl} • ${col} • ${qty}`;
+      }).join(" | ");
+    }
+
+    // ---------- Auth ----------
+    onAuthStateChanged(auth, (user) => {
+      if (!user){
+        window.location.href = "./login.html";
+        return;
+      }
+      currentUser = user;
+      setStatus(`✅ Logged in as: ${user.email}`, "ok");
+      ensureAtLeastOneOrder();
+    });
+
+    btnLogout.addEventListener("click", async () => {
+      await signOut(auth);
+      window.location.href = "./login.html";
+    });
+
+    // ---------- Core flow ----------
+    async function findOrCreateFlow(awb){
+      currentAWB = cleanAWB(awb);
+      if (!currentAWB){
+        setStatus("⚠️ Please enter an AWB.", "warn");
+        return;
+      }
+
+      hide(viewSection);
+      hide(createSection);
+      setStatus("Checking record...", "ok");
+
+      const docRef = doc(db, "packingLogs", currentAWB);
+      const snap = await getDoc(docRef);
+
+      if (snap.exists()){
+        currentRecord = snap.data();
+        setStatus("⚠️ Existing record found (double entry warning). Showing existing record.", "warn");
+        await renderRecord(currentAWB, currentRecord);
+        show(viewSection);
+      } else {
+        currentRecord = null;
+        setStatus("No record found → creating new entry.", "ok");
+        resetCreateForm();
+        show(createSection);
+      }
+    }
+
+    function resetCreateForm(){
+      // Keep orders as-is (so mabilis)
+      photoInput.value = "";
+    }
+
+    btnContinue.addEventListener("click", () => findOrCreateFlow(awbInput.value));
+    awbInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter"){
+        e.preventDefault();
+        findOrCreateFlow(awbInput.value);
+      }
+    });
+
+    btnNewEntry.addEventListener("click", () => {
+      // allow create even if record exists (new photo / update)
+      setStatus("⚠️ Creating new entry anyway (will overwrite same AWB).", "warn");
+      show(createSection);
+      hide(viewSection);
+    });
+
+    btnCancelCreate.addEventListener("click", () => {
+      hide(createSection);
+      setStatus("Ready. Enter/Scan AWB.", "ok");
+    });
+
+    // Orders add/remove
+    btnAddOrder.addEventListener("click", () => {
+      const idx = ordersWrap.children.length;
+      ordersWrap.appendChild(createOrderBox(idx));
+    });
+    btnRemoveOrder.addEventListener("click", () => {
+      if (ordersWrap.children.length > 1){
+        ordersWrap.removeChild(ordersWrap.lastElementChild);
+      }
+    });
+
+    // ---------- Save (Firestore + Storage) ----------
+    btnSave.addEventListener("click", async () => {
+      try{
+        const awb = cleanAWB(awbInput.value || currentAWB);
+        if (!awb){
+          setStatus("⚠️ AWB required.", "warn");
+          return;
+        }
+        currentAWB = awb;
+
+        const orders = readOrdersFromUI();
+        const ordersText = summarizeOrders(orders);
+
+        // validate at least one color chosen per order (optional strict)
+        // We'll allow but warn:
+        const missingColor = orders.some(o => !o.color);
+        if (missingColor){
+          if (!confirm("May order na walang color selected. Save pa rin?")) return;
+        }
+
+        btnSave.disabled = true;
+        btnSave.textContent = "Saving...";
+
+        // upload photo (optional but recommended)
+        let photoUrl = "";
+        const file = photoInput.files?.[0] || null;
+
+        if (file){
+          const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+          const path = `packingProofs/${currentUser.uid}/${awb}.${ext}`;
+          const storageRef = ref(storage, path);
+
+          await uploadBytes(storageRef, file, { contentType: file.type || "image/jpeg" });
+          photoUrl = await getDownloadURL(storageRef);
+        }
+
+        // write firestore
+        const docRef = doc(db, "packingLogs", awb);
+        const payload = {
+          awb,
+          orders,
+          ordersText,
+          photoUrl: photoUrl || (currentRecord?.photoUrl || ""),
+          createdAt: serverTimestamp(),
+          createdByUid: currentUser.uid,
+          createdByEmail: currentUser.email || "",
+          updatedAt: serverTimestamp()
+        };
+        await setDoc(docRef, payload, { merge: true });
+
+        setStatus("✅ Saved! Opening record…", "ok");
+
+        // read back (so we can show timestamps)
+        const snap = await getDoc(docRef);
+        currentRecord = snap.data();
+        await renderRecord(awb, currentRecord);
+
+        hide(createSection);
+        show(viewSection);
+
+      }catch(err){
+        console.error(err);
+        setStatus("❌ Save error:\n" + (err?.message || err), "bad");
+      }finally{
+        btnSave.disabled = false;
+        btnSave.textContent = "Save Packing Log";
+      }
+    });
+
+    // ---------- Render record + copy ----------
+    async function renderRecord(awb, rec){
+      // timestamp display
+      let dt = "";
+      try{
+        const createdAt = rec?.createdAt?.toDate ? rec.createdAt.toDate() : null;
+        const updatedAt = rec?.updatedAt?.toDate ? rec.updatedAt.toDate() : null;
+        dt = createdAt ? formatDateTime(createdAt) : (updatedAt ? formatDateTime(updatedAt) : "");
+      }catch{}
+
+      const ordersText = rec?.ordersText || summarizeOrders(rec?.orders || []);
+      recordMeta.textContent = `AWB: ${awb} • ${dt ? ("Saved: " + dt + " • ") : ""}By: ${rec?.createdByEmail || "-"}`;
+
+      // image
+      const url = rec?.photoUrl || "";
+      if (url){
+        recordImg.src = url;
+        recordImg.classList.remove("hidden");
+        imgPlaceholder.classList.add("hidden");
+        openImgLink.href = url;
+      }else{
+        recordImg.classList.add("hidden");
+        imgPlaceholder.classList.remove("hidden");
+        openImgLink.href = "#";
+      }
+
+      // message template (edit mo later bestie)
+      const nowText = dt || formatDateTime(new Date());
+      const msg =
 `Hi po! ✅ Ready to ship na po ang order nyo.
 
-📦 AWB: ${awb}
-🕒 Packed on: ${createdAt || "N/A"}
-Thank you po!`;
-    el("msgText").value = msg;
+AWB: ${awb}
+Packed: ${nowText}
 
-📸 Photo proof: ${photoUrl || "N/A"}
-    el("openImgBtn").onclick = ()=>{ if(photoUrl) window.open(photoUrl, "_blank"); };
-    el("copyImgLinkBtn").onclick = ()=> copyOneClick(photoUrl || "");
-    el("copyMsgBtn").onclick = ()=> copyOneClick(el("msgText").value);
-    el("copyAwbBtn").onclick = ()=> copyOneClick(awb);
-  }
+Maraming salamat po! — Tatak JPD`;
 
-  // ---------- Main flow: Continue ----------
-  async function continueFlow(){
-    const awb = trim(el("awbInput").value);
-    if(!awb){ setStatus("Please enter/scan AWB.", "warn"); return; }
-
-    hide(el("recordBox"));
-    hide(el("createBox"));
-    clearStatus();
-    setStatus("Checking AWB…", "pill");
-
-    const snap = await docRef(awb).get();
-
-    if(snap.exists){
-      clearStatus();
-      alert("⚠️ DOUBLE ENTRY: may record na sa AWB na ’to. Please check—already has parcel.");
-      showRecord(awb, snap.data() || {}, true);
-      return;
+      messageBox.value = msg;
+      ordersPreview.textContent = "Orders: " + ordersText;
     }
 
-    clearStatus();
-    openCreate(awb);
-  }
+    btnCopyMsg.addEventListener("click", async () => {
+      try{
+        await navigator.clipboard.writeText(messageBox.value);
+        setStatus("✅ Message copied!", "ok");
+      }catch{
+        // fallback
+        messageBox.focus();
+        messageBox.select();
+        document.execCommand("copy");
+        setStatus("✅ Message copied (fallback)!", "ok");
+      }
+    });
 
-  el("continueBtn").onclick = continueFlow;
-  el("awbInput").addEventListener("keydown", (e)=>{
-    if(e.key==="Enter"){ e.preventDefault(); continueFlow(); }
-  });
+    btnCopyImage.addEventListener("click", async () => {
+      try{
+        const url = openImgLink.href;
+        if (!url || url === "#"){ setStatus("⚠️ No image to copy.", "warn"); return; }
 
-  // ---------- Save entry (upload + firestore) ----------
-  el("addItemBtn").onclick = ()=>{
-    items.push({level:"",color:"",qty:1});
-    renderItems();
-  };
+        // Try ClipboardItem (not always supported)
+        const resp = await fetch(url);
+        const blob = await resp.blob();
+        if (!window.ClipboardItem) throw new Error("ClipboardItem not supported");
 
-  el("cancelBtn").onclick = ()=>{
-    hide(el("createBox"));
-    el("saveHint").textContent = "";
-  };
+        await navigator.clipboard.write([ new ClipboardItem({ [blob.type]: blob }) ]);
+        setStatus("✅ Image copied!", "ok");
+      }catch(err){
+        setStatus("⚠️ Copy image not supported on this browser. Click 'Open image' then long-press → Copy/Save.", "warn");
+      }
+    });
 
-  el("saveBtn").onclick = async ()=>{
-    const awb = trim(el("createAwb").value);
-    if(!awb) return;
+    // ---------- Scanner ----------
+    btnScan.addEventListener("click", async () => {
+      try{
+        scanBack.style.display = "flex";
+        setStatus("Scanning…", "ok");
 
-    // validate items
-    for(const it of items){
-      if(!it.level) return alert("Pili ka muna ng Level sa lahat ng items.");
-      if(!it.color) return alert("Pili ka muna ng Color sa lahat ng items.");
-      if(!it.qty || it.qty < 1) return alert("Qty must be at least 1.");
+        // Start scanning
+        const result = await reader.decodeFromVideoDevice(
+          undefined,
+          scanVideo,
+          (res, err, controls) => {
+            if (controls && !scanStopper) scanStopper = controls;
+            if (res?.getText){
+              const code = cleanAWB(res.getText());
+              if (code){
+                awbInput.value = code;
+                closeScanner();
+                findOrCreateFlow(code);
+              }
+            }
+          }
+        );
+
+      }catch(err){
+        console.error(err);
+        setStatus("⚠️ Camera scan not available. You can paste/type AWB then Enter.", "warn");
+        scanBack.style.display = "none";
+      }
+    });
+
+    function closeScanner(){
+      scanBack.style.display = "none";
+      try{ scanStopper?.stop?.(); }catch{}
+      scanStopper = null;
+      try{ reader.reset(); }catch{}
     }
+    btnCloseScan.addEventListener("click", closeScanner);
+    scanBack.addEventListener("click", (e) => {
+      if (e.target === scanBack) closeScanner();
+    });
 
-    const file = el("photoInput").files?.[0];
-    if(!file) return alert("Photo proof is required.");
-
-    // re-check double
-    const again = await docRef(awb).get();
-    if(again.exists){
-      alert("⚠️ DOUBLE ENTRY: may record na. Please check.");
-      showRecord(awb, again.data() || {}, true);
-      return;
-    }
-
-    const user = auth.currentUser;
-    if(!user) return alert("Not logged in.");
-
-    el("saveHint").textContent = "Uploading photo + saving…";
-
-    // upload to storage
-    const ts = Date.now();
-    const path = `packingProofs/${user.uid}/${awb}_${ts}.jpg`;
-    const sref = storage.ref().child(path);
-    await sref.put(file);
-    const photoUrl = await sref.getDownloadURL();
-
-    const payload = {
-      awb,
-      items,
-      photoUrl,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      createdBy: user.email || user.uid
-    };
-
-    await docRef(awb).set(payload);
-
-    el("saveHint").textContent = "";
-
-    // fetch again to get server timestamp resolved
-    const saved = await docRef(awb).get();
-    alert("✅ Saved! May record na si AWB.");
-    showRecord(awb, saved.data() || payload, false);
-  };
-
-  // ---------- Barcode Scan (ZXing) ----------
-  let codeReader;
-
-  el("scanBtn").onclick = async ()=>{
-    show(el("scanBox"));
-    if(!codeReader) codeReader = new ZXing.BrowserMultiFormatReader();
-
-    try{
-      await codeReader.decodeFromVideoDevice(null, el("preview"), (result, err)=>{
-        if(result){
-          el("awbInput").value = result.getText();
-          codeReader.reset();
-          hide(el("scanBox"));
-          continueFlow(); // auto continue
-        }
-      });
-    }catch(e){
-      alert("Scan error: " + (e?.message || e));
-    }
-  };
-
-  el("stopScanBtn").onclick = ()=>{
-    try{ if(codeReader) codeReader.reset(); }catch(_){}
-    hide(el("scanBox"));
-  };
-</script>
+  </script>
 </body>
 </html>
