@@ -1,734 +1,232 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Tatak JPD — Packing Logs</title>
   <style>
-    :root{
-      --bg:#f5f6f8; --card:#fff; --text:#111; --muted:#666;
-      --line:#e8e8ee; --btn:#111; --btnText:#fff;
-      --ok:#16a34a; --warn:#f59e0b; --bad:#ef4444;
-      --radius:18px;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-    }
-    body{ margin:0; background:var(--bg); color:var(--text); }
-    .wrap{ max-width:980px; margin:24px auto; padding:0 16px; }
-    .card{
-      background:var(--card);
-      border:1px solid var(--line);
-      border-radius:var(--radius);
-      box-shadow: 0 10px 30px rgba(0,0,0,.06);
-      overflow:hidden;
-    }
-    .head{
-      display:flex; align-items:center; justify-content:space-between;
-      padding:18px 18px; border-bottom:1px solid var(--line);
-    }
-    .brand{ display:flex; flex-direction:column; gap:4px; }
-    .brand b{ font-size:20px; }
-    .brand small{ color:var(--muted); }
-    .btn{
-      appearance:none; border:0; cursor:pointer;
-      background:var(--btn); color:var(--btnText);
-      padding:12px 16px; border-radius:14px; font-weight:700;
-    }
-    .btn:disabled{ opacity:.5; cursor:not-allowed; }
-    .btn.ghost{ background:#fff; color:#111; border:1px solid var(--line); }
-    .btn.danger{ background:#111; }
-    .pad{ padding:18px; }
-    .grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-    @media (max-width:720px){ .grid{ grid-template-columns:1fr; } }
-    label{ display:block; font-size:13px; color:var(--muted); margin:0 0 6px; }
-    input, select, textarea{
-      width:100%; box-sizing:border-box;
-      border:1px solid var(--line);
-      border-radius:14px;
-      padding:12px 12px;
-      font-size:16px;
-      background:#fff;
-    }
-    textarea{ min-height:84px; resize:vertical; }
-    .hint{ font-size:12px; color:var(--muted); margin-top:8px; }
-    .hr{ height:1px; background:var(--line); margin:18px 0; }
-    .status{ font-size:13px; padding:10px 12px; border-radius:14px; border:1px solid var(--line); background:#fff; }
-    .status.ok{ border-color:rgba(22,163,74,.25); background:rgba(22,163,74,.06); }
-    .status.bad{ border-color:rgba(239,68,68,.25); background:rgba(239,68,68,.06); }
-    .status.warn{ border-color:rgba(245,158,11,.25); background:rgba(245,158,11,.08); }
-    .list{ display:flex; flex-direction:column; gap:12px; }
-    .item{
-      border:1px solid var(--line);
-      border-radius:16px;
-      padding:12px;
-      background:#fff;
-    }
-    .itemTop{ display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; }
-    .badge{ font-size:12px; padding:6px 10px; border-radius:999px; border:1px solid var(--line); background:#fff; color:#111; }
-    .muted{ color:var(--muted); }
-    .actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
-    .smallbtn{ padding:10px 12px; border-radius:12px; font-weight:700; border:1px solid var(--line); background:#fff; cursor:pointer; }
-    .smallbtn.primary{ background:#111; color:#fff; border-color:#111; }
-    .row{
-      display:flex; gap:10px; align-items:end; flex-wrap:wrap;
-      border:1px solid var(--line); border-radius:16px; padding:12px;
-      background:#fafafa;
-    }
-    .row > .cell{ flex:1 1 160px; min-width:160px; }
-    .row .mini{ flex:0 0 120px; min-width:120px; }
-    .footerNote{ text-align:center; color:var(--muted); font-size:12px; padding:14px 18px; border-top:1px solid var(--line); }
-
-    /* Scanner modal */
-    .modalBackdrop{
-      position:fixed; inset:0; background:rgba(0,0,0,.55);
-      display:none; align-items:center; justify-content:center;
-      padding:16px; z-index:9999;
-    }
-    .modal{
-      width:min(720px, 100%);
-      background:#fff; border-radius:18px; overflow:hidden;
-      border:1px solid rgba(255,255,255,.2);
-    }
-    .modalHead{
-      display:flex; justify-content:space-between; align-items:center;
-      padding:12px 14px; border-bottom:1px solid var(--line);
-    }
-    .scannerWrap{
-      position:relative;
-      background:#000;
-    }
-    #scanner{
-      width:100%;
-      height:420px;
-    }
-    .scanHint{
-      padding:12px 14px; font-size:13px; color:#111;
-      border-top:1px solid var(--line);
-    }
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial; background:#f5f6f8; margin:0; padding:24px;}
+    .card{max-width:760px; margin:24px auto; background:#fff; border-radius:18px; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,.08);}
+    .top{display:flex; gap:12px; align-items:center; justify-content:space-between;}
+    .title h1{margin:0; font-size:26px;}
+    .title .sub{color:#666; margin-top:4px;}
+    .pill{background:#eaf7ee; border:1px solid #bfe6c9; color:#1b5e20; padding:10px 12px; border-radius:12px; font-weight:700; margin-top:14px;}
+    .btn{padding:10px 14px; border-radius:14px; border:0; font-weight:800; cursor:pointer;}
+    .btn-dark{background:#111; color:#fff;}
+    .btn-light{background:#fff; color:#111; border:1px solid #ddd;}
+    h2{margin:18px 0 8px;}
+    label{display:block; margin:10px 0 6px; font-weight:700;}
+    input{width:100%; padding:14px 12px; border:1px solid #ddd; border-radius:12px; font-size:16px; outline:none;}
+    .row{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;}
+    .row > *{flex:1}
+    .hint{color:#666; margin-top:6px; font-size:14px;}
+    .status{margin-top:10px; font-weight:800;}
+    .muted{color:#777;}
+    .preview{margin-top:12px; border:1px dashed #ddd; border-radius:16px; padding:12px; min-height:180px; display:flex; align-items:center; justify-content:center; background:#fafafa;}
+    img{max-width:100%; border-radius:14px;}
+    .resultCard{margin-top:12px; padding:12px; border:1px solid #eee; border-radius:14px; background:#fafafa;}
+    .foot{margin-top:18px; color:#777; text-align:center; font-size:13px;}
+    button:disabled{opacity:.55; cursor:not-allowed;}
   </style>
 </head>
+
 <body>
-  <div class="wrap">
-    <div class="card">
-      <div class="head">
-        <div class="brand">
-          <b>✅ Tatak JPD</b>
-          <small>Cap Packing & AWB Proof System</small>
-        </div>
-        <button id="logoutBtn" class="btn">Logout</button>
+  <div class="card">
+    <div class="top">
+      <div class="title">
+        <h1>✅ Tatak JPD</h1>
+        <div class="sub">Cap Packing & AWB Proof System</div>
       </div>
+      <button id="btnLogout" class="btn btn-dark">Logout</button>
+    </div>
 
-      <div class="pad">
-        <div id="authStatus" class="status warn">Checking login…</div>
+    <div id="who" class="pill">Checking login…</div>
 
-        <div class="hr"></div>
+    <hr style="border:none;border-top:1px solid #eee;margin:16px 0;" />
 
-        <!-- SCAN FIRST -->
-        <h3 style="margin:0 0 10px;">Scan AWB</h3>
-        <div class="grid">
-          <div>
-            <label>AWB Number</label>
-            <input id="awbInput" placeholder="Scan will fill this…" autocomplete="off" />
-            <div class="hint">Tip: scan barcode para mabilis. Pwede rin paste/type kung kailangan.</div>
-          </div>
-          <div style="display:flex; gap:10px; align-items:end; flex-wrap:wrap;">
-            <button id="scanBtn" class="btn" type="button">📷 Scan AWB Barcode</button>
-            <button id="showFormBtn" class="btn ghost" type="button" title="If already typed/pasted AWB">Continue</button>
-          </div>
-        </div>
+    <h2>Save Packing Log (Photo)</h2>
 
-        <div class="hr"></div>
+    <label>AWB Number</label>
+    <input id="awbInput" type="text" placeholder="Type/paste AWB (or scan barcode)" />
 
-        <!-- FORM (hidden until scan/continue) -->
-        <div id="formSection" style="display:none;">
-          <h3 style="margin:0 0 10px;">Packing Details</h3>
+    <label>Upload Photo Proof</label>
+    <input id="photoInput" type="file" accept="image/*" capture="environment" />
+    <div class="hint">Tip: picture only para mabilis mag-save. Pwede mo i-timelapse sa phone then screenshot frames kung need.</div>
 
-          <label>Items (pwede multiple: kinder + elem sabay)</label>
-          <div id="itemsWrap" class="list"></div>
+    <div class="preview" id="previewBox">
+      <span class="muted">Preview will show here…</span>
+    </div>
 
-          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
-            <button id="addItemBtn" class="btn ghost" type="button">+ Add Item</button>
-          </div>
+    <div class="row">
+      <button id="btnSave" class="btn btn-dark">Save Packing Log</button>
+      <button id="btnClear" class="btn btn-light">Clear</button>
+    </div>
 
-          <div class="hr"></div>
+    <div id="saveStatus" class="status muted"></div>
 
-          <h3 style="margin:0 0 10px;">Video Proof</h3>
+    <hr style="border:none;border-top:1px solid #eee;margin:18px 0;" />
 
-          <div class="grid">
-            <div>
-              <label>Option 1: Record inside the site (auto-stop 25s)</label>
-              <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                <button id="recStartBtn" class="btn" type="button">🎥 Start Recording</button>
-                <button id="recStopBtn" class="btn ghost" type="button" disabled>Stop</button>
-              </div>
-              <div id="recInfo" class="hint">Tip: show “before → packing → closed → AWB attached” within 25 seconds.</div>
-            </div>
+    <h2>Search / View Logs</h2>
 
-            <div>
-              <label>Option 2: Upload a video file (phone timelapse OK)</label>
-              <input id="videoInput" type="file" accept="video/*" />
-              <div class="hint">If you want true timelapse: use phone “Timelapse” camera mode, then upload here.</div>
-            </div>
-          </div>
+    <label>Search by AWB</label>
+    <input id="searchAwb" type="text" placeholder="Type/paste AWB then Search" />
 
-          <video id="videoPreview" controls playsinline style="width:100%; margin-top:12px; border-radius:14px; border:1px solid var(--line); display:none;"></video>
+    <div class="row">
+      <button id="btnSearch" class="btn btn-light">Search</button>
+    </div>
 
-          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
-            <button id="saveBtn" class="btn" type="button">Save Packing Log</button>
-          </div>
+    <div id="searchResult"></div>
 
-          <div id="saveStatus" class="status" style="margin-top:12px; display:none;"></div>
-
-          <div class="hr"></div>
-
-          <h3 style="margin:0 0 10px;">Search / View Logs</h3>
-          <div class="grid">
-            <div>
-              <label>Search by AWB</label>
-              <input id="searchAwb" placeholder="Type AWB then Search" autocomplete="off" />
-            </div>
-            <div style="display:flex; gap:10px; align-items:end; flex-wrap:wrap;">
-              <button id="searchBtn" class="btn" type="button">Search</button>
-              <button id="loadRecentBtn" class="btn ghost" type="button">Load Recent</button>
-            </div>
-          </div>
-
-          <div style="height:12px;"></div>
-          <div id="results" class="list"></div>
-        </div>
-      </div>
-
-      <div class="footerNote">Private system — login required • Stored in Firebase (Auth + Firestore + Storage)</div>
+    <div class="foot">
+      Private system — login required • Stored in Firebase (Auth + Firestore + Storage)
     </div>
   </div>
-
-  <!-- Scanner Modal -->
-  <div id="scannerBackdrop" class="modalBackdrop">
-    <div class="modal">
-      <div class="modalHead">
-        <div style="font-weight:900;">📷 Scan AWB Barcode</div>
-        <button id="closeScanBtn" class="btn ghost" type="button">Close</button>
-      </div>
-      <div class="scannerWrap">
-        <div id="scanner"></div>
-      </div>
-      <div id="scanStatus" class="scanHint">Point the camera at the barcode (J&T / SPX / Flash Express).</div>
-    </div>
-  </div>
-
-  <!-- QuaggaJS (1D barcode scanner) -->
-  <script src="https://unpkg.com/@ericblade/quagga2@1.2.6/dist/quagga.min.js"></script>
 
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-    import { getFirestore, collection, addDoc, query, where, orderBy, limit, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js";
+    import { auth, db, storage } from "./firebase.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCMuFIBYcEWJCknOsA-hRctc6I7v4Sr_gU",
-      authDomain: "cap-proof.firebaseapp.com",
-      projectId: "cap-proof",
-      storageBucket: "cap-proof.firebasestorage.app",
-      messagingSenderId: "722260489486",
-      appId: "1:722260489486:web:e4c8111afb86586f2fd35f"
-    };
+    import {
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const storage = getStorage(app);
+    import {
+      doc,
+      setDoc,
+      getDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 
-    // UI
-    const authStatus = document.getElementById("authStatus");
-    const logoutBtn = document.getElementById("logoutBtn");
+    import {
+      ref,
+      uploadBytes,
+      getDownloadURL
+    } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-storage.js";
+
+    const whoEl = document.getElementById("who");
+    const btnLogout = document.getElementById("btnLogout");
 
     const awbInput = document.getElementById("awbInput");
-    const scanBtn = document.getElementById("scanBtn");
-    const showFormBtn = document.getElementById("showFormBtn");
-    const formSection = document.getElementById("formSection");
+    const photoInput = document.getElementById("photoInput");
+    const previewBox = document.getElementById("previewBox");
 
-    const itemsWrap = document.getElementById("itemsWrap");
-    const addItemBtn = document.getElementById("addItemBtn");
-
-    const recStartBtn = document.getElementById("recStartBtn");
-    const recStopBtn = document.getElementById("recStopBtn");
-    const recInfo = document.getElementById("recInfo");
-    const videoInput = document.getElementById("videoInput");
-    const videoPreview = document.getElementById("videoPreview");
-
-    const saveBtn = document.getElementById("saveBtn");
+    const btnSave = document.getElementById("btnSave");
+    const btnClear = document.getElementById("btnClear");
     const saveStatus = document.getElementById("saveStatus");
 
     const searchAwb = document.getElementById("searchAwb");
-    const searchBtn = document.getElementById("searchBtn");
-    const loadRecentBtn = document.getElementById("loadRecentBtn");
-    const results = document.getElementById("results");
+    const btnSearch = document.getElementById("btnSearch");
+    const searchResult = document.getElementById("searchResult");
 
-    // Scanner modal
-    const scannerBackdrop = document.getElementById("scannerBackdrop");
-    const closeScanBtn = document.getElementById("closeScanBtn");
-    const scanStatus = document.getElementById("scanStatus");
-
-    // Helpers
-    function showStatus(el, type, msg){
-      el.style.display = "block";
-      el.className = "status " + (type || "");
-      el.textContent = msg;
-    }
-    function hideStatus(el){ el.style.display = "none"; }
-    function normalizeAwb(s){ return (s||"").trim(); }
-
-    function formatTemplateMessage(awb){
-      return `Thank you for your orders. ✅\n\nProof of packing for AWB: ${awb}\n\nIf may concern po sa orders feel free to chat us, at kung satisfied po kayo malaking help po ang pagstar 😊`;
-    }
-    async function copyTextToClipboard(text){
-      await navigator.clipboard.writeText(text);
-    }
-
-    // Items UI
-    const SIZE_OPTIONS = [
-      { value:"kinder", label:"Kinder" },
-      { value:"elem", label:"Elem" },
-      { value:"shs", label:"SHS" },
-    ];
-    const COLOR_OPTIONS = [
-      "white","skyblue","pink",
-      "yellow gold","royal blue",
-      "black","red","green","violet",
-      "custom"
-    ];
-
-    function createItemRow(){
-      const row = document.createElement("div");
-      row.className = "row";
-      row.innerHTML = `
-        <div class="cell">
-          <label>Size</label>
-          <select class="sizeSel">
-            ${SIZE_OPTIONS.map(o => `<option value="${o.value}">${o.label}</option>`).join("")}
-          </select>
-        </div>
-        <div class="cell">
-          <label>Cap Color</label>
-          <select class="colorSel">
-            ${COLOR_OPTIONS.map(c => `<option value="${c}">${c}</option>`).join("")}
-          </select>
-          <input class="colorCustom" placeholder="Type custom color (if custom)" style="margin-top:8px; display:none;" />
-        </div>
-        <div class="mini">
-          <label>PCS</label>
-          <input class="pcsInp" type="number" min="1" step="1" value="1" />
-        </div>
-        <div class="mini">
-          <button class="btn ghost removeBtn" type="button" style="padding:12px 12px;">Remove</button>
-        </div>
-      `;
-      const colorSel = row.querySelector(".colorSel");
-      const colorCustom = row.querySelector(".colorCustom");
-      colorSel.addEventListener("change", () => {
-        colorCustom.style.display = (colorSel.value === "custom") ? "block" : "none";
-      });
-      row.querySelector(".removeBtn").addEventListener("click", () => row.remove());
-      return row;
-    }
-
-    function getItemsFromUI(){
-      const rows = [...itemsWrap.querySelectorAll(".row")];
-      return rows.map(r => {
-        const size = r.querySelector(".sizeSel").value;
-        const colorSel = r.querySelector(".colorSel").value;
-        const colorCustom = r.querySelector(".colorCustom").value.trim();
-        const color = (colorSel === "custom") ? colorCustom : colorSel;
-        const pcs = parseInt(r.querySelector(".pcsInp").value || "0", 10);
-        return { size, color, pcs };
-      });
-    }
-
-    function validateItems(items){
-      if(items.length === 0) return "Add at least 1 item.";
-      for(const it of items){
-        if(!it.size) return "Size is required.";
-        if(!it.color) return "Color is required.";
-        if(!Number.isFinite(it.pcs) || it.pcs <= 0) return "PCS must be 1 or higher.";
-      }
-      return null;
-    }
-
-    // Auth
     let currentUser = null;
+
+    // ✅ Protect page: if not logged in → login.html
     onAuthStateChanged(auth, (user) => {
-      if(!user){
+      if (!user) {
         window.location.href = "./login.html";
         return;
       }
       currentUser = user;
-      showStatus(authStatus, "ok", `Logged in as: ${user.email}`);
+      whoEl.textContent = `Logged in as: ${user.email}`;
     });
 
-    logoutBtn.addEventListener("click", async () => {
-      try{ await signOut(auth); } catch(e){}
+    // Logout
+    btnLogout.addEventListener("click", async () => {
+      await signOut(auth);
+      window.location.href = "./login.html";
     });
 
-    // Show form only after scan/continue
-    function openForm(){
-      const awb = normalizeAwb(awbInput.value);
-      if(!awb){ alert("Scan or type AWB first."); return; }
-      formSection.style.display = "block";
-      // focus items
-      if(itemsWrap.querySelector(".sizeSel")) itemsWrap.querySelector(".sizeSel").focus();
-      // load recent
-      setTimeout(loadRecent, 600);
-    }
-    showFormBtn.addEventListener("click", openForm);
+    // Preview photo
+    photoInput.addEventListener("change", () => {
+      const file = photoInput.files[0];
+      if (!file) {
+        previewBox.innerHTML = `<span class="muted">Preview will show here…</span>`;
+        return;
+      }
+      const url = URL.createObjectURL(file);
+      previewBox.innerHTML = `<img src="${url}" alt="preview" />`;
+    });
 
-    // Default one item row
-    itemsWrap.appendChild(createItemRow());
-    addItemBtn.addEventListener("click", ()=> itemsWrap.appendChild(createItemRow()));
+    // Clear
+    btnClear.addEventListener("click", () => {
+      awbInput.value = "";
+      photoInput.value = "";
+      previewBox.innerHTML = `<span class="muted">Preview will show here…</span>`;
+      saveStatus.textContent = "";
+    });
 
-    // ========= Barcode scanning (Quagga) =========
-    let scanning = false;
+    // ✅ Save packing log (Photo only)
+    btnSave.addEventListener("click", async () => {
+      const awb = awbInput.value.trim();
+      const file = photoInput.files[0];
 
-    function startScanner(){
-      scannerBackdrop.style.display = "flex";
-      scanStatus.textContent = "Starting camera…";
+      if (!awb || !file) {
+        alert("AWB + picture required.");
+        return;
+      }
+      if (!currentUser) return;
 
-      const constraints = {
-        width: { ideal: 1280 },
-        height: { ideal: 720 },
-        facingMode: "environment"
-      };
+      btnSave.disabled = true;
+      saveStatus.textContent = "Uploading photo + saving…";
+      saveStatus.classList.remove("muted");
 
-      Quagga.init({
-        inputStream: {
-          type: "LiveStream",
-          target: document.querySelector("#scanner"),
-          constraints
-        },
-        decoder: {
-          readers: [
-            "code_128_reader",
-            "code_39_reader",
-            "ean_reader",
-            "ean_8_reader"
-          ]
-        },
-        locate: true
-      }, (err) => {
-        if (err) {
-          console.error(err);
-          scanStatus.textContent = "Camera error. Try Chrome/Edge on PC or allow camera permission.";
+      try {
+        // Upload file to Storage
+        const filePath = `packingPhotos/${awb}.jpg`;
+        const storageRef = ref(storage, filePath);
+        await uploadBytes(storageRef, file);
+        const photoURL = await getDownloadURL(storageRef);
+
+        // Save doc using AWB as document ID (super easy search)
+        await setDoc(doc(db, "packingLogs", awb), {
+          awb,
+          photoURL,
+          filePath,
+          createdBy: currentUser.email,
+          createdAt: serverTimestamp()
+        }, { merge: true });
+
+        saveStatus.textContent = "✅ Saved!";
+        setTimeout(() => (saveStatus.textContent = ""), 2500);
+
+      } catch (e) {
+        console.error(e);
+        alert("❌ Save failed. Check Firestore rules + Storage rules.");
+        saveStatus.textContent = "❌ Error saving.";
+      } finally {
+        btnSave.disabled = false;
+      }
+    });
+
+    // ✅ Search (works kahit wala scan)
+    btnSearch.addEventListener("click", async () => {
+      const awb = searchAwb.value.trim();
+      if (!awb) return;
+
+      searchResult.innerHTML = `<div class="resultCard">Searching…</div>`;
+
+      try {
+        const snap = await getDoc(doc(db, "packingLogs", awb));
+
+        if (!snap.exists()) {
+          searchResult.innerHTML = `<div class="resultCard">❌ No record found for <b>${awb}</b></div>`;
           return;
         }
-        scanning = true;
-        Quagga.start();
-        scanStatus.textContent = "Point camera at the barcode…";
-      });
 
-      Quagga.offDetected();
-      Quagga.onDetected((data) => {
-        const code = data?.codeResult?.code;
-        if(!code) return;
-
-        // Basic cleanup (some scanners add spaces)
-        const cleaned = String(code).trim();
-
-        // Stop immediately to avoid duplicates
-        stopScanner();
-        awbInput.value = cleaned;
-        scanStatus.textContent = "Scanned: " + cleaned;
-
-        // auto open form
-        setTimeout(() => {
-          scannerBackdrop.style.display = "none";
-          openForm();
-        }, 400);
-      });
-    }
-
-    function stopScanner(){
-      if(scanning){
-        try { Quagga.stop(); } catch(e){}
-        scanning = false;
-      }
-      // clear scanner area
-      const el = document.querySelector("#scanner");
-      if(el) el.innerHTML = "";
-    }
-
-    scanBtn.addEventListener("click", startScanner);
-    closeScanBtn.addEventListener("click", () => {
-      stopScanner();
-      scannerBackdrop.style.display = "none";
-    });
-
-    // ========= Video proof (record OR upload) =========
-    let mediaStream = null;
-    let recorder = null;
-    let recordedBlob = null;
-    let recTimer = null;
-    let recStartTime = 0;
-
-    function setPreviewFromBlob(blob){
-      const url = URL.createObjectURL(blob);
-      videoPreview.src = url;
-      videoPreview.style.display = "block";
-    }
-
-    async function startRecording(){
-      recordedBlob = null;
-      videoInput.value = ""; // if recording, clear uploaded file
-      videoPreview.style.display = "none";
-
-      try{
-        mediaStream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: "environment" },
-          audio: true
-        });
-      }catch(e){
-        alert("Camera permission error. Please allow camera/mic.\n" + (e?.message||e));
-        return;
-      }
-
-      const chunks = [];
-      const mime = MediaRecorder.isTypeSupported("video/webm;codecs=vp9")
-        ? "video/webm;codecs=vp9"
-        : (MediaRecorder.isTypeSupported("video/webm") ? "video/webm" : "");
-
-      try{
-        recorder = new MediaRecorder(mediaStream, mime ? { mimeType: mime } : undefined);
-      }catch(e){
-        alert("Recorder not supported on this browser. Try Chrome/Edge.\n" + (e?.message||e));
-        return;
-      }
-
-      recorder.ondataavailable = (ev) => {
-        if(ev.data && ev.data.size > 0) chunks.push(ev.data);
-      };
-
-      recorder.onstop = () => {
-        // stop tracks
-        try{ mediaStream.getTracks().forEach(t => t.stop()); }catch(e){}
-        mediaStream = null;
-
-        recordedBlob = new Blob(chunks, { type: recorder.mimeType || "video/webm" });
-        setPreviewFromBlob(recordedBlob);
-        recInfo.textContent = `Recorded ✅ (${Math.round(recordedBlob.size/1024/1024)} MB). Ready to save.`;
-        recStopBtn.disabled = true;
-        recStartBtn.disabled = false;
-      };
-
-      recStartBtn.disabled = true;
-      recStopBtn.disabled = false;
-
-      // auto stop at 25 seconds
-      recStartTime = Date.now();
-      recInfo.textContent = "Recording… Auto-stops at 25s.";
-      recTimer = setInterval(() => {
-        const sec = Math.floor((Date.now() - recStartTime)/1000);
-        recInfo.textContent = `Recording… ${sec}s / 25s`;
-        if(sec >= 25) stopRecording();
-      }, 300);
-
-      recorder.start();
-    }
-
-    function stopRecording(){
-      if(recTimer){ clearInterval(recTimer); recTimer = null; }
-      if(recorder && recorder.state !== "inactive"){
-        try{ recorder.stop(); }catch(e){}
-      }
-    }
-
-    recStartBtn.addEventListener("click", startRecording);
-    recStopBtn.addEventListener("click", stopRecording);
-
-    videoInput.addEventListener("change", () => {
-      recordedBlob = null; // if uploading file, ignore recorded blob
-      const f = videoInput.files?.[0];
-      if(!f) return;
-      // Show preview
-      const url = URL.createObjectURL(f);
-      videoPreview.src = url;
-      videoPreview.style.display = "block";
-      recInfo.textContent = `Selected file ✅ (${Math.round(f.size/1024/1024)} MB).`;
-    });
-
-    // ========= Save log =========
-    saveBtn.addEventListener("click", async () => {
-      hideStatus(saveStatus);
-
-      const awb = normalizeAwb(awbInput.value);
-      if(!awb){ showStatus(saveStatus, "bad", "AWB is required."); return; }
-
-      const items = getItemsFromUI();
-      const itemErr = validateItems(items);
-      if(itemErr){ showStatus(saveStatus, "bad", itemErr); return; }
-
-      // Need proof video: either recordedBlob or uploaded video file
-      const uploadedFile = videoInput.files?.[0] || null;
-      if(!recordedBlob && !uploadedFile){
-        showStatus(saveStatus, "bad", "Video proof is required (record or upload).");
-        return;
-      }
-      if(!currentUser){
-        showStatus(saveStatus, "bad", "Not logged in.");
-        return;
-      }
-
-      // Size guard (optional): warn if too big
-      const sizeBytes = recordedBlob ? recordedBlob.size : uploadedFile.size;
-      const sizeMB = sizeBytes / 1024 / 1024;
-      if(sizeMB > 80){
-        showStatus(saveStatus, "bad", "Video too large (>80MB). Use phone timelapse or shorter recording.");
-        return;
-      }
-
-      saveBtn.disabled = true;
-      showStatus(saveStatus, "warn", "Uploading video + saving…");
-
-      try{
-        // Upload to Storage
-        const safeAwb = awb.replace(/[^a-zA-Z0-9_-]/g, "_");
-        const ext = uploadedFile
-          ? (uploadedFile.name.split(".").pop() || "mp4")
-          : "webm";
-
-        const path = `proofs/${currentUser.uid}/${safeAwb}_${Date.now()}.${ext}`;
-        const storageRef = ref(storage, path);
-
-        const blobToUpload = uploadedFile || recordedBlob;
-        const metadata = uploadedFile
-          ? { contentType: uploadedFile.type || "video/mp4" }
-          : { contentType: recordedBlob.type || "video/webm" };
-
-        await uploadBytes(storageRef, blobToUpload, metadata);
-        const videoURL = await getDownloadURL(storageRef);
-
-        // Save to Firestore
-        await addDoc(collection(db, "packingLogs"), {
-          awb,
-          items,
-          proofType: "video",
-          videoURL,
-          videoPath: path,
-          createdAt: serverTimestamp(),
-          createdBy: currentUser.email || currentUser.uid,
-          sentToCustomer: false
-        });
-
-        showStatus(saveStatus, "ok", "Saved! ✅ You can search it below by AWB.");
-
-        // Reset form (keep AWB optional)
-        // awbInput.value = "";
-        videoInput.value = "";
-        recordedBlob = null;
-        videoPreview.style.display = "none";
-        itemsWrap.innerHTML = "";
-        itemsWrap.appendChild(createItemRow());
-
-        await loadRecent();
-
-      }catch(e){
-        console.error(e);
-        showStatus(saveStatus, "bad",
-          "Error saving. If upload failed: enable Firebase Storage (Build → Storage) and allow rules. Details: " + (e?.message || e)
-        );
-      }finally{
-        saveBtn.disabled = false;
-      }
-    });
-
-    // ========= Search / Load =========
-    async function renderDocs(docs){
-      results.innerHTML = "";
-      if(docs.length === 0){
-        results.innerHTML = `<div class="status">No results.</div>`;
-        return;
-      }
-
-      for(const d of docs){
-        const data = d.data();
-        const itemLines = (data.items || []).map(it => `${it.size.toUpperCase()} • ${it.color} • ${it.pcs} pcs`).join("<br>");
-
-        const box = document.createElement("div");
-        box.className = "item";
-        box.innerHTML = `
-          <div class="itemTop">
-            <div>
-              <div style="font-weight:900; font-size:16px;">AWB: ${data.awb || "-"}</div>
-              <div class="muted" style="margin-top:4px;">By: ${data.createdBy || "-"}</div>
+        const d = snap.data();
+        searchResult.innerHTML = `
+          <div class="resultCard">
+            <div><b>AWB:</b> ${d.awb}</div>
+            <div style="margin-top:10px;">
+              <img src="${d.photoURL}" alt="proof" style="max-width:100%;border-radius:14px;" />
             </div>
-            <div class="badge">${data.sentToCustomer ? "Sent ✅" : "Not sent"}</div>
           </div>
-
-          <div style="margin-top:10px; line-height:1.4;">
-            ${itemLines || "<span class='muted'>No items</span>"}
-          </div>
-
-          ${data.videoURL ? `
-            <video controls playsinline style="width:100%; margin-top:10px; border-radius:14px; border:1px solid var(--line);">
-              <source src="${data.videoURL}">
-            </video>
-          ` : ""}
-
-          <div class="actions">
-            <button class="smallbtn primary copyMsgBtn" type="button">Copy Message</button>
-          </div>
-          <div class="hint">Tip: paste message + attach video link/file as needed.</div>
         `;
-
-        const msg = formatTemplateMessage(data.awb || "");
-        box.querySelector(".copyMsgBtn").addEventListener("click", async () => {
-          try{
-            await copyTextToClipboard(msg);
-            alert("Message copied ✅");
-          }catch(e){
-            alert("Copy failed: " + (e?.message || e));
-          }
-        });
-
-        results.appendChild(box);
-      }
-    }
-
-    async function searchByAwb(){
-      const awb = normalizeAwb(searchAwb.value);
-      if(!awb){ alert("Type AWB first."); return; }
-
-      results.innerHTML = `<div class="status warn">Searching…</div>`;
-      try{
-        const q = query(
-          collection(db, "packingLogs"),
-          where("awb", "==", awb),
-          orderBy("createdAt", "desc"),
-          limit(20)
-        );
-        const snap = await getDocs(q);
-        await renderDocs(snap.docs);
-      }catch(e){
+      } catch (e) {
         console.error(e);
-        results.innerHTML = `<div class="status bad">Search error: ${e?.message || e}</div>`;
+        searchResult.innerHTML = `<div class="resultCard">❌ Error searching.</div>`;
       }
-    }
-
-    async function loadRecent(){
-      results.innerHTML = `<div class="status warn">Loading recent…</div>`;
-      try{
-        const q = query(
-          collection(db, "packingLogs"),
-          orderBy("createdAt", "desc"),
-          limit(20)
-        );
-        const snap = await getDocs(q);
-        await renderDocs(snap.docs);
-      }catch(e){
-        console.error(e);
-        results.innerHTML = `<div class="status bad">Load error: ${e?.message || e}</div>`;
-      }
-    }
-
-    searchBtn.addEventListener("click", searchByAwb);
-    loadRecentBtn.addEventListener("click", loadRecent);
+    });
   </script>
 </body>
 </html>
