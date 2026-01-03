@@ -5,44 +5,90 @@
   <title>Tatak JPD – Login</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    body{font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;background:#f5f5f5;min-height:100vh;display:flex;align-items:center;justify-content:center;margin:0;padding:24px}
-    .card{background:#fff;padding:24px;border-radius:16px;width:100%;max-width:380px;box-shadow:0 10px 30px rgba(0,0,0,.1);text-align:center}
-    h1{margin:0;font-size:20px}
-    p{font-size:13px;color:#666;margin:8px 0 18px}
-    label{display:block;text-align:left;font-size:14px;margin:10px 0 6px;color:#111}
-    input{width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;font-size:16px;box-sizing:border-box}
-    button{width:100%;padding:12px;margin-top:14px;border:none;border-radius:12px;background:#000;color:#fff;font-size:16px;font-weight:700}
-    button:disabled{opacity:.6}
-    .msg{margin-top:12px;font-size:13px;text-align:left;white-space:pre-wrap}
-    .err{color:#b00020}
-    .ok{color:#0a7a2f}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
+      background:#f5f5f5;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      min-height:100vh;
+    }
+    .card{
+      background:#fff;
+      border-radius:18px;
+      padding:22px;
+      width:100%;
+      max-width:420px;
+      box-shadow:0 10px 30px rgba(0,0,0,.08);
+    }
+    h1{
+      margin:0;
+      font-size:20px;
+      text-align:center;
+    }
+    .sub{
+      text-align:center;
+      color:#666;
+      font-size:13px;
+      margin-bottom:16px;
+    }
+    label{
+      font-size:13px;
+      font-weight:600;
+    }
+    input{
+      width:100%;
+      padding:12px;
+      border-radius:12px;
+      border:1px solid #ddd;
+      margin:6px 0 14px;
+      font-size:14px;
+    }
+    button{
+      width:100%;
+      padding:14px;
+      border-radius:14px;
+      border:0;
+      font-weight:800;
+      background:#000;
+      color:#fff;
+      font-size:15px;
+    }
+    .msg{
+      text-align:center;
+      font-size:13px;
+      margin-top:12px;
+      color:red;
+    }
+    .lock{
+      text-align:center;
+      font-size:28px;
+      margin-bottom:6px;
+    }
   </style>
 </head>
 <body>
+
   <div class="card">
-    <h1>🔐 Tatak JPD</h1>
-    <p>Cap Packing & AWB Proof System</p>
+    <div class="lock">🔐</div>
+    <h1>Tatak JPD</h1>
+    <div class="sub">Cap Packing & AWB Proof System</div>
 
-    <form id="loginForm">
-      <label>Email</label>
-      <input type="email" id="email" placeholder="you@email.com" autocomplete="email" required />
+    <label>Email</label>
+    <input id="email" type="email" placeholder="you@email.com" />
 
-      <label>Password</label>
-      <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" required />
+    <label>Password</label>
+    <input id="password" type="password" placeholder="••••••••" />
 
-      <button id="loginBtn" type="submit">Login</button>
-    </form>
+    <button id="loginBtn">Login</button>
 
     <div id="msg" class="msg"></div>
-
-    <p style="font-size:12px;color:#777;margin-top:10px;">
-      Private system — login required
-    </p>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCMuFIBYcEWJCknOsA-hRctc6I7v4Sr_gU",
@@ -56,32 +102,24 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    const form = document.getElementById("loginForm");
-    const btn = document.getElementById("loginBtn");
+    const email = document.getElementById("email");
+    const password = document.getElementById("password");
     const msg = document.getElementById("msg");
 
-    function show(text, type="err"){
-      msg.className = "msg " + (type === "ok" ? "ok" : "err");
-      msg.textContent = text;
-    }
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      btn.disabled = true;
-      show("Logging in…", "ok");
-
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-
+    document.getElementById("loginBtn").addEventListener("click", async () => {
+      msg.textContent = "";
       try {
-        await signInWithEmailAndPassword(auth, email, password);
-        show("Success! Redirecting…", "ok");
-        window.location.href = "index.html";
-      } catch (err) {
-        show(err?.message || String(err), "err");
-      } finally {
-        btn.disabled = false;
+        await signInWithEmailAndPassword(auth, email.value, password.value);
+        window.location.replace("index.html");
+      } catch (e) {
+        msg.textContent = "Invalid email or password";
+      }
+    });
+
+    // if already logged in → skip login page
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        window.location.replace("index.html");
       }
     });
   </script>
