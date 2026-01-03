@@ -183,10 +183,23 @@
   function docRef(awb){ return db.collection("packingLogs").doc(awb); } // docId = AWB (simple!)
 
   // ---------- Auth guard ----------
-  auth.onAuthStateChanged(u=>{
-    if(!u){ location.href="./login.html"; return; }
-    el("userPill").textContent = "Logged in as: " + (u.email || u.uid);
-  });
+  import { getAuth, onAuthStateChanged } from "firebase/auth";
+
+const auth = getAuth();
+
+const checkingEl = document.getElementById("checkingLogin");
+const appEl = document.getElementById("appContent"); // buong app wrapper
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    // ✅ LOGGED IN
+    checkingEl.style.display = "none";
+    appEl.style.display = "block";
+  } else {
+    // ❌ NOT LOGGED IN
+    window.location.href = "login.html";
+  }
+});
 
   el("logoutBtn").onclick = async ()=>{
     await auth.signOut();
