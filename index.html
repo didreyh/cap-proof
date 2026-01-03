@@ -12,14 +12,14 @@
       padding: 20px;
     }
     .card {
-      max-width: 800px;
+      max-width: 900px;
       margin: auto;
       background: white;
       padding: 20px;
       border-radius: 16px;
       box-shadow: 0 10px 30px rgba(0,0,0,.08);
     }
-    h2 { margin-top: 0; }
+    h2, h3 { margin-top: 0; }
     input, textarea, button {
       width: 100%;
       padding: 12px;
@@ -44,24 +44,17 @@
       border-radius: 12px;
       margin-top: 10px;
     }
-    .section {
-      margin-top: 20px;
-    }
-    .muted {
-      color: #666;
-      font-size: 13px;
-    }
-    .success {
-      color: green;
-      margin-top: 8px;
-    }
+    .section { margin-top: 25px; }
+    .muted { color: #666; font-size: 13px; }
+    .success { color: green; margin-top: 8px; }
+    ul { padding-left: 18px; }
   </style>
 </head>
 <body>
 
 <div class="card">
   <h2>📦 Tatak JPD – Packing Proof</h2>
-  <p class="muted">Search AWB → view photo → copy message → send to customer</p>
+  <p class="muted">PC view: Search AWB → copy message → daily summary</p>
 
   <!-- SEARCH -->
   <div class="section">
@@ -83,13 +76,29 @@
     <button onclick="copyMessage()">📋 Copy message</button>
     <div class="success" id="copyStatus"></div>
   </div>
+
+  <!-- DAILY SUMMARY -->
+  <div class="section">
+    <h3>📊 Daily Summary</h3>
+    <p class="muted">Ilang na-pack mo today</p>
+    <button class="secondary" onclick="loadTodaySummary()">Load Today Summary</button>
+    <div id="summaryBox" style="margin-top:10px;"></div>
+  </div>
 </div>
 
-<!-- FIREBASE -->
+<!-- FIREBASE + JS -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import {
+    getFirestore,
+    doc,
+    getDoc,
+    collection,
+    query,
+    where,
+    getDocs
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCMuFIBYcEWJCknOsA-hRctc6I7v4Sr_gU",
@@ -104,25 +113,23 @@
   const auth = getAuth(app);
   const db = getFirestore(app);
 
-  // 🔐 Require login
+  // Require login
   onAuthStateChanged(auth, user => {
     if (!user) window.location.href = "login.html";
   });
 
-  // 🔍 SEARCH AWB
+  // SEARCH AWB
   window.searchAWB = async function () {
     const awb = document.getElementById("awbInput").value.trim();
     if (!awb) return alert("Please enter AWB");
 
     const snap = await getDoc(doc(db, "packingLogs", awb));
-
     if (!snap.exists()) {
-      alert("No record found for this AWB");
+      alert("No record found");
       return;
     }
 
     const data = snap.data();
-
     const dateText = data.createdAt?.toDate
       ? data.createdAt.toDate().toLocaleString("en-PH")
       : "N/A";
@@ -145,11 +152,43 @@ Thank you po!
     document.getElementById("resultSection").style.display = "block";
   };
 
-  // 📋 COPY MESSAGE
+  // COPY MESSAGE
   window.copyMessage = async function () {
     const msg = document.getElementById("messageBox").value;
     await navigator.clipboard.writeText(msg);
-    document.getElementById("copyStatus").innerText = "✅ Message copied. Ready to send!";
+    document.getElementById("copyStatus").innerText =
+      "✅ Message copied. Ready to send!";
+  };
+
+  // DAILY SUMMARY
+  window.loadTodaySummary = async function () {
+    const box = document.getElementById("summaryBox");
+    box.innerHTML = "Loading...";
+
+    const now = new Date();
+    const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0,0,0);
+    const end   = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23,59,59);
+
+    const q = query(
+      collection(db, "packingLogs"),
+      where("createdAt", ">=", start),
+      where("createdAt", "<=", end)
+    );
+
+    const snap = await getDocs(q);
+
+    if (snap.empty) {
+      box.innerHTML = "Wala pang packing logs today.";
+      return;
+    }
+
+    let html = `<b>Total packed today:</b> ${snap.size}<ul>`;
+    snap.forEach(d => {
+      html += `<li>${d.data().awb}</li>`;
+    });
+    html += `</ul>`;
+
+    box.innerHTML = html;
   };
 </script>
 
