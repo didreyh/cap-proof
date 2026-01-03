@@ -486,15 +486,14 @@
 }
 
     function summarizeOrders(orders){
-      // Example: "Order1: Kinder+Elem, Fuchsia Pink, qty 36 | Order2: SHS, Black"
-      if (!orders?.length) return "No order details.";
-      return orders.map((o, i) => {
-        const lvl = (o.levels?.length ? o.levels.join("+") : "No level");
-        const col = (o.color || "No color");
-        const qty = (o.qty ? `qty ${o.qty}` : "qty -");
-        return `#${i+1} ${lvl} • ${col} • ${qty}`;
-      }).join(" | ");
-    }
+  if (!orders?.length) return "No order details.";
+  return orders.map((o, i) => {
+    const lvl = (o.level || "No level");
+    const col = (o.color || "No color");
+    const qty = (o.qty ? `qty ${o.qty}` : "qty -");
+    return `#${i+1} ${lvl} • ${col} • ${qty}`;
+  }).join(" | ");
+}
 
     // ---------- Auth ----------
     onAuthStateChanged(auth, (user) => {
