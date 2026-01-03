@@ -1,40 +1,161 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Tatak JPD Login</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tatak JPD – Login</title>
+
+  <style>
+    *{
+      box-sizing:border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      display:flex;
+      justify-content:center;
+      background:#f4f4f4;
+      padding:24px 0;
+      align-items:flex-start;
+    }
+
+    @media (min-width:768px){
+      body{
+        align-items:center;
+        padding:0;
+      }
+    }
+
+    .login-card{
+      width:92%;
+      max-width:380px;
+      background:#fff;
+      border-radius:18px;
+      padding:22px;
+      box-shadow:0 10px 30px rgba(0,0,0,0.12);
+      text-align:center;
+    }
+
+    .logo{
+      font-size:34px;
+      margin-bottom:6px;
+    }
+
+    h1{
+      font-size:20px;
+      margin:0;
+      font-weight:700;
+    }
+
+    .subtitle{
+      font-size:13px;
+      color:#777;
+      margin-bottom:18px;
+    }
+
+    label{
+      display:block;
+      text-align:left;
+      font-size:13px;
+      margin-bottom:6px;
+      margin-top:14px;
+      font-weight:500;
+    }
+
+    input{
+      width:100%;
+      padding:12px;
+      border-radius:10px;
+      border:1px solid #ddd;
+      font-size:14px;
+    }
+
+    input:focus{
+      outline:none;
+      border-color:#000;
+    }
+
+    button{
+      width:100%;
+      margin-top:20px;
+      padding:14px;
+      background:#000;
+      color:#fff;
+      border:none;
+      border-radius:12px;
+      font-size:15px;
+      font-weight:600;
+      cursor:pointer;
+    }
+
+    button:disabled{
+      opacity:.6;
+      cursor:not-allowed;
+    }
+
+    .footer{
+      margin-top:16px;
+      font-size:11px;
+      color:#999;
+    }
+  </style>
 </head>
+
 <body>
 
-<h2>Login</h2>
+  <div class="login-card">
+    <div class="logo">🔐</div>
 
-<input id="email" type="email" placeholder="Email"><br><br>
-<input id="password" type="password" placeholder="Password"><br><br>
-<button onclick="login()">Login</button>
+    <h1>Tatak JPD</h1>
+    <div class="subtitle">Cap Packing & AWB Proof System</div>
 
-<script src="firebase.js"></script>
+    <label>Email</label>
+    <input type="email" id="email" placeholder="you@email.com" />
 
-<script type="module">
-  import { signInWithEmailAndPassword, onAuthStateChanged } 
-  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    <label>Password</label>
+    <input type="password" id="password" placeholder="••••••••" />
 
-  window.login = function () {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+    <button id="loginBtn">Login</button>
 
-    signInWithEmailAndPassword(auth, email, password)
-      .then(() => {
+    <div class="footer">
+      Private system — login required
+    </div>
+  </div>
+
+  <!-- JS (Firebase hook ready) -->
+  <script type="module">
+    import { getAuth, signInWithEmailAndPassword } 
+      from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { app } from "./firebase.js";
+
+    const auth = getAuth(app);
+
+    const btn = document.getElementById("loginBtn");
+
+    btn.addEventListener("click", async () => {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      if(!email || !password){
+        alert("Please enter email and password");
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = "Logging in...";
+
+      try{
+        await signInWithEmailAndPassword(auth, email, password);
         window.location.href = "index.html";
-      })
-      .catch(err => alert(err.message));
-  };
-
-  onAuthStateChanged(auth, user => {
-    if (user) {
-      window.location.href = "index.html";
-    }
-  });
-</script>
+      }catch(err){
+        alert(err.message);
+        btn.disabled = false;
+        btn.textContent = "Login";
+      }
+    });
+  </script>
 
 </body>
 </html>
