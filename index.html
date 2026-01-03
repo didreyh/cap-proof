@@ -803,7 +803,7 @@ btnDaily.addEventListener("click", async () => {
         const qty = o.qty && Number.isFinite(o.qty) ? o.qty : 1;
 
         // levels can be multiple
-        (o.levels || []).forEach(lvl => inc(levelCounts, lvl, qty));
+        if (o.level) inc(levelCounts, o.level, qty);
 
         // one color
         if (o.color) inc(colorCounts, o.color, qty);
