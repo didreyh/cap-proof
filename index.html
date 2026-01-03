@@ -5,114 +5,76 @@
   <title>Tatak JPD – Packing Proof</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+  <!-- ZXing for barcode scan -->
+  <script src="https://unpkg.com/@zxing/library@latest"></script>
+
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f6f8;
-      padding: 20px;
-    }
-    .card {
-      max-width: 900px;
-      margin: auto;
-      background: white;
-      padding: 20px;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.08);
-    }
-    h2, h3 { margin-top: 0; }
-    input, textarea, button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 8px;
-      border-radius: 10px;
-      border: 1px solid #ddd;
-      font-size: 15px;
-    }
-    button {
-      background: #111;
-      color: white;
-      border: none;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    button.secondary {
-      background: #eee;
-      color: #111;
-    }
-    img {
-      max-width: 100%;
-      border-radius: 12px;
-      margin-top: 10px;
-    }
-    .section { margin-top: 25px; }
-    .muted { color: #666; font-size: 13px; }
-    .success { color: green; margin-top: 8px; }
-    ul { padding-left: 18px; }
+    body{font-family:Arial,sans-serif;background:#f5f6f8;padding:20px}
+    .card{max-width:900px;margin:auto;background:#fff;padding:20px;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.08)}
+    h2,h3{margin:0 0 8px}
+    .muted{color:#666;font-size:13px}
+    .section{margin-top:22px}
+    input,textarea,button{width:100%;padding:12px;margin-top:8px;border-radius:10px;border:1px solid #ddd;font-size:15px}
+    button{background:#111;color:#fff;border:none;font-weight:700;cursor:pointer}
+    button.secondary{background:#eee;color:#111}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    img{max-width:100%;border-radius:12px;margin-top:10px;border:1px solid #eee}
+    .box{background:#fafafa;border:1px solid #eee;padding:12px;border-radius:12px;margin-top:10px}
+    .success{color:#0a7a2f;font-weight:700;margin-top:6px}
+    video{width:100%;border-radius:12px;background:#000}
   </style>
 </head>
+
 <body>
+<div class="card">
+  <h2>📦 Tatak JPD – Packing Proof</h2>
+  <p class="muted">Type/Scan AWB → view photo → copy message → daily summary</p>
 
-<h2>📦 Tatak JPD – Packing Proof</h2>
-<p class="muted">PC view: Search AWB → copy message → daily summary</p>
+  <!-- SEARCH / SCAN -->
+  <div class="section">
+    <h3>Search / Scan AWB</h3>
+    <input id="awbInput" placeholder="Type or paste AWB number" />
 
-<div class="section">
-  <h3>Search / Scan AWB</h3>
+    <div class="row">
+      <button id="scanBtn" type="button">📷 Scan AWB</button>
+      <button id="searchBtn" type="button" class="secondary">Search</button>
+    </div>
 
-  <label>AWB Number</label>
-  <input id="awbInput" placeholder="Type or paste AWB number" />
-
-  <div class="row" style="margin-top:10px;">
-    <button id="scanBtn" class="tinybtn" type="button">📷 Scan AWB Barcode</button>
-    <button id="searchBtn" class="tinybtn" type="button">Search</button>
+    <div id="scanBox" class="box" style="display:none">
+      <p class="muted">Allow camera access then point to barcode</p>
+      <video id="preview" playsinline></video>
+      <button id="stopScanBtn" type="button" class="secondary">Stop Scan</button>
+    </div>
   </div>
-
-  <div id="scannerWrap" class="box" style="display:none;">
-    <div class="muted" style="margin-bottom:8px;">Allow camera access, then it will auto-fill.</div>
-    <video id="video" playsinline style="width:100%; border-radius:12px; background:#000;"></video>
-    <button id="stopScanBtn" class="secondary tinybtn" type="button" style="margin-top:10px;">Stop Scan</button>
-    <div id="scanMsg" class="muted" style="margin-top:8px;"></div>
-  </div>
-
-  <div id="resultBox" class="box" style="display:none;"></div>
-</div>
 
   <!-- RESULT -->
-  <div class="section" id="resultSection" style="display:none;">
+  <div class="section" id="resultSection" style="display:none">
     <p><b>AWB:</b> <span id="awbText"></span></p>
     <p><b>Packed on:</b> <span id="timeText"></span></p>
 
     <img id="proofImage" />
 
-    <label style="margin-top:14px;"><b>Message to send</b></label>
+    <label><b>Message to send</b></label>
     <textarea id="messageBox" rows="6"></textarea>
-
-    <button onclick="copyMessage()">📋 Copy message</button>
-    <div class="success" id="copyStatus"></div>
+    <button id="copyBtn" type="button">📋 Copy message</button>
+    <div id="copyStatus" class="success"></div>
   </div>
 
   <!-- DAILY SUMMARY -->
   <div class="section">
     <h3>📊 Daily Summary</h3>
-    <p class="muted">Ilang na-pack mo today</p>
-    <button class="secondary" onclick="loadTodaySummary()">Load Today Summary</button>
-    <div id="summaryBox" style="margin-top:10px;"></div>
+    <button id="summaryBtn" type="button" class="secondary">Load Today Summary</button>
+    <div id="summaryBox" class="box"></div>
   </div>
 </div>
 
-<!-- FIREBASE + JS -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import {
-    getFirestore,
-    doc,
-    getDoc,
-    collection,
-    query,
-    where,
-    getDocs
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
+<script>
+  // 🔥 Firebase config (yours)
   const firebaseConfig = {
     apiKey: "AIzaSyCMuFIBYcEWJCknOsA-hRctc6I7v4Sr_gU",
     authDomain: "cap-proof.firebaseapp.com",
@@ -122,34 +84,39 @@
     appId: "1:722260489486:web:e4c8111afb86586f2fd35f"
   };
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
 
   // Require login
-  onAuthStateChanged(auth, user => {
-    if (!user) window.location.href = "login.html";
+  auth.onAuthStateChanged(u=>{
+    if(!u) location.href="login.html";
   });
 
-  // SEARCH AWB
-  window.searchAWB = async function () {
-    const awb = document.getElementById("awbInput").value.trim();
-    if (!awb) return alert("Please enter AWB");
+  const awbInput = document.getElementById("awbInput");
+  const searchBtn = document.getElementById("searchBtn");
 
-    const snap = await getDoc(doc(db, "packingLogs", awb));
-    if (!snap.exists()) {
-      alert("No record found");
-      return;
-    }
+  // ENTER = SEARCH
+  awbInput.addEventListener("keydown", e=>{
+    if(e.key==="Enter"){ e.preventDefault(); searchBtn.click(); }
+  });
 
-    const data = snap.data();
-    const dateText = data.createdAt?.toDate
-      ? data.createdAt.toDate().toLocaleString("en-PH")
+  // SEARCH
+  async function searchAWB(){
+    const awb = awbInput.value.trim();
+    if(!awb) return alert("Enter AWB");
+
+    const doc = await db.collection("packingLogs").doc(awb).get();
+    if(!doc.exists) return alert("No record found");
+
+    const d = doc.data();
+    const timeText = d.createdAt?.toDate
+      ? d.createdAt.toDate().toLocaleString("en-PH")
       : "N/A";
 
     document.getElementById("awbText").innerText = awb;
-    document.getElementById("timeText").innerText = dateText;
-    document.getElementById("proofImage").src = data.imageUrl;
+    document.getElementById("timeText").innerText = timeText;
+    document.getElementById("proofImage").src = d.imageUrl;
 
     document.getElementById("messageBox").value =
 `Hi po! 😊
@@ -157,140 +124,66 @@
 Ready to ship na po ang order nyo.
 
 📦 AWB: ${awb}
-🕒 Packed on: ${dateText}
+🕒 Packed on: ${timeText}
 
 Thank you po!
 – Tatak JPD`;
 
-    document.getElementById("resultSection").style.display = "block";
-  };
+    document.getElementById("resultSection").style.display="block";
+  }
+  searchBtn.onclick = searchAWB;
 
-  // COPY MESSAGE
-  window.copyMessage = async function () {
-    const msg = document.getElementById("messageBox").value;
-    await navigator.clipboard.writeText(msg);
-    document.getElementById("copyStatus").innerText =
-      "✅ Message copied. Ready to send!";
+  // COPY
+  document.getElementById("copyBtn").onclick = async ()=>{
+    await navigator.clipboard.writeText(document.getElementById("messageBox").value);
+    document.getElementById("copyStatus").innerText="✅ Copied!";
   };
 
   // DAILY SUMMARY
-  window.loadTodaySummary = async function () {
+  document.getElementById("summaryBtn").onclick = async ()=>{
     const box = document.getElementById("summaryBox");
-    box.innerHTML = "Loading...";
+    box.innerHTML="Loading…";
+    const now=new Date();
+    const start=new Date(now.getFullYear(),now.getMonth(),now.getDate(),0,0,0);
+    const end=new Date(now.getFullYear(),now.getMonth(),now.getDate(),23,59,59);
 
-    const now = new Date();
-    const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0,0,0);
-    const end   = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23,59,59);
+    const snap = await db.collection("packingLogs")
+      .where("createdAt",">=",start)
+      .where("createdAt","<=",end)
+      .get();
 
-    const q = query(
-      collection(db, "packingLogs"),
-      where("createdAt", ">=", start),
-      where("createdAt", "<=", end)
-    );
+    if(snap.empty){ box.innerHTML="Wala pang logs today."; return; }
 
-    const snap = await getDocs(q);
-
-    if (snap.empty) {
-      box.innerHTML = "Wala pang packing logs today.";
-      return;
-    }
-
-    let html = `<b>Total packed today:</b> ${snap.size}<ul>`;
-    snap.forEach(d => {
-      html += `<li>${d.data().awb}</li>`;
-    });
-    html += `</ul>`;
-
-    box.innerHTML = html;
+    let html=`<b>Total today:</b> ${snap.size}<ul>`;
+    snap.forEach(d=> html+=`<li>${d.id}</li>`);
+    html+="</ul>";
+    box.innerHTML=html;
   };
-// --- SCAN (Barcode) using camera via BarcodeDetector (works on most Android/Chrome & some iOS Safari versions)
-const scanBtn = document.getElementById("scanBtn");
-const stopScanBtn = document.getElementById("stopScanBtn");
-const scannerWrap = document.getElementById("scannerWrap");
-const videoEl = document.getElementById("video");
-const scanMsg = document.getElementById("scanMsg");
-const awbInput = document.getElementById("awbInput");
 
-let scanStream = null;
-let scanLoopRunning = false;
+  // SCAN (ZXing)
+  const scanBtn=document.getElementById("scanBtn");
+  const stopScanBtn=document.getElementById("stopScanBtn");
+  const scanBox=document.getElementById("scanBox");
+  const preview=document.getElementById("preview");
+  let codeReader;
 
-function hasBarcodeDetector() {
-  return "BarcodeDetector" in window;
-}
-
-async function startScan() {
-  if (!hasBarcodeDetector()) {
-    alert("Barcode scan not supported on this browser. Use type/paste muna, or open in Chrome.");
-    return;
-  }
-
-  scannerWrap.style.display = "block";
-  scanMsg.textContent = "Starting camera…";
-
-  try {
-    scanStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: "environment" },
-      audio: false,
-    });
-    videoEl.srcObject = scanStream;
-    await videoEl.play();
-
-    const detector = new BarcodeDetector({
-      formats: ["code_128", "code_39", "ean_13", "ean_8", "itf", "upc_a", "upc_e", "qr_code"]
-    });
-
-    scanLoopRunning = true;
-    scanMsg.textContent = "Scanning… point camera to AWB barcode";
-
-    const scanLoop = async () => {
-      if (!scanLoopRunning) return;
-
-      try {
-        const barcodes = await detector.detect(videoEl);
-        if (barcodes && barcodes.length) {
-          const raw = barcodes[0].rawValue || "";
-          if (raw) {
-            awbInput.value = raw.trim();
-            scanMsg.textContent = `✅ Detected: ${raw}`;
-            stopScan(); // auto stop after detect
-            // auto trigger search if you want:
-            // document.getElementById("searchBtn").click();
-            return;
-          }
-        }
-      } catch (e) {
-        // ignore detect errors
+  scanBtn.onclick = async ()=>{
+    scanBox.style.display="block";
+    if(!codeReader) codeReader = new ZXing.BrowserMultiFormatReader();
+    codeReader.decodeFromVideoDevice(null, preview, (res,err)=>{
+      if(res){
+        awbInput.value = res.getText();
+        codeReader.reset();
+        scanBox.style.display="none";
+        searchBtn.click();
       }
+    });
+  };
 
-      requestAnimationFrame(scanLoop);
-    };
-
-    requestAnimationFrame(scanLoop);
-
-  } catch (err) {
-    scanMsg.textContent = "❌ Camera permission denied or error.";
-    console.error(err);
-  }
-}
-
-function stopScan() {
-  scanLoopRunning = false;
-  if (scanStream) {
-    scanStream.getTracks().forEach(t => t.stop());
-    scanStream = null;
-  }
-  if (videoEl) videoEl.srcObject = null;
-  // keep wrap open so user sees detected value, or hide:
-  // scannerWrap.style.display = "none";
-}
-
-scanBtn?.addEventListener("click", startScan);
-stopScanBtn?.addEventListener("click", () => {
-  stopScan();
-  scannerWrap.style.display = "none";
-});  
-  
+  stopScanBtn.onclick = ()=>{
+    if(codeReader) codeReader.reset();
+    scanBox.style.display="none";
+  };
 </script>
-
 </body>
 </html>
