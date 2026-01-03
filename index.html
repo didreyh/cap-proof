@@ -52,16 +52,29 @@
 </head>
 <body>
 
-<div class="card">
-  <h2>📦 Tatak JPD – Packing Proof</h2>
-  <p class="muted">PC view: Search AWB → copy message → daily summary</p>
+<h2>📦 Tatak JPD – Packing Proof</h2>
+<p class="muted">PC view: Search AWB → copy message → daily summary</p>
 
-  <!-- SEARCH -->
-  <div class="section">
-    <label><b>Search AWB</b></label>
-    <input id="awbInput" placeholder="Type or paste AWB number" />
-    <button onclick="searchAWB()">Search</button>
+<div class="section">
+  <h3>Search / Scan AWB</h3>
+
+  <label>AWB Number</label>
+  <input id="awbInput" placeholder="Type or paste AWB number" />
+
+  <div class="row" style="margin-top:10px;">
+    <button id="scanBtn" class="tinybtn" type="button">📷 Scan AWB Barcode</button>
+    <button id="searchBtn" class="tinybtn" type="button">Search</button>
   </div>
+
+  <div id="scannerWrap" class="box" style="display:none;">
+    <div class="muted" style="margin-bottom:8px;">Allow camera access, then it will auto-fill.</div>
+    <video id="video" playsinline style="width:100%; border-radius:12px; background:#000;"></video>
+    <button id="stopScanBtn" class="secondary tinybtn" type="button" style="margin-top:10px;">Stop Scan</button>
+    <div id="scanMsg" class="muted" style="margin-top:8px;"></div>
+  </div>
+
+  <div id="resultBox" class="box" style="display:none;"></div>
+</div>
 
   <!-- RESULT -->
   <div class="section" id="resultSection" style="display:none;">
