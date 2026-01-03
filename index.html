@@ -316,12 +316,10 @@
 
 📦 AWB: ${awb}
 🕒 Packed on: ${createdAt || "N/A"}
-📸 Photo proof: ${photoUrl || "N/A"}
-
 Thank you po!`;
-
     el("msgText").value = msg;
 
+📸 Photo proof: ${photoUrl || "N/A"}
     el("openImgBtn").onclick = ()=>{ if(photoUrl) window.open(photoUrl, "_blank"); };
     el("copyImgLinkBtn").onclick = ()=> copyOneClick(photoUrl || "");
     el("copyMsgBtn").onclick = ()=> copyOneClick(el("msgText").value);
