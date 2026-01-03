@@ -455,28 +455,35 @@
     }
 
     function readOrdersFromUI(){
-      const orders = [];
-      [...ordersWrap.children].forEach((box) => {
-        const idx = Number(box.dataset.orderIndex || "0");
-        const levels = [];
-        box.querySelectorAll(`input[name="level_${idx}"]`).forEach((i) => {
-          if (i.checked) levels.push(i.value);
-        });
+  const orders = [];
+  [...ordersWrap.children].forEach((box) => {
+    const idx = Number(box.dataset.orderIndex || "0");
 
-        let color = "";
-        box.querySelectorAll(`input[name="color_${idx}"]`).forEach((i) => {
-          if (i.checked) color = i.value;
-        });
+    // ✅ single level
+    let level = "";
+    box.querySelectorAll(`input[name="level_${idx}"]`).forEach((i) => {
+      if (i.checked) level = i.value;
+    });
 
-        const qtyInput = box.querySelector('input[data-role="qty"]');
-        const qtyRaw = (qtyInput?.value || "").trim();
-        const qty = qtyRaw ? Number(qtyRaw.replace(/[^\d]/g,"")) : null;
+    // ✅ single color
+    let color = "";
+    box.querySelectorAll(`input[name="color_${idx}"]`).forEach((i) => {
+      if (i.checked) color = i.value;
+    });
 
-        orders.push({ levels, color, qty: Number.isFinite(qty) && qty > 0 ? qty : null });
-      });
+    const qtyInput = box.querySelector('input[data-role="qty"]');
+    const qtyRaw = (qtyInput?.value || "").trim();
+    const qty = qtyRaw ? Number(qtyRaw.replace(/[^\d]/g,"")) : null;
 
-      return orders;
-    }
+    orders.push({
+      level: level || "",
+      color: color || "",
+      qty: Number.isFinite(qty) && qty > 0 ? qty : null
+    });
+  });
+
+  return orders;
+}
 
     function summarizeOrders(orders){
       // Example: "Order1: Kinder+Elem, Fuchsia Pink, qty 36 | Order2: SHS, Black"
