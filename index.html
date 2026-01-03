@@ -66,14 +66,14 @@
     </div>
   </div>
 
- <script type="module">
+<script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import {
     getAuth,
+    onAuthStateChanged,
+    signOut,
     setPersistence,
-    browserLocalPersistence,
-    signInWithEmailAndPassword,
-    onAuthStateChanged
+    browserLocalPersistence
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
   const firebaseConfig = {
@@ -88,32 +88,53 @@
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
 
-  // ✅ force persistence so session survives page navigation
-  await setPersistence(auth, browserLocalPersistence);
+  // --- small debug helper (shows on page if you add #debug element) ---
+  const dbg = (t) => {
+    const el = document.getElementById("debug");
+    if (el) el.textContent = t;
+  };
 
-  const email = document.getElementById("email");
-  const password = document.getElementById("password");
-  const msg = document.getElementById("msg");
-  const btn = document.getElementById("loginBtn");
+  dbg("JS loaded ✅");
 
-  btn.addEventListener("click", async () => {
-    msg.textContent = "";
-    btn.disabled = true;
-    btn.textContent = "Logging in…";
+  // ✅ IMPORTANT: don't block if persistence fails
+  setPersistence(auth, browserLocalPersistence)
+    .then(() => dbg("Persistence: LOCAL ✅"))
+    .catch((e) => dbg("Persistence warning: " + (e?.code || e?.message || e)));
+
+  // ✅ Make logout always clickable using window function
+  window.doLogout = async function () {
     try {
-      await signInWithEmailAndPassword(auth, email.value.trim(), password.value);
-      window.location.href = "index.html";
-    } catch (e) {
-      msg.textContent = e?.message || "Login failed";
-    } finally {
-      btn.disabled = false;
-      btn.textContent = "Login";
-    }
-  });
+      await signOut(auth);
+    } catch (e) {}
+    window.location.href = "login.html";
+  };
 
-  // if already logged in → skip login page
+  const loading = document.getElementById("loading");
+  const appDiv = document.getElementById("app");
+  const userEmail = document.getElementById("userEmail");
+
+  // Safety: if auth state never returns, show message
+  setTimeout(() => {
+    if (loading && !loading.classList.contains("hide")) {
+      dbg("Auth still loading… (try open in Chrome if this persists)");
+    }
+  }, 5000);
+
+  dbg("Waiting auth state…");
+
   onAuthStateChanged(auth, (user) => {
-    if (user) window.location.href = "index.html";
+    if (!user) {
+      dbg("No user → redirect to login");
+      window.location.href = "login.html";
+      return;
+    }
+
+    dbg("User OK ✅");
+    if (loading) loading.classList.add("hide");
+    if (appDiv) appDiv.classList.remove("hide");
+    if (userEmail) userEmail.textContent = "Logged in as: " + (user.email || "");
+  }, (error) => {
+    dbg("Auth error: " + (error?.message || error));
   });
 </script>
 </body>
