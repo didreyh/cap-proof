@@ -4,81 +4,42 @@
   <meta charset="UTF-8" />
   <title>Tatak JPD – Login</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <style>
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #f5f5f5;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0;
-    }
-
-    .card {
-      background: #fff;
-      padding: 24px;
-      border-radius: 16px;
-      width: 100%;
-      max-width: 360px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.1);
-      text-align: center;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: 20px;
-    }
-
-    p {
-      font-size: 13px;
-      color: #666;
-      margin-bottom: 20px;
-    }
-
-    input {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 12px;
-      border-radius: 10px;
-      border: 1px solid #ddd;
-      font-size: 14px;
-    }
-
-    button {
-      width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 12px;
-      background: #000;
-      color: #fff;
-      font-size: 15px;
-      cursor: pointer;
-    }
-
-    .error {
-      color: red;
-      font-size: 13px;
-      margin-top: 10px;
-    }
+    body{font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;background:#f5f5f5;min-height:100vh;display:flex;align-items:center;justify-content:center;margin:0;padding:24px}
+    .card{background:#fff;padding:24px;border-radius:16px;width:100%;max-width:380px;box-shadow:0 10px 30px rgba(0,0,0,.1);text-align:center}
+    h1{margin:0;font-size:20px}
+    p{font-size:13px;color:#666;margin:8px 0 18px}
+    label{display:block;text-align:left;font-size:14px;margin:10px 0 6px;color:#111}
+    input{width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;font-size:16px;box-sizing:border-box}
+    button{width:100%;padding:12px;margin-top:14px;border:none;border-radius:12px;background:#000;color:#fff;font-size:16px;font-weight:700}
+    button:disabled{opacity:.6}
+    .msg{margin-top:12px;font-size:13px;text-align:left;white-space:pre-wrap}
+    .err{color:#b00020}
+    .ok{color:#0a7a2f}
   </style>
 </head>
 <body>
-
   <div class="card">
     <h1>🔐 Tatak JPD</h1>
     <p>Cap Packing & AWB Proof System</p>
 
-    <input type="email" id="email" placeholder="Email" />
-    <input type="password" id="password" placeholder="Password" />
+    <form id="loginForm">
+      <label>Email</label>
+      <input type="email" id="email" placeholder="you@email.com" autocomplete="email" required />
 
-    <button onclick="login()">Login</button>
+      <label>Password</label>
+      <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" required />
 
-    <div class="error" id="error"></div>
+      <button id="loginBtn" type="submit">Login</button>
+    </form>
+
+    <div id="msg" class="msg"></div>
+
+    <p style="font-size:12px;color:#777;margin-top:10px;">
+      Private system — login required
+    </p>
   </div>
 
-  <!-- Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -95,22 +56,34 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    window.login = function () {
-      const email = document.getElementById("email").value;
+    const form = document.getElementById("loginForm");
+    const btn = document.getElementById("loginBtn");
+    const msg = document.getElementById("msg");
+
+    function show(text, type="err"){
+      msg.className = "msg " + (type === "ok" ? "ok" : "err");
+      msg.textContent = text;
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      btn.disabled = true;
+      show("Logging in…", "ok");
+
+      const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value;
-      const errorBox = document.getElementById("error");
 
-      errorBox.textContent = "";
-
-      signInWithEmailAndPassword(auth, email, password)
-        .then(() => {
-          window.location.href = "index.html";
-        })
-        .catch((error) => {
-          errorBox.textContent = error.message;
-        });
-    };
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        show("Success! Redirecting…", "ok");
+        window.location.href = "index.html";
+      } catch (err) {
+        show(err?.message || String(err), "err");
+      } finally {
+        btn.disabled = false;
+      }
+    });
   </script>
-
 </body>
 </html>
