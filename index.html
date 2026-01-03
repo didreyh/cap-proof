@@ -5,165 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Tatak JPD - Packing Proof</title>
 
-  <style>
-    body{
-      margin:0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background:#f3f4f6;
-      min-height:100vh;
-      padding:18px;
-    }
-    .wrap{
-      max-width:820px;
-      margin:0 auto;
-    }
-    .card{
-      background:white;
-      border-radius:22px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.08);
-      padding:18px;
-      margin-bottom:16px;
-    }
-    .topbar{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:12px;
-      padding:6px 6px 12px;
-      border-bottom:1px solid #e5e7eb;
-      margin-bottom:12px;
-    }
-    .title{
-      font-weight:900;
-      font-size:28px;
-      line-height:1.1;
-    }
-    .subtitle{
-      margin-top:6px;
-      color:#6b7280;
-      font-size:14px;
-    }
-    .logout{
-      border:none;
-      background:#0b0b0b;
-      color:white;
-      border-radius:16px;
-      padding:12px 16px;
-      font-weight:800;
-      cursor:pointer;
-    }
-    .pill{
-      background:#ecfdf5;
-      border:1px solid #bbf7d0;
-      padding:10px 12px;
-      border-radius:14px;
-      color:#065f46;
-      font-size:14px;
-      margin:8px 0 0;
-      word-break:break-all;
-    }
-    h2{
-      margin:10px 0 10px;
-      font-size:22px;
-    }
-    label{
-      display:block;
-      font-weight:800;
-      margin:10px 0 6px;
-    }
-    input[type="text"], textarea{
-      width:100%;
-      box-sizing:border-box;
-      border:1px solid #d1d5db;
-      border-radius:14px;
-      padding:14px;
-      font-size:16px;
-      outline:none;
-    }
-    input[type="text"]:focus, textarea:focus{
-      border-color:#111827;
-      box-shadow:0 0 0 4px rgba(17,24,39,.08);
-    }
-    .row{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-      margin-top:10px;
-    }
-    .btn{
-      border:none;
-      border-radius:16px;
-      padding:14px 16px;
-      font-weight:900;
-      cursor:pointer;
-    }
-    .btn-dark{
-      background:#0b0b0b;
-      color:white;
-    }
-    .btn-light{
-      background:#f3f4f6;
-      color:#111827;
-    }
-    .status{
-      margin-top:10px;
-      color:#111827;
-      font-size:14px;
-      min-height:18px;
-    }
-    .hint{
-      color:#6b7280;
-      font-size:13px;
-      margin-top:6px;
-    }
-
-    /* radio "box" UI */
-    .choices{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      margin-top:8px;
-    }
-    .choice{
-      display:inline-flex;
-      align-items:center;
-      gap:10px;
-      border:1px solid #d1d5db;
-      border-radius:14px;
-      padding:10px 12px;
-      cursor:pointer;
-      user-select:none;
-      background:white;
-    }
-    .choice input{ transform: scale(1.2); }
-    .choice strong{ font-weight:900; }
-
-    .divider{ height:1px; background:#e5e7eb; margin:16px 0; }
-
-    .preview{
-      width:100%;
-      max-height:520px;
-      object-fit:contain;
-      border-radius:16px;
-      border:1px solid #e5e7eb;
-      background:#fafafa;
-    }
-
-    textarea{
-      min-height:140px;
-      resize:vertical;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      font-size:14px;
-    }
-
-    .footer{
-      text-align:center;
-      color:#9ca3af;
-      font-size:12px;
-      margin-top:12px;
-    }
-  </style>
+  <!-- ZXing (barcode scan) -->
+  <script src="https://unpkg.com/@zxing/library@latest"></script>
 
   <!-- Firebase v8 compat -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -171,297 +14,436 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
   <script src="./firebase.js"></script>
+
+  <style>
+    :root{--bg:#f3f4f6;--card:#fff;--text:#111827;--muted:#6b7280;--line:#e5e7eb;--black:#0b0b0b}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text)}
+    .wrap{max-width:920px;margin:24px auto;padding:0 14px}
+    .card{background:var(--card);border-radius:22px;box-shadow:0 18px 40px rgba(0,0,0,.08);padding:18px}
+    .top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+    .title{font-size:30px;font-weight:900;line-height:1.15}
+    .sub{color:var(--muted);margin-top:6px;font-size:14px}
+    .logout{border:0;background:var(--black);color:#fff;border-radius:16px;padding:12px 14px;font-weight:900;cursor:pointer}
+    .pill{margin-top:10px;background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46;border-radius:14px;padding:10px 12px;font-weight:800;word-break:break-word}
+    .warn{margin-top:10px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:14px;padding:10px 12px;font-weight:900}
+    .hr{height:1px;background:var(--line);margin:16px 0}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    input[type="text"]{flex:1;min-width:220px;border:1px solid var(--line);border-radius:14px;padding:14px;font-size:16px;outline:none}
+    button{border:0;border-radius:16px;padding:14px 16px;font-weight:900;cursor:pointer}
+    .btn{background:var(--black);color:#fff}
+    .btn2{background:#fff;border:1px solid var(--line);color:#111}
+    .hint{color:var(--muted);font-size:13px;margin-top:8px}
+    .hidden{display:none}
+
+    /* create form */
+    .box{background:#fafafa;border:1px solid var(--line);border-radius:18px;padding:14px;margin-top:12px}
+    .label{display:block;font-weight:900;margin-top:12px;margin-bottom:8px}
+    .chips{display:flex;flex-wrap:wrap;gap:10px}
+    .chip{border:1px solid #d1d5db;background:#fff;border-radius:14px;padding:10px 12px;font-weight:800;cursor:pointer}
+    .chip.active{background:var(--black);border-color:var(--black);color:#fff}
+    .itemCard{background:#fff;border:1px solid var(--line);border-radius:18px;padding:12px;margin-top:10px}
+    .itemTop{display:flex;justify-content:space-between;align-items:center;gap:10px}
+    .miniInput{width:120px;border:1px solid var(--line);border-radius:14px;padding:10px 12px;font-size:15px;outline:none}
+    .smallBtn{padding:10px 12px;border-radius:14px}
+
+    /* record view */
+    .previewWrap{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start;margin-top:10px}
+    .imgBox{width:340px;max-width:100%;background:#fafafa;border:1px dashed var(--line);border-radius:18px;padding:10px}
+    .imgBox img{width:100%;border-radius:14px;display:block;border:1px solid var(--line);background:#fff}
+    textarea{width:100%;min-height:150px;border:1px solid var(--line);border-radius:14px;padding:12px;font-size:14px;outline:none;resize:vertical}
+    .success{color:#0a7a2f;font-weight:900;margin-top:8px}
+    video{width:100%;border-radius:16px;background:#000}
+  </style>
 </head>
 
 <body>
-  <div class="wrap">
+<div class="wrap">
+  <div class="card">
+    <div class="top">
+      <div>
+        <div class="title">📦 Tatak JPD – Packing Proof</div>
+        <div class="sub">Enter/Scan AWB → if no record, create entry → upload photo → copy message</div>
+        <div id="userPill" class="pill">Checking login…</div>
+      </div>
+      <button id="logoutBtn" class="logout">Logout</button>
+    </div>
 
-    <!-- Top card -->
-    <div class="card">
-      <div class="topbar">
-        <div>
-          <div class="title">📦 Tatak JPD – Packing Proof</div>
-          <div class="subtitle">Type/Scan AWB → if no record, create entry → photo proof → copy message</div>
-          <div class="pill" id="userPill">Checking login...</div>
+    <div class="hr"></div>
+
+    <div class="label">AWB</div>
+    <div class="row">
+      <input id="awbInput" type="text" placeholder="Type / paste AWB then press Enter" inputmode="numeric" />
+      <button id="continueBtn" class="btn" type="button">Continue</button>
+      <button id="scanBtn" class="btn2" type="button">📷 Scan</button>
+    </div>
+    <div class="hint">Enter = Continue. Sa PC: paste AWB then Enter. Sa phone: Scan or type.</div>
+
+    <!-- Scanner -->
+    <div id="scanBox" class="box hidden">
+      <div class="hint" style="margin-top:0">Allow camera access then point to barcode.</div>
+      <video id="preview" playsinline></video>
+      <div class="row" style="margin-top:10px">
+        <button id="stopScanBtn" class="btn2 smallBtn" type="button">Stop Scan</button>
+      </div>
+    </div>
+
+    <!-- Status -->
+    <div id="statusLine" class="hidden"></div>
+
+    <!-- EXISTING RECORD VIEW -->
+    <div id="recordBox" class="hidden">
+      <div class="hr"></div>
+      <div id="doubleWarn" class="warn">⚠️ DOUBLE ENTRY: may record na sa AWB na ’to. Ito ang unang record.</div>
+
+      <div class="previewWrap">
+        <div class="imgBox">
+          <div class="hint" id="recMeta" style="margin-top:0"></div>
+          <img id="recImg" alt="Proof photo" />
+          <div class="row" style="margin-top:10px">
+            <button id="openImgBtn" class="btn2" type="button">Open image</button>
+            <button id="copyImgLinkBtn" class="btn2" type="button">Copy image link</button>
+          </div>
+          <div class="hint">PC: Open image → right-click → Copy Image (pinaka mabilis).</div>
         </div>
-        <button class="logout" id="logoutBtn">Logout</button>
+
+        <div style="flex:1;min-width:260px">
+          <div class="label" style="margin-top:0">Ready message</div>
+          <textarea id="msgText" readonly></textarea>
+          <div class="row" style="margin-top:10px">
+            <button id="copyMsgBtn" class="btn" type="button">Copy Message</button>
+            <button id="copyAwbBtn" class="btn2" type="button">Copy AWB</button>
+          </div>
+          <div id="copyHint" class="success"></div>
+        </div>
       </div>
-
-      <h2>Search / Scan AWB</h2>
-
-      <label>AWB Number</label>
-      <input id="awbInput" type="text" placeholder="Type or paste AWB number" inputmode="numeric" />
-
-      <div class="row">
-        <button class="btn btn-dark" id="continueBtn">Continue</button>
-        <span class="hint">Tip: sa PC pwede paste + Enter. Sa phone pwede type/scan.</span>
-      </div>
-
-      <div class="status" id="statusText"></div>
     </div>
 
-    <!-- Create entry section -->
-    <div class="card" id="createSection" style="display:none;">
-      <h2>Create New Entry</h2>
+    <!-- CREATE NEW ENTRY -->
+    <div id="createBox" class="hidden">
+      <div class="hr"></div>
+      <div class="pill">No record yet ✅ Fill up details then upload photo proof.</div>
 
-      <label>AWB</label>
-      <input id="createAwb" type="text" readonly />
+      <div class="box">
+        <div class="label" style="margin-top:0">AWB (auto)</div>
+        <input id="createAwb" type="text" readonly />
 
-      <label>Level</label>
-      <div class="choices">
-        <label class="choice"><input type="radio" name="level" value="Kinder"><strong>Kinder</strong></label>
-        <label class="choice"><input type="radio" name="level" value="Elem"><strong>Elem</strong></label>
-        <label class="choice"><input type="radio" name="level" value="SHS"><strong>SHS</strong></label>
+        <div class="label">Photo proof (required)</div>
+        <input id="photoInput" type="file" accept="image/*" />
+
+        <div class="label">Items</div>
+        <div id="itemsWrap"></div>
+
+        <div class="row" style="margin-top:12px">
+          <button id="addItemBtn" class="btn2" type="button">+ Add Item</button>
+          <button id="saveBtn" class="btn" type="button">Save Entry</button>
+          <button id="cancelBtn" class="btn2" type="button">Cancel</button>
+        </div>
+
+        <div id="saveHint" class="hint"></div>
       </div>
-
-      <label>Cap Color (one choice)</label>
-      <div class="choices">
-        <label class="choice"><input type="radio" name="capColor" value="White"><strong>White</strong></label>
-        <label class="choice"><input type="radio" name="capColor" value="Light Blue"><strong>Light Blue</strong></label>
-        <label class="choice"><input type="radio" name="capColor" value="Fuchsia Pink"><strong>Fuchsia Pink</strong></label>
-        <label class="choice"><input type="radio" name="capColor" value="Royal Blue"><strong>Royal Blue</strong></label>
-        <label class="choice"><input type="radio" name="capColor" value="Black"><strong>Black</strong></label>
-        <label class="choice"><input type="radio" name="capColor" value="Yellow Gold"><strong>Yellow Gold</strong></label>
-        <label class="choice"><input type="radio" name="capColor" value="Emerald Green"><strong>Emerald Green</strong></label>
-        <label class="choice"><input type="radio" name="capColor" value="Red"><strong>Red</strong></label>
-        <label class="choice"><input type="radio" name="capColor" value="Maroon"><strong>Maroon</strong></label>
-        <label class="choice"><input type="radio" name="capColor" value="Apple Green"><strong>Apple Green</strong></label>
-      </div>
-
-      <label>Photo Proof</label>
-      <input id="photoInput" type="file" accept="image/*" />
-
-      <div class="row">
-        <button class="btn btn-dark" id="saveBtn">Save Packing Log</button>
-        <button class="btn btn-light" id="cancelBtn">Cancel</button>
-      </div>
-
-      <div class="status" id="saveStatus"></div>
-      <div class="hint">If "Double AWB" lumabas, ibig sabihin may record na siya.</div>
     </div>
 
-    <!-- Result section -->
-    <div class="card" id="resultSection" style="display:none;">
-      <h2>Result</h2>
-
-      <div class="hint">
-        AWB: <strong id="resultAwb"></strong> • Packed on: <strong id="resultPackedOn"></strong>
-        <br/>Level: <strong id="resultLevel"></strong> • Color: <strong id="resultColor"></strong>
-      </div>
-
-      <div class="divider"></div>
-
-      <img id="resultPhoto" class="preview" alt="Packing proof photo" />
-
-      <div class="divider"></div>
-
-      <label>Copy-ready message</label>
-      <textarea id="copyMessage"></textarea>
-
-      <div class="row">
-        <button class="btn btn-dark" id="copyBtn">Copy Message</button>
-      </div>
-
-      <div class="status" id="copyStatus"></div>
-    </div>
-
-    <div class="footer">Private system — login required • Stored in Firebase (Auth + Firestore + Storage)</div>
   </div>
+</div>
 
-  <script>
-    const userPill   = document.getElementById("userPill");
-    const statusText = document.getElementById("statusText");
-    const saveStatus = document.getElementById("saveStatus");
-    const copyStatus = document.getElementById("copyStatus");
+<script>
+  const LEVELS = ["Kinder","Elem","SHS"];
+  const COLORS = ["White","Light Blue","Fuchsia Pink","Royal Blue","Black","Yellow Gold","Emerald Green","Red","Maroon","Apple Green"];
 
-    const awbInput   = document.getElementById("awbInput");
-    const createAwb  = document.getElementById("createAwb");
+  const el = (id)=>document.getElementById(id);
+  const show = (x)=>x.classList.remove("hidden");
+  const hide = (x)=>x.classList.add("hidden");
+  const trim = (s)=>(s||"").toString().trim();
 
-    const createSection = document.getElementById("createSection");
-    const resultSection = document.getElementById("resultSection");
+  function setStatus(html, kind="pill"){
+    const box = el("statusLine");
+    box.className = kind === "warn" ? "warn" : "pill";
+    box.innerHTML = html;
+    show(box);
+  }
+  function clearStatus(){ hide(el("statusLine")); }
 
-    const continueBtn = document.getElementById("continueBtn");
-    const saveBtn     = document.getElementById("saveBtn");
-    const cancelBtn   = document.getElementById("cancelBtn");
-    const logoutBtn   = document.getElementById("logoutBtn");
-
-    const photoInput  = document.getElementById("photoInput");
-
-    function setStatus(msg){ statusText.textContent = msg || ""; }
-    function setSaveStatus(msg){ saveStatus.textContent = msg || ""; }
-    function setCopyStatus(msg){ copyStatus.textContent = msg || ""; }
-
-    function showCreateForm(awb){
-      createSection.style.display = "block";
-      createAwb.value = awb;
-
-      // reset picks
-      document.querySelectorAll('input[name="level"]').forEach(r=>r.checked=false);
-      document.querySelectorAll('input[name="capColor"]').forEach(r=>r.checked=false);
-      photoInput.value = "";
-      setSaveStatus("");
+  async function copyOneClick(text){
+    try{
+      await navigator.clipboard.writeText(text);
+      el("copyHint").textContent = "✅ Copied!";
+      setTimeout(()=> el("copyHint").textContent="", 1200);
+    }catch(e){
+      el("copyHint").textContent = "⚠️ Copy blocked. Try manual copy.";
     }
-    function hideCreateForm(){ createSection.style.display="none"; }
-    function hideResult(){ resultSection.style.display="none"; }
+  }
 
-    function showResultFromData(awb, d){
-      resultSection.style.display="block";
-      document.getElementById("resultAwb").innerText = awb;
-      document.getElementById("resultLevel").innerText = d.level || "-";
-      document.getElementById("resultColor").innerText = d.color || "-";
-      document.getElementById("resultPhoto").src = d.imageUrl || "";
+  function formatTs(ts){
+    try{
+      if(ts && typeof ts.toDate === "function") return ts.toDate().toLocaleString("en-PH");
+    }catch(_){}
+    return "";
+  }
 
-      let packedOn = "Saved (timestamp pending)";
-      try {
-        if(d.createdAt && d.createdAt.toDate) packedOn = d.createdAt.toDate().toLocaleString("en-PH");
-      } catch(e){}
+  function docRef(awb){ return db.collection("packingLogs").doc(awb); } // docId = AWB (simple!)
 
-      document.getElementById("resultPackedOn").innerText = packedOn;
+  // ---------- Auth guard ----------
+  auth.onAuthStateChanged(u=>{
+    if(!u){ location.href="./login.html"; return; }
+    el("userPill").textContent = "Logged in as: " + (u.email || u.uid);
+  });
 
-      document.getElementById("copyMessage").value =
-`Hi po! 😊 Ready to ship na po ang order nyo.
+  el("logoutBtn").onclick = async ()=>{
+    await auth.signOut();
+    location.href="./login.html";
+  };
+
+  // ---------- Create items UI ----------
+  let items = [];
+
+  function chipGroup(options, activeValue, onPick){
+    const wrap = document.createElement("div");
+    wrap.className = "chips";
+    options.forEach(v=>{
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "chip" + (v===activeValue ? " active": "");
+      b.textContent = v;
+      b.onclick = ()=>{
+        onPick(v);
+      };
+      wrap.appendChild(b);
+    });
+    return wrap;
+  }
+
+  function renderItems(){
+    const wrap = el("itemsWrap");
+    wrap.innerHTML = "";
+
+    items.forEach((it, idx)=>{
+      const card = document.createElement("div");
+      card.className = "itemCard";
+
+      const top = document.createElement("div");
+      top.className = "itemTop";
+      top.innerHTML = `<div style="font-weight:900">Item #${idx+1}</div>`;
+      const rm = document.createElement("button");
+      rm.type="button";
+      rm.className="btn2 smallBtn";
+      rm.textContent="Remove";
+      rm.onclick = ()=>{
+        items.splice(idx,1);
+        if(items.length===0) items.push({level:"",color:"",qty:1});
+        renderItems();
+      };
+      top.appendChild(rm);
+      card.appendChild(top);
+
+      const levelLabel = document.createElement("div");
+      levelLabel.className="label";
+      levelLabel.textContent="Level";
+      card.appendChild(levelLabel);
+
+      card.appendChild(chipGroup(LEVELS, it.level, (v)=>{
+        it.level = v;
+        renderItems();
+      }));
+
+      const colorLabel = document.createElement("div");
+      colorLabel.className="label";
+      colorLabel.textContent="Cap Color (one choice)";
+      card.appendChild(colorLabel);
+
+      card.appendChild(chipGroup(COLORS, it.color, (v)=>{
+        it.color = v;
+        renderItems();
+      }));
+
+      const qtyRow = document.createElement("div");
+      qtyRow.className="row";
+      qtyRow.style.marginTop="10px";
+      qtyRow.innerHTML = `<div style="font-weight:900">Qty</div>`;
+      const qty = document.createElement("input");
+      qty.className="miniInput";
+      qty.type="number";
+      qty.min="1";
+      qty.value = it.qty || 1;
+      qty.oninput = ()=>{ it.qty = Math.max(1, Number(qty.value||1)); };
+      qtyRow.appendChild(qty);
+      card.appendChild(qtyRow);
+
+      wrap.appendChild(card);
+    });
+  }
+
+  function openCreate(awb){
+    hide(el("recordBox"));
+    clearStatus();
+    show(el("createBox"));
+    el("createAwb").value = awb;
+    el("photoInput").value = "";
+    el("saveHint").textContent = "";
+    items = [{level:"",color:"",qty:1}];
+    renderItems();
+  }
+
+  function showRecord(awb, data, isDouble){
+    hide(el("createBox"));
+    clearStatus();
+    show(el("recordBox"));
+
+    el("doubleWarn").style.display = isDouble ? "block" : "none";
+
+    const createdAt = formatTs(data.createdAt);
+    const createdBy = data.createdBy || "";
+    const photoUrl = data.photoUrl || data.imageUrl || data.photoURL || "";
+
+    el("recMeta").textContent =
+      `AWB: ${awb}` +
+      (createdAt ? ` • ${createdAt}` : "") +
+      (createdBy ? ` • ${createdBy}` : "");
+
+    if(photoUrl){
+      el("recImg").src = photoUrl;
+    }else{
+      el("recImg").src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(
+        `<svg xmlns='http://www.w3.org/2000/svg' width='800' height='520'>
+          <rect width='100%' height='100%' fill='#f3f4f6'/>
+          <text x='50%' y='50%' text-anchor='middle' dominant-baseline='middle' fill='#6b7280' font-size='26' font-family='Arial'>No photo in record</text>
+        </svg>`
+      );
+    }
+
+    // message template (edit anytime)
+    const msg =
+`Hi po! ✅ Ready to ship na po ang order nyo.
 
 📦 AWB: ${awb}
-🏷️ Level: ${d.level || "-"}
-🎨 Cap Color: ${d.color || "-"}
-🕒 Packed on: ${packedOn}
+🕒 Packed on: ${createdAt || "N/A"}
+📸 Photo proof: ${photoUrl || "N/A"}
 
-Thank you po!
-– Tatak JPD`;
+Thank you po!`;
+
+    el("msgText").value = msg;
+
+    el("openImgBtn").onclick = ()=>{ if(photoUrl) window.open(photoUrl, "_blank"); };
+    el("copyImgLinkBtn").onclick = ()=> copyOneClick(photoUrl || "");
+    el("copyMsgBtn").onclick = ()=> copyOneClick(el("msgText").value);
+    el("copyAwbBtn").onclick = ()=> copyOneClick(awb);
+  }
+
+  // ---------- Main flow: Continue ----------
+  async function continueFlow(){
+    const awb = trim(el("awbInput").value);
+    if(!awb){ setStatus("Please enter/scan AWB.", "warn"); return; }
+
+    hide(el("recordBox"));
+    hide(el("createBox"));
+    clearStatus();
+    setStatus("Checking AWB…", "pill");
+
+    const snap = await docRef(awb).get();
+
+    if(snap.exists){
+      clearStatus();
+      alert("⚠️ DOUBLE ENTRY: may record na sa AWB na ’to. Please check—already has parcel.");
+      showRecord(awb, snap.data() || {}, true);
+      return;
     }
 
-    // Auth guard
-    auth.onAuthStateChanged(user=>{
-      if(!user){
-        window.location.href = "./login.html";
-        return;
-      }
-      userPill.textContent = "Logged in as: " + (user.email || user.uid);
-    });
+    clearStatus();
+    openCreate(awb);
+  }
 
-    logoutBtn.addEventListener("click", async ()=>{
-      await auth.signOut();
-      window.location.href = "./login.html";
-    });
+  el("continueBtn").onclick = continueFlow;
+  el("awbInput").addEventListener("keydown", (e)=>{
+    if(e.key==="Enter"){ e.preventDefault(); continueFlow(); }
+  });
 
-    // ✅ MAIN FLOW: check existing first; if none, show create form
-    async function checkOrCreateAWB(){
-      const awb = awbInput.value.trim();
-      if(!awb) return alert("Enter/scan AWB muna.");
+  // ---------- Save entry (upload + firestore) ----------
+  el("addItemBtn").onclick = ()=>{
+    items.push({level:"",color:"",qty:1});
+    renderItems();
+  };
 
-      hideResult();
-      hideCreateForm();
-      setStatus("Checking AWB...");
+  el("cancelBtn").onclick = ()=>{
+    hide(el("createBox"));
+    el("saveHint").textContent = "";
+  };
 
-      try{
-        const ref = db.collection("packingLogs").doc(awb); // docId = AWB
-        const snap = await ref.get();
+  el("saveBtn").onclick = async ()=>{
+    const awb = trim(el("createAwb").value);
+    if(!awb) return;
 
-        if(snap.exists){
-          setStatus("");
-          alert("⚠️ Double AWB! May record na ito. Please check, already has parcel.");
-          showResultFromData(awb, snap.data());
-          return;
+    // validate items
+    for(const it of items){
+      if(!it.level) return alert("Pili ka muna ng Level sa lahat ng items.");
+      if(!it.color) return alert("Pili ka muna ng Color sa lahat ng items.");
+      if(!it.qty || it.qty < 1) return alert("Qty must be at least 1.");
+    }
+
+    const file = el("photoInput").files?.[0];
+    if(!file) return alert("Photo proof is required.");
+
+    // re-check double
+    const again = await docRef(awb).get();
+    if(again.exists){
+      alert("⚠️ DOUBLE ENTRY: may record na. Please check.");
+      showRecord(awb, again.data() || {}, true);
+      return;
+    }
+
+    const user = auth.currentUser;
+    if(!user) return alert("Not logged in.");
+
+    el("saveHint").textContent = "Uploading photo + saving…";
+
+    // upload to storage
+    const ts = Date.now();
+    const path = `packingProofs/${user.uid}/${awb}_${ts}.jpg`;
+    const sref = storage.ref().child(path);
+    await sref.put(file);
+    const photoUrl = await sref.getDownloadURL();
+
+    const payload = {
+      awb,
+      items,
+      photoUrl,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      createdBy: user.email || user.uid
+    };
+
+    await docRef(awb).set(payload);
+
+    el("saveHint").textContent = "";
+
+    // fetch again to get server timestamp resolved
+    const saved = await docRef(awb).get();
+    alert("✅ Saved! May record na si AWB.");
+    showRecord(awb, saved.data() || payload, false);
+  };
+
+  // ---------- Barcode Scan (ZXing) ----------
+  let codeReader;
+
+  el("scanBtn").onclick = async ()=>{
+    show(el("scanBox"));
+    if(!codeReader) codeReader = new ZXing.BrowserMultiFormatReader();
+
+    try{
+      await codeReader.decodeFromVideoDevice(null, el("preview"), (result, err)=>{
+        if(result){
+          el("awbInput").value = result.getText();
+          codeReader.reset();
+          hide(el("scanBox"));
+          continueFlow(); // auto continue
         }
-
-        setStatus("");
-        showCreateForm(awb);
-      }catch(err){
-        setStatus("");
-        alert(err.message || "Error checking AWB");
-      }
+      });
+    }catch(e){
+      alert("Scan error: " + (e?.message || e));
     }
+  };
 
-    continueBtn.addEventListener("click", checkOrCreateAWB);
-
-    // Enter key = Continue
-    awbInput.addEventListener("keydown", (e)=>{
-      if(e.key === "Enter"){
-        e.preventDefault();
-        checkOrCreateAWB();
-      }
-    });
-
-    cancelBtn.addEventListener("click", ()=>{
-      hideCreateForm();
-      setSaveStatus("");
-    });
-
-    async function saveNewPackingLog(){
-      const awb = createAwb.value.trim();
-      if(!awb) return alert("Missing AWB.");
-
-      const level = document.querySelector('input[name="level"]:checked')?.value;
-      const color = document.querySelector('input[name="capColor"]:checked')?.value;
-      if(!level) return alert("Pili ka muna: Kinder / Elem / SHS");
-      if(!color) return alert("Pili ka muna ng color.");
-
-      const file = photoInput.files?.[0];
-      if(!file) return alert("Upload photo muna.");
-
-      const user = auth.currentUser;
-      if(!user) return alert("Not logged in.");
-
-      setSaveStatus("Uploading photo + saving...");
-
-      try{
-        // double-check
-        const ref = db.collection("packingLogs").doc(awb);
-        const snap = await ref.get();
-        if(snap.exists){
-          setSaveStatus("");
-          alert("⚠️ Double AWB! May record na ito. Please check.");
-          showResultFromData(awb, snap.data());
-          hideCreateForm();
-          return;
-        }
-
-        // Upload to storage
-        const uid = user.uid;
-        const path = `packingProofs/${uid}/${awb}.jpg`;
-        const storageRef = storage.ref().child(path);
-
-        await storageRef.put(file);
-        const imageUrl = await storageRef.getDownloadURL();
-
-        const data = {
-          awb,
-          level,
-          color,
-          imageUrl,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-          createdBy: user.email || uid
-        };
-
-        await ref.set(data);
-
-        setSaveStatus("");
-        alert("✅ Saved! May record na si AWB.");
-        hideCreateForm();
-
-        // fetch again to get timestamp resolved
-        const snap2 = await ref.get();
-        showResultFromData(awb, snap2.data() || data);
-
-      }catch(err){
-        setSaveStatus("");
-        alert(err.message || "Save failed");
-      }
-    }
-
-    saveBtn.addEventListener("click", saveNewPackingLog);
-
-    // Copy button
-    document.getElementById("copyBtn").addEventListener("click", async ()=>{
-      try{
-        const text = document.getElementById("copyMessage").value;
-        await navigator.clipboard.writeText(text);
-        setCopyStatus("✅ Copied!");
-        setTimeout(()=>setCopyStatus(""), 1200);
-      }catch(e){
-        setCopyStatus("Copy failed (try manual long-press).");
-      }
-    });
-  </script>
+  el("stopScanBtn").onclick = ()=>{
+    try{ if(codeReader) codeReader.reset(); }catch(_){}
+    hide(el("scanBox"));
+  };
+</script>
 </body>
 </html>
