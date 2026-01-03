@@ -1,78 +1,26 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Tatak JPD – Login</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Tatak JPD — Login</title>
   <style>
-    body{
-      margin:0;
-      font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
-      background:#f5f5f5;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      min-height:100vh;
-    }
-    .card{
-      background:#fff;
-      border-radius:18px;
-      padding:22px;
-      width:100%;
-      max-width:420px;
-      box-shadow:0 10px 30px rgba(0,0,0,.08);
-    }
-    h1{
-      margin:0;
-      font-size:20px;
-      text-align:center;
-    }
-    .sub{
-      text-align:center;
-      color:#666;
-      font-size:13px;
-      margin-bottom:16px;
-    }
-    label{
-      font-size:13px;
-      font-weight:600;
-    }
-    input{
-      width:100%;
-      padding:12px;
-      border-radius:12px;
-      border:1px solid #ddd;
-      margin:6px 0 14px;
-      font-size:14px;
-    }
-    button{
-      width:100%;
-      padding:14px;
-      border-radius:14px;
-      border:0;
-      font-weight:800;
-      background:#000;
-      color:#fff;
-      font-size:15px;
-    }
-    .msg{
-      text-align:center;
-      font-size:13px;
-      margin-top:12px;
-      color:red;
-    }
-    .lock{
-      text-align:center;
-      font-size:28px;
-      margin-bottom:6px;
-    }
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial; background:#f5f6f8; margin:0; padding:24px;}
+    .card{max-width:520px; margin:40px auto; background:#fff; border-radius:18px; padding:24px; box-shadow:0 10px 30px rgba(0,0,0,.08);}
+    h1{margin:0; font-size:28px;}
+    .sub{color:#666; margin:6px 0 18px;}
+    label{display:block; margin:12px 0 6px; font-weight:600;}
+    input{width:100%; padding:14px 12px; border:1px solid #ddd; border-radius:12px; font-size:16px; outline:none;}
+    button{width:100%; margin-top:14px; padding:14px; border:0; border-radius:14px; background:#111; color:#fff; font-size:18px; font-weight:700;}
+    button:disabled{opacity:.55}
+    .msg{margin-top:12px; color:#b00020; font-weight:600;}
+    .foot{margin-top:14px; color:#777; text-align:center;}
   </style>
 </head>
-<body>
 
+<body>
   <div class="card">
-    <div class="lock">🔐</div>
-    <h1>Tatak JPD</h1>
+    <h1>🔒 Tatak JPD</h1>
     <div class="sub">Cap Packing & AWB Proof System</div>
 
     <label>Email</label>
@@ -81,60 +29,52 @@
     <label>Password</label>
     <input id="password" type="password" placeholder="••••••••" />
 
-    <button id="loginBtn">Login</button>
-
+    <button id="btnLogin">Login</button>
     <div id="msg" class="msg"></div>
+
+    <div class="foot">Private system — login required</div>
   </div>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import {
-    getAuth,
-    setPersistence,
-    browserLocalPersistence,
-    signInWithEmailAndPassword,
-    onAuthStateChanged
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  <script type="module">
+    import { auth } from "./firebase.js";
+    import {
+      signInWithEmailAndPassword,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyCMuFIBYcEWJCknOsA-hRctc6I7v4Sr_gU",
-    authDomain: "cap-proof.firebaseapp.com",
-    projectId: "cap-proof",
-    storageBucket: "cap-proof.firebasestorage.app",
-    messagingSenderId: "722260489486",
-    appId: "1:722260489486:web:e4c8111afb86586f2fd35f"
-  };
+    const emailEl = document.getElementById("email");
+    const passEl  = document.getElementById("password");
+    const btn     = document.getElementById("btnLogin");
+    const msgEl   = document.getElementById("msg");
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
+    // If already logged in → go to index
+    onAuthStateChanged(auth, (user) => {
+      if (user) window.location.href = "./index.html";
+    });
 
-  // ✅ force persistence so session survives page navigation
-  await setPersistence(auth, browserLocalPersistence);
+    btn.addEventListener("click", async () => {
+      msgEl.textContent = "";
+      btn.disabled = true;
 
-  const email = document.getElementById("email");
-  const password = document.getElementById("password");
-  const msg = document.getElementById("msg");
-  const btn = document.getElementById("loginBtn");
+      const email = emailEl.value.trim();
+      const password = passEl.value;
 
-  btn.addEventListener("click", async () => {
-    msg.textContent = "";
-    btn.disabled = true;
-    btn.textContent = "Logging in…";
-    try {
-      await signInWithEmailAndPassword(auth, email.value.trim(), password.value);
-      window.location.href = "index.html";
-    } catch (e) {
-      msg.textContent = e?.message || "Login failed";
-    } finally {
-      btn.disabled = false;
-      btn.textContent = "Login";
-    }
-  });
+      if (!email || !password) {
+        msgEl.textContent = "Email and password required.";
+        btn.disabled = false;
+        return;
+      }
 
-  // if already logged in → skip login page
-  onAuthStateChanged(auth, (user) => {
-    if (user) window.location.href = "index.html";
-  });
-</script>
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        window.location.href = "./index.html";
+      } catch (e) {
+        msgEl.textContent = "Login failed. Check email/password or enabled Email/Password in Firebase.";
+        console.error(e);
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  </script>
 </body>
 </html>
