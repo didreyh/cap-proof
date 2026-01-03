@@ -5,12 +5,39 @@
   <title>Tatak JPD – Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    body{font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;margin:0;background:#f5f5f5;padding:18px}
-    .card{background:#fff;border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.08);max-width:520px;margin:0 auto}
-    .top{display:flex;justify-content:space-between;align-items:center;gap:12px}
-    .btn{border:0;border-radius:12px;padding:10px 12px;font-weight:700}
-    .btn-black{background:#000;color:#fff}
-    .muted{color:#666;font-size:13px;margin-top:6px}
+    body{
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
+      margin:0;
+      background:#f5f5f5;
+      padding:18px;
+    }
+    .card{
+      background:#fff;
+      border-radius:18px;
+      padding:20px;
+      box-shadow:0 10px 30px rgba(0,0,0,.08);
+      max-width:520px;
+      margin:0 auto;
+    }
+    .top{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+    }
+    .btn{
+      border:0;
+      border-radius:12px;
+      padding:10px 14px;
+      font-weight:800;
+      background:#000;
+      color:#fff;
+    }
+    .muted{
+      color:#666;
+      font-size:13px;
+      margin-top:6px;
+    }
     .hide{display:none}
   </style>
 </head>
@@ -19,10 +46,10 @@
   <div class="card">
     <div class="top">
       <div>
-        <div style="font-weight:800;font-size:18px">✅ Tatak JPD</div>
+        <div style="font-weight:900;font-size:18px">✅ Tatak JPD</div>
         <div class="muted">Cap Packing & AWB Proof System</div>
       </div>
-      <button id="logoutBtn" class="btn btn-black">Logout</button>
+      <button id="logoutBtn" class="btn">Logout</button>
     </div>
 
     <hr style="border:none;border-top:1px solid #eee;margin:16px 0">
@@ -30,11 +57,11 @@
     <div id="loading">Checking login…</div>
 
     <div id="app" class="hide">
-      <div style="font-weight:800">Welcome! 🎉</div>
+      <div style="font-weight:800">Welcome 🎉</div>
       <div class="muted" id="userEmail"></div>
 
       <div style="margin-top:14px">
-        Next step natin dito: packing form + photo proof 😄
+        Ready na for packing logs + photo proof 📦📸
       </div>
     </div>
   </div>
@@ -58,22 +85,19 @@
     const loading = document.getElementById("loading");
     const appDiv = document.getElementById("app");
     const userEmail = document.getElementById("userEmail");
-    const logoutBtn = document.getElementById("logoutBtn");
 
-    // ✅ Protect page: if NOT logged in -> back to login.html
     onAuthStateChanged(auth, (user) => {
       if (!user) {
         window.location.replace("login.html");
         return;
       }
 
-      // logged in
       loading.classList.add("hide");
       appDiv.classList.remove("hide");
-      userEmail.textContent = "Logged in as: " + (user.email || "");
+      userEmail.textContent = "Logged in as: " + user.email;
     });
 
-    logoutBtn.addEventListener("click", async () => {
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
       await signOut(auth);
       window.location.replace("login.html");
     });
