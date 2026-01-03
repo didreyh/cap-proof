@@ -1,88 +1,155 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Tatak JPD Packing Logs</title>
+  <meta charset="UTF-8" />
+  <title>Tatak JPD – Packing Proof</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f6f8;
+      padding: 20px;
+    }
+    .card {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.08);
+    }
+    h2 { margin-top: 0; }
+    input, textarea, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 8px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      font-size: 15px;
+    }
+    button {
+      background: #111;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button.secondary {
+      background: #eee;
+      color: #111;
+    }
+    img {
+      max-width: 100%;
+      border-radius: 12px;
+      margin-top: 10px;
+    }
+    .section {
+      margin-top: 20px;
+    }
+    .muted {
+      color: #666;
+      font-size: 13px;
+    }
+    .success {
+      color: green;
+      margin-top: 8px;
+    }
+  </style>
 </head>
 <body>
 
-<h2>Scan / Enter AWB</h2>
-<input id="awb" placeholder="AWB Number"><br><br>
+<div class="card">
+  <h2>📦 Tatak JPD – Packing Proof</h2>
+  <p class="muted">Search AWB → view photo → copy message → send to customer</p>
 
-<input type="file" id="photo"><br><br>
-<button onclick="saveLog()">Save Packing Log</button>
+  <!-- SEARCH -->
+  <div class="section">
+    <label><b>Search AWB</b></label>
+    <input id="awbInput" placeholder="Type or paste AWB number" />
+    <button onclick="searchAWB()">Search</button>
+  </div>
 
-<hr>
+  <!-- RESULT -->
+  <div class="section" id="resultSection" style="display:none;">
+    <p><b>AWB:</b> <span id="awbText"></span></p>
+    <p><b>Packed on:</b> <span id="timeText"></span></p>
 
-<h3>Search AWB</h3>
-<input id="searchAwb" placeholder="Enter AWB">
-<button onclick="search()">Search</button>
+    <img id="proofImage" />
 
-<div id="result"></div>
+    <label style="margin-top:14px;"><b>Message to send</b></label>
+    <textarea id="messageBox" rows="6"></textarea>
 
-<br><button onclick="logout()">Logout</button>
+    <button onclick="copyMessage()">📋 Copy message</button>
+    <div class="success" id="copyStatus"></div>
+  </div>
+</div>
 
-<script src="firebase.js"></script>
-
+<!-- FIREBASE -->
 <script type="module">
-  import {
-    collection, addDoc, query, where, getDocs, serverTimestamp
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  import {
-    ref, uploadBytes, getDownloadURL
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+  const firebaseConfig = {
+    apiKey: "AIzaSyCMuFIBYcEWJCknOsA-hRctc6I7v4Sr_gU",
+    authDomain: "cap-proof.firebaseapp.com",
+    projectId: "cap-proof",
+    storageBucket: "cap-proof.firebasestorage.app",
+    messagingSenderId: "722260489486",
+    appId: "1:722260489486:web:e4c8111afb86586f2fd35f"
+  };
 
-  import {
-    signOut, onAuthStateChanged
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
+  // 🔐 Require login
   onAuthStateChanged(auth, user => {
     if (!user) window.location.href = "login.html";
   });
 
-  window.saveLog = async function () {
-    const awb = document.getElementById("awb").value;
-    const file = document.getElementById("photo").files[0];
-    const user = auth.currentUser;
+  // 🔍 SEARCH AWB
+  window.searchAWB = async function () {
+    const awb = document.getElementById("awbInput").value.trim();
+    if (!awb) return alert("Please enter AWB");
 
-    if (!awb || !file) {
-      alert("AWB at photo required");
+    const snap = await getDoc(doc(db, "packingLogs", awb));
+
+    if (!snap.exists()) {
+      alert("No record found for this AWB");
       return;
     }
 
-    const fileRef = ref(storage, `packingProofs/${user.uid}/${awb}.jpg`);
-    await uploadBytes(fileRef, file);
-    const url = await getDownloadURL(fileRef);
+    const data = snap.data();
 
-    await addDoc(collection(db, "packingLogs"), {
-      awb,
-      photoUrl: url,
-      uid: user.uid,
-      createdAt: serverTimestamp()
-    });
+    const dateText = data.createdAt?.toDate
+      ? data.createdAt.toDate().toLocaleString("en-PH")
+      : "N/A";
 
-    alert("Saved!");
+    document.getElementById("awbText").innerText = awb;
+    document.getElementById("timeText").innerText = dateText;
+    document.getElementById("proofImage").src = data.imageUrl;
+
+    document.getElementById("messageBox").value =
+`Hi po! 😊
+
+Ready to ship na po ang order nyo.
+
+📦 AWB: ${awb}
+🕒 Packed on: ${dateText}
+
+Thank you po!
+– Tatak JPD`;
+
+    document.getElementById("resultSection").style.display = "block";
   };
 
-  window.search = async function () {
-    const awb = document.getElementById("searchAwb").value;
-    const q = query(
-      collection(db, "packingLogs"),
-      where("awb", "==", awb)
-    );
-
-    const snap = await getDocs(q);
-    const res = document.getElementById("result");
-    res.innerHTML = "";
-
-    snap.forEach(doc => {
-      res.innerHTML += `<img src="${doc.data().photoUrl}" width="200"><br>`;
-    });
-  };
-
-  window.logout = function () {
-    signOut(auth);
+  // 📋 COPY MESSAGE
+  window.copyMessage = async function () {
+    const msg = document.getElementById("messageBox").value;
+    await navigator.clipboard.writeText(msg);
+    document.getElementById("copyStatus").innerText = "✅ Message copied. Ready to send!";
   };
 </script>
 
