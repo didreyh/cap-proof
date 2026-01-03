@@ -6,108 +6,25 @@
   <title>Tatak JPD – Login</title>
 
   <style>
-    *{
-      box-sizing:border-box;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-    }
-
-    body{
-      margin:0;
-      min-height:100vh;
-      display:flex;
-      justify-content:center;
-      background:#f4f4f4;
-      padding:24px 0;
-      align-items:flex-start;
-    }
-
-    @media (min-width:768px){
-      body{
-        align-items:center;
-        padding:0;
-      }
-    }
-
-    .login-card{
-      width:92%;
-      max-width:380px;
-      background:#fff;
-      border-radius:18px;
-      padding:22px;
-      box-shadow:0 10px 30px rgba(0,0,0,0.12);
-      text-align:center;
-    }
-
-    .logo{
-      font-size:34px;
-      margin-bottom:6px;
-    }
-
-    h1{
-      font-size:20px;
-      margin:0;
-      font-weight:700;
-    }
-
-    .subtitle{
-      font-size:13px;
-      color:#777;
-      margin-bottom:18px;
-    }
-
-    label{
-      display:block;
-      text-align:left;
-      font-size:13px;
-      margin-bottom:6px;
-      margin-top:14px;
-      font-weight:500;
-    }
-
-    input{
-      width:100%;
-      padding:12px;
-      border-radius:10px;
-      border:1px solid #ddd;
-      font-size:14px;
-    }
-
-    input:focus{
-      outline:none;
-      border-color:#000;
-    }
-
-    button{
-      width:100%;
-      margin-top:20px;
-      padding:14px;
-      background:#000;
-      color:#fff;
-      border:none;
-      border-radius:12px;
-      font-size:15px;
-      font-weight:600;
-      cursor:pointer;
-    }
-
-    button:disabled{
-      opacity:.6;
-      cursor:not-allowed;
-    }
-
-    .footer{
-      margin-top:16px;
-      font-size:11px;
-      color:#999;
-    }
+    *{box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;}
+    body{margin:0;min-height:100vh;display:flex;justify-content:center;background:#f4f4f4;padding:24px 0;align-items:flex-start;}
+    @media (min-width:768px){body{align-items:center;padding:0;}}
+    .login-card{width:92%;max-width:380px;background:#fff;border-radius:18px;padding:22px;box-shadow:0 10px 30px rgba(0,0,0,0.12);text-align:center;}
+    .logo{font-size:34px;margin-bottom:6px;}
+    h1{font-size:20px;margin:0;font-weight:700;}
+    .subtitle{font-size:13px;color:#777;margin-bottom:18px;}
+    label{display:block;text-align:left;font-size:13px;margin-bottom:6px;margin-top:14px;font-weight:500;}
+    input{width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;font-size:14px;}
+    input:focus{outline:none;border-color:#000;}
+    button{width:100%;margin-top:20px;padding:14px;background:#000;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;}
+    button:disabled{opacity:.6;cursor:not-allowed;}
+    .footer{margin-top:16px;font-size:11px;color:#999;}
   </style>
 </head>
 
 <body>
-
   <div class="login-card">
     <div class="logo">🔐</div>
-
     <h1>Tatak JPD</h1>
     <div class="subtitle">Cap Packing & AWB Proof System</div>
 
@@ -119,18 +36,26 @@
 
     <button id="loginBtn">Login</button>
 
-    <div class="footer">
-      Private system — login required
-    </div>
+    <div class="footer">Private system — login required</div>
   </div>
 
-  <!-- JS (Firebase hook ready) -->
-  <script type="module">
-    import { getAuth, signInWithEmailAndPassword } 
-      from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { app } from "./firebase.js";
+  <!-- Firebase (compat = pinaka-safe sa static sites) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 
-    const auth = getAuth(app);
+  <script>
+    // ✅ YOUR Firebase config (same as sinend mo)
+    const firebaseConfig = {
+      apiKey: "AIzaSyCMuFIBYcEWJCknOsA-hRctc6I7v4Sr_gU",
+      authDomain: "cap-proof.firebaseapp.com",
+      projectId: "cap-proof",
+      storageBucket: "cap-proof.firebasestorage.app",
+      messagingSenderId: "722260489486",
+      appId: "1:722260489486:web:e4c8111afb86586f2fd35f"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
 
     const btn = document.getElementById("loginBtn");
 
@@ -138,7 +63,7 @@
       const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value.trim();
 
-      if(!email || !password){
+      if (!email || !password) {
         alert("Please enter email and password");
         return;
       }
@@ -146,16 +71,15 @@
       btn.disabled = true;
       btn.textContent = "Logging in...";
 
-      try{
-        await signInWithEmailAndPassword(auth, email, password);
+      try {
+        await auth.signInWithEmailAndPassword(email, password);
         window.location.href = "index.html";
-      }catch(err){
+      } catch (err) {
         alert(err.message);
         btn.disabled = false;
         btn.textContent = "Login";
       }
     });
   </script>
-
 </body>
 </html>
