@@ -1,86 +1,91 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Tatak JPD — Login</title>
+  <meta charset="UTF-8" />
+  <title>Tatak JPD - Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    :root { --card:#fff; --bg:#f5f6f7; --text:#111; --muted:#6b7280; }
-    body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; background:var(--bg); color:var(--text); }
-    .wrap { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px; }
-    .card { width:min(560px, 100%); background:var(--card); border-radius:22px; box-shadow:0 10px 30px rgba(0,0,0,.08); padding:28px; }
-    h1 { margin:0; font-size:34px; letter-spacing:-0.02em; text-align:center; }
-    .sub { text-align:center; color:var(--muted); margin-top:6px; }
-    .lock { display:flex; justify-content:center; font-size:32px; margin-bottom:10px; }
-    label { display:block; font-weight:700; margin:18px 0 8px; }
-    input { width:100%; padding:16px 14px; border-radius:14px; border:1px solid #e5e7eb; font-size:16px; outline:none; }
-    button {
-      width:100%; margin-top:18px; padding:16px 14px; border-radius:18px;
-      border:0; background:#111; color:#fff; font-weight:800; font-size:18px; cursor:pointer;
+    body {
+      font-family: system-ui, sans-serif;
+      background:#f5f6f8;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      height:100vh;
     }
-    button:disabled { opacity:.6; cursor:not-allowed; }
-    .status { margin-top:14px; padding:12px 14px; border-radius:14px; background:#f3f4f6; color:#111; display:none; }
-    .hint { margin-top:14px; color:var(--muted); text-align:center; font-size:14px; }
+    .card {
+      background:#fff;
+      padding:24px;
+      border-radius:16px;
+      width:100%;
+      max-width:380px;
+      box-shadow:0 10px 30px rgba(0,0,0,.1);
+    }
+    h2 { text-align:center; }
+    input, button {
+      width:100%;
+      padding:12px;
+      margin-top:10px;
+      border-radius:10px;
+      border:1px solid #ddd;
+      font-size:16px;
+    }
+    button {
+      background:#000;
+      color:#fff;
+      border:none;
+    }
+    .status {
+      margin-top:10px;
+      font-size:14px;
+      color:#555;
+      text-align:center;
+    }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="card">
-      <div class="lock">🔒</div>
-      <h1>Tatak JPD</h1>
-      <div class="sub">Cap Packing & AWB Proof System</div>
 
-      <form id="loginForm">
-        <label>Email</label>
-        <input id="email" type="email" placeholder="you@email.com" required />
+<div class="card">
+  <h2>🔐 Tatak JPD</h2>
 
-        <label>Password</label>
-        <input id="password" type="password" placeholder="••••••••" required />
+  <input id="email" type="email" placeholder="Email" />
+  <input id="password" type="password" placeholder="Password" />
+  <button id="loginBtn">Login</button>
 
-        <button id="btnLogin" type="submit">Login</button>
-        <div id="status" class="status"></div>
-      </form>
+  <div class="status" id="status"></div>
+</div>
 
-      <div class="hint">Private system — login required</div>
-    </div>
-  </div>
+<script type="module">
+  import { auth } from "./firebase.js";
+  import {
+    signInWithEmailAndPassword,
+    onAuthStateChanged,
+    setPersistence,
+    browserLocalPersistence
+  } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
-  <script type="module">
-    import { auth } from "./firebase.js";
-    import {
-      signInWithEmailAndPassword,
-      onAuthStateChanged
-    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+  setPersistence(auth, browserLocalPersistence);
 
-    const form = document.getElementById("loginForm");
-    const emailEl = document.getElementById("email");
-    const passEl = document.getElementById("password");
-    const btn = document.getElementById("btnLogin");
-    const statusEl = document.getElementById("status");
+  const status = document.getElementById("status");
 
-    function setStatus(msg, show=true){
-      statusEl.style.display = show ? "block" : "none";
-      statusEl.textContent = msg || "";
+  document.getElementById("loginBtn").onclick = async () => {
+    status.textContent = "Logging in...";
+    try {
+      await signInWithEmailAndPassword(
+        auth,
+        email.value,
+        password.value
+      );
+      location.href = "index.html";
+    } catch (e) {
+      status.textContent = e.message;
     }
+  };
 
-    onAuthStateChanged(auth, (user) => {
-      if (user) window.location.href = "./index.html";
-    });
+  onAuthStateChanged(auth, user => {
+    if (user) location.href = "index.html";
+  });
+</script>
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      btn.disabled = true;
-      setStatus("Logging in…");
-
-      try {
-        await signInWithEmailAndPassword(auth, emailEl.value.trim(), passEl.value);
-        setStatus("Login success ✅ Redirecting…");
-        window.location.href = "./index.html";
-      } catch (err) {
-        setStatus("Login failed: " + (err?.message || "unknown error"));
-        btn.disabled = false;
-      }
-    });
-  </script>
 </body>
 </html>
