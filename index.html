@@ -423,7 +423,7 @@
 
       const left = document.createElement("div");
       left.innerHTML = `<label>Level (pwede multiple)</label>`;
-      const levelGroup = pillGroup(LEVELS, { multiple:true, name:`level_${orderIndex}` });
+      const levelGroup = pillGroup(LEVELS, { multiple:false, name:`level_${orderIndex}` });
       left.appendChild(levelGroup);
 
       const right = document.createElement("div");
