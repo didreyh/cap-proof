@@ -203,6 +203,93 @@ Thank you po!
 
     box.innerHTML = html;
   };
+// --- SCAN (Barcode) using camera via BarcodeDetector (works on most Android/Chrome & some iOS Safari versions)
+const scanBtn = document.getElementById("scanBtn");
+const stopScanBtn = document.getElementById("stopScanBtn");
+const scannerWrap = document.getElementById("scannerWrap");
+const videoEl = document.getElementById("video");
+const scanMsg = document.getElementById("scanMsg");
+const awbInput = document.getElementById("awbInput");
+
+let scanStream = null;
+let scanLoopRunning = false;
+
+function hasBarcodeDetector() {
+  return "BarcodeDetector" in window;
+}
+
+async function startScan() {
+  if (!hasBarcodeDetector()) {
+    alert("Barcode scan not supported on this browser. Use type/paste muna, or open in Chrome.");
+    return;
+  }
+
+  scannerWrap.style.display = "block";
+  scanMsg.textContent = "Starting camera…";
+
+  try {
+    scanStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: "environment" },
+      audio: false,
+    });
+    videoEl.srcObject = scanStream;
+    await videoEl.play();
+
+    const detector = new BarcodeDetector({
+      formats: ["code_128", "code_39", "ean_13", "ean_8", "itf", "upc_a", "upc_e", "qr_code"]
+    });
+
+    scanLoopRunning = true;
+    scanMsg.textContent = "Scanning… point camera to AWB barcode";
+
+    const scanLoop = async () => {
+      if (!scanLoopRunning) return;
+
+      try {
+        const barcodes = await detector.detect(videoEl);
+        if (barcodes && barcodes.length) {
+          const raw = barcodes[0].rawValue || "";
+          if (raw) {
+            awbInput.value = raw.trim();
+            scanMsg.textContent = `✅ Detected: ${raw}`;
+            stopScan(); // auto stop after detect
+            // auto trigger search if you want:
+            // document.getElementById("searchBtn").click();
+            return;
+          }
+        }
+      } catch (e) {
+        // ignore detect errors
+      }
+
+      requestAnimationFrame(scanLoop);
+    };
+
+    requestAnimationFrame(scanLoop);
+
+  } catch (err) {
+    scanMsg.textContent = "❌ Camera permission denied or error.";
+    console.error(err);
+  }
+}
+
+function stopScan() {
+  scanLoopRunning = false;
+  if (scanStream) {
+    scanStream.getTracks().forEach(t => t.stop());
+    scanStream = null;
+  }
+  if (videoEl) videoEl.srcObject = null;
+  // keep wrap open so user sees detected value, or hide:
+  // scannerWrap.style.display = "none";
+}
+
+scanBtn?.addEventListener("click", startScan);
+stopScanBtn?.addEventListener("click", () => {
+  stopScan();
+  scannerWrap.style.display = "none";
+});  
+  
 </script>
 
 </body>
