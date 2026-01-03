@@ -2,231 +2,435 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Tatak JPD — Packing Logs</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tatak JPD — Packing & AWB Proof</title>
   <style>
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial; background:#f5f6f8; margin:0; padding:24px;}
-    .card{max-width:760px; margin:24px auto; background:#fff; border-radius:18px; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,.08);}
-    .top{display:flex; gap:12px; align-items:center; justify-content:space-between;}
-    .title h1{margin:0; font-size:26px;}
-    .title .sub{color:#666; margin-top:4px;}
-    .pill{background:#eaf7ee; border:1px solid #bfe6c9; color:#1b5e20; padding:10px 12px; border-radius:12px; font-weight:700; margin-top:14px;}
-    .btn{padding:10px 14px; border-radius:14px; border:0; font-weight:800; cursor:pointer;}
-    .btn-dark{background:#111; color:#fff;}
-    .btn-light{background:#fff; color:#111; border:1px solid #ddd;}
-    h2{margin:18px 0 8px;}
-    label{display:block; margin:10px 0 6px; font-weight:700;}
-    input{width:100%; padding:14px 12px; border:1px solid #ddd; border-radius:12px; font-size:16px; outline:none;}
-    .row{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;}
-    .row > *{flex:1}
-    .hint{color:#666; margin-top:6px; font-size:14px;}
-    .status{margin-top:10px; font-weight:800;}
-    .muted{color:#777;}
-    .preview{margin-top:12px; border:1px dashed #ddd; border-radius:16px; padding:12px; min-height:180px; display:flex; align-items:center; justify-content:center; background:#fafafa;}
-    img{max-width:100%; border-radius:14px;}
-    .resultCard{margin-top:12px; padding:12px; border:1px solid #eee; border-radius:14px; background:#fafafa;}
-    .foot{margin-top:18px; color:#777; text-align:center; font-size:13px;}
-    button:disabled{opacity:.55; cursor:not-allowed;}
+    :root { --card:#fff; --ink:#111; --muted:#666; --line:#e9e9e9; --bg:#f5f6f7; }
+    *{ box-sizing:border-box; font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; }
+    body{ margin:0; background:var(--bg); color:var(--ink); }
+    .wrap{ max-width:900px; margin:0 auto; padding:18px; }
+    .card{
+      background:var(--card); border:1px solid var(--line); border-radius:18px;
+      padding:18px; box-shadow:0 10px 30px rgba(0,0,0,.06);
+    }
+    .top{ display:flex; align-items:flex-start; justify-content:space-between; gap:14px; }
+    .brand h1{ margin:0; font-size:28px; }
+    .brand p{ margin:4px 0 0; color:var(--muted); }
+    .btn{
+      border:none; border-radius:12px; padding:10px 14px; cursor:pointer; font-weight:700;
+    }
+    .btn.black{ background:#111; color:#fff; }
+    .btn.gray{ background:#e9e9e9; color:#111; }
+    .btn:disabled{ opacity:.55; cursor:not-allowed; }
+    hr{ border:none; border-top:1px solid var(--line); margin:16px 0; }
+
+    label{ display:block; font-weight:700; margin:10px 0 6px; }
+    input{
+      width:100%; padding:12px 12px; border-radius:12px; border:1px solid var(--line); font-size:16px;
+      outline:none;
+    }
+    input:focus{ border-color:#111; }
+    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    .row > * { flex:1; min-width:160px; }
+    .hint{ margin:8px 0 0; color:var(--muted); font-size:14px; }
+    .pill{
+      margin-top:10px; background:#eafff1; border:1px solid #b9f5d0; color:#0c6b3a;
+      padding:10px 12px; border-radius:14px; font-weight:700;
+    }
+    .status{ margin-top:10px; background:#fff8db; border:1px solid #f5e39a; padding:10px 12px; border-radius:14px; }
+    .danger{ background:#ffe7e7; border:1px solid #ffb8b8; }
+    .muted{ color:var(--muted); }
+
+    .grid{ display:grid; grid-template-columns: 1fr; gap:12px; }
+    @media (min-width: 860px){
+      .grid{ grid-template-columns: 1fr 1fr; }
+    }
+
+    .logCard{
+      border:1px solid var(--line); border-radius:16px; padding:12px; background:#fff;
+    }
+    .logTop{ display:flex; justify-content:space-between; gap:10px; align-items:center; }
+    .logTop b{ font-size:16px; }
+    .logMeta{ color:var(--muted); font-size:13px; margin-top:4px; }
+    .img{
+      margin-top:10px; width:100%; border-radius:14px; border:1px solid var(--line);
+      overflow:hidden; background:#fafafa; min-height:160px; display:flex; align-items:center; justify-content:center;
+    }
+    .img img{ width:100%; display:block; }
+    .small{ font-size:12px; color:var(--muted); }
+    .footer{ margin-top:14px; text-align:center; color:var(--muted); font-size:12px; }
+    .right{ text-align:right; }
+    .linkBtn{ background:transparent; border:none; color:#0a66ff; font-weight:800; cursor:pointer; padding:0; }
+    .scanBox{
+      margin-top:12px; border:1px dashed #cfcfcf; border-radius:16px; padding:12px;
+      background:#fafafa;
+    }
+    #scanner{ width:100%; }
   </style>
 </head>
 
 <body>
-  <div class="card">
-    <div class="top">
-      <div class="title">
-        <h1>✅ Tatak JPD</h1>
-        <div class="sub">Cap Packing & AWB Proof System</div>
+  <div class="wrap">
+    <div class="card">
+      <div class="top">
+        <div class="brand">
+          <h1>✅ Tatak JPD</h1>
+          <p>Cap Packing & AWB Proof System</p>
+          <div id="userPill" class="pill" style="display:none;"></div>
+        </div>
+        <div class="right">
+          <button id="logoutBtn" class="btn black">Logout</button>
+        </div>
       </div>
-      <button id="btnLogout" class="btn btn-dark">Logout</button>
-    </div>
 
-    <div id="who" class="pill">Checking login…</div>
+      <hr />
 
-    <hr style="border:none;border-top:1px solid #eee;margin:16px 0;" />
+      <div class="grid">
+        <!-- LEFT: CREATE LOG -->
+        <div>
+          <h2 style="margin:0 0 6px;">Create Packing Log</h2>
+          <div class="muted" style="margin-bottom:10px;">
+            Option A: <b>Firestore only</b> — photo proof is <b>URL</b> (no Firebase Storage).
+          </div>
 
-    <h2>Save Packing Log (Photo)</h2>
+          <label>AWB Number</label>
+          <input id="awbInput" placeholder="Scan / type AWB (JNT / SPX / Flash etc.)" />
 
-    <label>AWB Number</label>
-    <input id="awbInput" type="text" placeholder="Type/paste AWB (or scan barcode)" />
+          <div class="row" style="margin-top:10px;">
+            <button id="openScanBtn" class="btn black">📷 Scan AWB (Camera)</button>
+            <button id="focusBtn" class="btn gray">⌨️ Focus AWB Field</button>
+          </div>
 
-    <label>Upload Photo Proof</label>
-    <input id="photoInput" type="file" accept="image/*" capture="environment" />
-    <div class="hint">Tip: picture only para mabilis mag-save. Pwede mo i-timelapse sa phone then screenshot frames kung need.</div>
+          <div id="scanWrap" class="scanBox" style="display:none;">
+            <div class="row" style="margin:0 0 10px;">
+              <b>Camera Scanner</b>
+              <div class="right"><button id="closeScanBtn" class="btn gray" style="padding:8px 10px;">Close</button></div>
+            </div>
+            <div id="scanner"></div>
+            <div class="small" style="margin-top:8px;">
+              Tip: itapat sa barcode (JNT/SPX/Flash). Pag na-detect, auto fill AWB.
+            </div>
+          </div>
 
-    <div class="preview" id="previewBox">
-      <span class="muted">Preview will show here…</span>
-    </div>
+          <label style="margin-top:14px;">Photo Proof URL</label>
+          <input id="photoUrlInput" placeholder="Paste image link (ex: https://i.ibb.co/...jpg)" />
+          <div class="hint">
+            Upload photo mo sa <b>ImgBB</b> (recommended) then copy <b>Direct link</b>:
+            <span class="small">https://imgbb.com</span>
+          </div>
 
-    <div class="row">
-      <button id="btnSave" class="btn btn-dark">Save Packing Log</button>
-      <button id="btnClear" class="btn btn-light">Clear</button>
-    </div>
+          <div class="row" style="margin-top:12px;">
+            <button id="saveBtn" class="btn black">💾 Save Packing Log</button>
+            <button id="clearBtn" class="btn gray">Clear</button>
+          </div>
 
-    <div id="saveStatus" class="status muted"></div>
+          <div id="statusBox" class="status" style="display:none;"></div>
+        </div>
 
-    <hr style="border:none;border-top:1px solid #eee;margin:18px 0;" />
+        <!-- RIGHT: SEARCH / VIEW -->
+        <div>
+          <h2 style="margin:0 0 6px;">Search / View Logs</h2>
+          <div class="muted" style="margin-bottom:10px;">
+            Search is always available kahit wala pang scan ✅
+          </div>
 
-    <h2>Search / View Logs</h2>
+          <label>Search by AWB</label>
+          <input id="searchInput" placeholder="Type AWB then Search" />
 
-    <label>Search by AWB</label>
-    <input id="searchAwb" type="text" placeholder="Type/paste AWB then Search" />
+          <div class="row" style="margin-top:12px;">
+            <button id="searchBtn" class="btn black">🔎 Search</button>
+            <button id="latestBtn" class="btn gray">🕒 Latest 20</button>
+          </div>
 
-    <div class="row">
-      <button id="btnSearch" class="btn btn-light">Search</button>
-    </div>
+          <div id="results" style="margin-top:14px;"></div>
+        </div>
+      </div>
 
-    <div id="searchResult"></div>
-
-    <div class="foot">
-      Private system — login required • Stored in Firebase (Auth + Firestore + Storage)
+      <div class="footer">
+        Private system — login required • Stored in Firebase (Auth + Firestore)
+      </div>
     </div>
   </div>
 
+  <!-- html5-qrcode (camera barcode/QR scanner) -->
+  <script src="https://unpkg.com/html5-qrcode"></script>
+
+  <!-- Firebase SDK (modular) -->
   <script type="module">
-    import { auth, db, storage } from "./firebase.js";
-
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
     import {
-      onAuthStateChanged,
-      signOut
-    } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
-
-    import {
-      doc,
-      setDoc,
-      getDoc,
+      getFirestore,
+      collection,
+      addDoc,
+      getDocs,
+      query,
+      where,
+      orderBy,
+      limit,
       serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-    import {
-      ref,
-      uploadBytes,
-      getDownloadURL
-    } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-storage.js";
+    // ✅ Your Firebase config (from you)
+    const firebaseConfig = {
+      apiKey: "AIzaSyCMuFIBYcEWJCknOsA-hRctc6I7v4Sr_gU",
+      authDomain: "cap-proof.firebaseapp.com",
+      projectId: "cap-proof",
+      storageBucket: "cap-proof.firebasestorage.app",
+      messagingSenderId: "722260489486",
+      appId: "1:722260489486:web:e4c8111afb86586f2fd35f"
+    };
 
-    const whoEl = document.getElementById("who");
-    const btnLogout = document.getElementById("btnLogout");
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // UI refs
+    const userPill = document.getElementById("userPill");
+    const logoutBtn = document.getElementById("logoutBtn");
 
     const awbInput = document.getElementById("awbInput");
-    const photoInput = document.getElementById("photoInput");
-    const previewBox = document.getElementById("previewBox");
+    const photoUrlInput = document.getElementById("photoUrlInput");
+    const saveBtn = document.getElementById("saveBtn");
+    const clearBtn = document.getElementById("clearBtn");
+    const statusBox = document.getElementById("statusBox");
 
-    const btnSave = document.getElementById("btnSave");
-    const btnClear = document.getElementById("btnClear");
-    const saveStatus = document.getElementById("saveStatus");
+    const searchInput = document.getElementById("searchInput");
+    const searchBtn = document.getElementById("searchBtn");
+    const latestBtn = document.getElementById("latestBtn");
+    const results = document.getElementById("results");
 
-    const searchAwb = document.getElementById("searchAwb");
-    const btnSearch = document.getElementById("btnSearch");
-    const searchResult = document.getElementById("searchResult");
+    const focusBtn = document.getElementById("focusBtn");
 
-    let currentUser = null;
+    // Scanner UI
+    const openScanBtn = document.getElementById("openScanBtn");
+    const closeScanBtn = document.getElementById("closeScanBtn");
+    const scanWrap = document.getElementById("scanWrap");
+    const scannerEl = document.getElementById("scanner");
+    let qrScanner = null;
 
-    // ✅ Protect page: if not logged in → login.html
+    function setStatus(msg, type="warn"){
+      statusBox.style.display = "block";
+      statusBox.className = "status" + (type === "danger" ? " danger" : "");
+      statusBox.textContent = msg;
+    }
+    function clearStatus(){ statusBox.style.display = "none"; statusBox.textContent=""; }
+
+    function normAwb(v){
+      return (v || "").trim().toUpperCase();
+    }
+
+    function renderLogs(logs){
+      if (!logs.length){
+        results.innerHTML = `<div class="muted">No results.</div>`;
+        return;
+      }
+      results.innerHTML = logs.map(l => {
+        const dateStr = l.createdAt?.toDate ? l.createdAt.toDate().toLocaleString() : (l.createdAtText || "—");
+        const url = l.photoUrl || "";
+        return `
+          <div class="logCard">
+            <div class="logTop">
+              <div>
+                <b>AWB: ${escapeHtml(l.awb || "—")}</b>
+                <div class="logMeta">By: ${escapeHtml(l.createdByEmail || l.createdBy || "—")} • ${escapeHtml(dateStr)}</div>
+              </div>
+              ${url ? `<a class="linkBtn" href="${url}" target="_blank" rel="noopener">Open</a>` : ""}
+            </div>
+            <div class="img">
+              ${
+                url
+                  ? `<img src="${url}" alt="proof" loading="lazy" />`
+                  : `<div class="muted">No photo URL</div>`
+              }
+            </div>
+            ${url ? `<div class="small" style="margin-top:8px; word-break:break-all;">${escapeHtml(url)}</div>` : ``}
+          </div>
+        `;
+      }).join("");
+    }
+
+    function escapeHtml(str){
+      return String(str).replace(/[&<>"']/g, m => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+      }[m]));
+    }
+
+    // Auth gate
     onAuthStateChanged(auth, (user) => {
       if (!user) {
+        // if not logged in, go back to login page
         window.location.href = "./login.html";
         return;
       }
-      currentUser = user;
-      whoEl.textContent = `Logged in as: ${user.email}`;
+      userPill.style.display = "block";
+      userPill.textContent = `Logged in as: ${user.email || user.uid}`;
+      // load latest on start
+      loadLatest();
     });
 
-    // Logout
-    btnLogout.addEventListener("click", async () => {
-      await signOut(auth);
-      window.location.href = "./login.html";
-    });
-
-    // Preview photo
-    photoInput.addEventListener("change", () => {
-      const file = photoInput.files[0];
-      if (!file) {
-        previewBox.innerHTML = `<span class="muted">Preview will show here…</span>`;
-        return;
+    logoutBtn.addEventListener("click", async () => {
+      try {
+        await signOut(auth);
+      } catch (e) {
+        alert("Logout failed: " + e.message);
       }
-      const url = URL.createObjectURL(file);
-      previewBox.innerHTML = `<img src="${url}" alt="preview" />`;
     });
 
-    // Clear
-    btnClear.addEventListener("click", () => {
+    focusBtn.addEventListener("click", () => {
+      awbInput.focus();
+    });
+
+    clearBtn.addEventListener("click", () => {
       awbInput.value = "";
-      photoInput.value = "";
-      previewBox.innerHTML = `<span class="muted">Preview will show here…</span>`;
-      saveStatus.textContent = "";
+      photoUrlInput.value = "";
+      clearStatus();
+      awbInput.focus();
     });
 
-    // ✅ Save packing log (Photo only)
-    btnSave.addEventListener("click", async () => {
-      const awb = awbInput.value.trim();
-      const file = photoInput.files[0];
+    // Save log (Firestore only)
+    saveBtn.addEventListener("click", async () => {
+      clearStatus();
+      const user = auth.currentUser;
+      if (!user) return;
 
-      if (!awb || !file) {
-        alert("AWB + picture required.");
-        return;
+      const awb = normAwb(awbInput.value);
+      const photoUrl = photoUrlInput.value.trim();
+
+      if (!awb) return setStatus("Lagyan muna ng AWB.", "danger");
+      if (!photoUrl) return setStatus("Paste mo muna yung Photo URL (ex: ImgBB direct link).", "danger");
+
+      // very light validation
+      if (!/^https?:\/\//i.test(photoUrl)) {
+        return setStatus("Mukhang hindi link yung Photo URL. Dapat nagsisimula sa http/https.", "danger");
       }
-      if (!currentUser) return;
 
-      btnSave.disabled = true;
-      saveStatus.textContent = "Uploading photo + saving…";
-      saveStatus.classList.remove("muted");
-
+      saveBtn.disabled = true;
+      saveBtn.textContent = "Saving...";
       try {
-        // Upload file to Storage
-        const filePath = `packingPhotos/${awb}.jpg`;
-        const storageRef = ref(storage, filePath);
-        await uploadBytes(storageRef, file);
-        const photoURL = await getDownloadURL(storageRef);
-
-        // Save doc using AWB as document ID (super easy search)
-        await setDoc(doc(db, "packingLogs", awb), {
+        await addDoc(collection(db, "packingLogs"), {
           awb,
-          photoURL,
-          filePath,
-          createdBy: currentUser.email,
-          createdAt: serverTimestamp()
-        }, { merge: true });
+          photoUrl,
+          createdAt: serverTimestamp(),
+          createdBy: user.uid,
+          createdByEmail: user.email || null
+        });
 
-        saveStatus.textContent = "✅ Saved!";
-        setTimeout(() => (saveStatus.textContent = ""), 2500);
-
+        setStatus("Saved ✅");
+        // refresh list
+        await searchByAwb(awb);
       } catch (e) {
         console.error(e);
-        alert("❌ Save failed. Check Firestore rules + Storage rules.");
-        saveStatus.textContent = "❌ Error saving.";
+        setStatus("Save failed: " + e.message, "danger");
       } finally {
-        btnSave.disabled = false;
+        saveBtn.disabled = false;
+        saveBtn.textContent = "💾 Save Packing Log";
       }
     });
 
-    // ✅ Search (works kahit wala scan)
-    btnSearch.addEventListener("click", async () => {
-      const awb = searchAwb.value.trim();
-      if (!awb) return;
+    // Search
+    searchBtn.addEventListener("click", async () => {
+      const awb = normAwb(searchInput.value);
+      if (!awb) return setStatus("Type muna ng AWB sa search box.", "danger");
+      await searchByAwb(awb);
+    });
 
-      searchResult.innerHTML = `<div class="resultCard">Searching…</div>`;
+    // Enter to search
+    searchInput.addEventListener("keydown", async (e) => {
+      if (e.key === "Enter") {
+        const awb = normAwb(searchInput.value);
+        if (!awb) return;
+        await searchByAwb(awb);
+      }
+    });
+
+    latestBtn.addEventListener("click", loadLatest);
+
+    async function searchByAwb(awb){
+      clearStatus();
+      results.innerHTML = `<div class="muted">Searching…</div>`;
+      try {
+        const q = query(
+          collection(db, "packingLogs"),
+          where("awb", "==", awb),
+          orderBy("createdAt", "desc"),
+          limit(20)
+        );
+        const snap = await getDocs(q);
+        const logs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderLogs(logs);
+      } catch (e) {
+        console.error(e);
+        setStatus("Search failed: " + e.message, "danger");
+      }
+    }
+
+    async function loadLatest(){
+      clearStatus();
+      results.innerHTML = `<div class="muted">Loading latest…</div>`;
+      try {
+        const q = query(
+          collection(db, "packingLogs"),
+          orderBy("createdAt", "desc"),
+          limit(20)
+        );
+        const snap = await getDocs(q);
+        const logs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderLogs(logs);
+      } catch (e) {
+        console.error(e);
+        setStatus("Load latest failed: " + e.message, "danger");
+      }
+    }
+
+    // --- Camera Scan (html5-qrcode) ---
+    openScanBtn.addEventListener("click", async () => {
+      scanWrap.style.display = "block";
+      if (qrScanner) return;
+
+      // Note: html5-qrcode supports QR and some barcodes depending on device/browser.
+      // We still try; kung di ma-detect sa iPhone, pwede ka mag-type or use scanner keyboard.
+      qrScanner = new Html5Qrcode("scanner");
 
       try {
-        const snap = await getDoc(doc(db, "packingLogs", awb));
-
-        if (!snap.exists()) {
-          searchResult.innerHTML = `<div class="resultCard">❌ No record found for <b>${awb}</b></div>`;
-          return;
-        }
-
-        const d = snap.data();
-        searchResult.innerHTML = `
-          <div class="resultCard">
-            <div><b>AWB:</b> ${d.awb}</div>
-            <div style="margin-top:10px;">
-              <img src="${d.photoURL}" alt="proof" style="max-width:100%;border-radius:14px;" />
-            </div>
-          </div>
-        `;
+        await qrScanner.start(
+          { facingMode: "environment" },
+          { fps: 10, qrbox: { width: 280, height: 160 } },
+          (decodedText) => {
+            // decodedText might include spaces/newlines
+            const awb = normAwb(decodedText);
+            awbInput.value = awb;
+            searchInput.value = awb;
+            // stop scanning after first hit
+            closeScanner();
+          },
+          (err) => {
+            // ignore scan errors (continuous)
+          }
+        );
       } catch (e) {
         console.error(e);
-        searchResult.innerHTML = `<div class="resultCard">❌ Error searching.</div>`;
+        setStatus("Scanner error (pwede mo na lang i-type/paste AWB): " + e.message, "danger");
       }
     });
+
+    closeScanBtn.addEventListener("click", closeScanner);
+
+    async function closeScanner(){
+      scanWrap.style.display = "none";
+      if (!qrScanner) return;
+      try {
+        await qrScanner.stop();
+        await qrScanner.clear();
+      } catch {}
+      qrScanner = null;
+    }
+
+    // Convenience: if AWB field changes, also update search field
+    awbInput.addEventListener("input", () => {
+      searchInput.value = normAwb(awbInput.value);
+    });
+
   </script>
 </body>
 </html>
