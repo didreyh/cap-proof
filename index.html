@@ -3,175 +3,118 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tatak JPD — Packing & AWB Proof</title>
+  <title>Tatak JPD • Packing Logs</title>
   <style>
-    :root { --card:#fff; --ink:#111; --muted:#666; --line:#e9e9e9; --bg:#f5f6f7; }
-    *{ box-sizing:border-box; font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; }
-    body{ margin:0; background:var(--bg); color:var(--ink); }
-    .wrap{ max-width:900px; margin:0 auto; padding:18px; }
-    .card{
-      background:var(--card); border:1px solid var(--line); border-radius:18px;
-      padding:18px; box-shadow:0 10px 30px rgba(0,0,0,.06);
-    }
-    .top{ display:flex; align-items:flex-start; justify-content:space-between; gap:14px; }
-    .brand h1{ margin:0; font-size:28px; }
-    .brand p{ margin:4px 0 0; color:var(--muted); }
-    .btn{
-      border:none; border-radius:12px; padding:10px 14px; cursor:pointer; font-weight:700;
-    }
-    .btn.black{ background:#111; color:#fff; }
-    .btn.gray{ background:#e9e9e9; color:#111; }
-    .btn:disabled{ opacity:.55; cursor:not-allowed; }
-    hr{ border:none; border-top:1px solid var(--line); margin:16px 0; }
-
-    label{ display:block; font-weight:700; margin:10px 0 6px; }
-    input{
-      width:100%; padding:12px 12px; border-radius:12px; border:1px solid var(--line); font-size:16px;
-      outline:none;
-    }
-    input:focus{ border-color:#111; }
-    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
-    .row > * { flex:1; min-width:160px; }
-    .hint{ margin:8px 0 0; color:var(--muted); font-size:14px; }
-    .pill{
-      margin-top:10px; background:#eafff1; border:1px solid #b9f5d0; color:#0c6b3a;
-      padding:10px 12px; border-radius:14px; font-weight:700;
-    }
-    .status{ margin-top:10px; background:#fff8db; border:1px solid #f5e39a; padding:10px 12px; border-radius:14px; }
-    .danger{ background:#ffe7e7; border:1px solid #ffb8b8; }
-    .muted{ color:var(--muted); }
-
-    .grid{ display:grid; grid-template-columns: 1fr; gap:12px; }
-    @media (min-width: 860px){
-      .grid{ grid-template-columns: 1fr 1fr; }
-    }
-
-    .logCard{
-      border:1px solid var(--line); border-radius:16px; padding:12px; background:#fff;
-    }
-    .logTop{ display:flex; justify-content:space-between; gap:10px; align-items:center; }
-    .logTop b{ font-size:16px; }
-    .logMeta{ color:var(--muted); font-size:13px; margin-top:4px; }
-    .img{
-      margin-top:10px; width:100%; border-radius:14px; border:1px solid var(--line);
-      overflow:hidden; background:#fafafa; min-height:160px; display:flex; align-items:center; justify-content:center;
-    }
-    .img img{ width:100%; display:block; }
-    .small{ font-size:12px; color:var(--muted); }
-    .footer{ margin-top:14px; text-align:center; color:var(--muted); font-size:12px; }
-    .right{ text-align:right; }
-    .linkBtn{ background:transparent; border:none; color:#0a66ff; font-weight:800; cursor:pointer; padding:0; }
-    .scanBox{
-      margin-top:12px; border:1px dashed #cfcfcf; border-radius:16px; padding:12px;
-      background:#fafafa;
-    }
-    #scanner{ width:100%; }
+    :root { --bg:#f6f7fb; --card:#fff; --text:#111; --muted:#666; --btn:#111; --btnText:#fff; --line:#e8e8ef; --soft:#eef8f1; }
+    *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;}
+    body{margin:0;min-height:100vh;background:var(--bg);padding:18px;}
+    .wrap{max-width:780px;margin:0 auto;}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.06);padding:18px 18px 14px;}
+    .top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
+    h1{margin:0 0 2px;font-size:24px;display:flex;gap:10px;align-items:center;}
+    .sub{margin:0;color:var(--muted);font-size:13px;}
+    .logout{padding:10px 14px;border:0;border-radius:14px;background:var(--btn);color:var(--btnText);font-weight:800;cursor:pointer;}
+    .pill{margin-top:10px;background:var(--soft);border:1px solid #cfe9d7;border-radius:12px;padding:10px 12px;color:#0a7a2f;font-size:13px;}
+    hr{border:0;border-top:1px solid var(--line);margin:14px 0;}
+    h2{margin:0 0 10px;font-size:22px;}
+    label{display:block;margin:10px 0 6px;font-weight:700;}
+    input[type="text"]{width:100%;padding:14px;border:1px solid var(--line);border-radius:12px;font-size:16px;}
+    .row{display:flex;gap:10px;flex-wrap:wrap;}
+    .btn{padding:12px 14px;border:0;border-radius:14px;background:var(--btn);color:var(--btnText);font-weight:800;cursor:pointer;}
+    .btn.secondary{background:#fff;color:#111;border:1px solid var(--line);}
+    .btn:disabled{opacity:.6;cursor:not-allowed;}
+    .tip{color:var(--muted);font-size:13px;margin-top:8px;}
+    .status{margin-top:10px;font-size:14px;color:var(--muted);}
+    .err{margin-top:10px;color:#b00020;font-size:14px;white-space:pre-wrap;}
+    .preview{margin-top:12px;border:1px dashed var(--line);border-radius:14px;overflow:hidden;background:#fafafa;display:grid;place-items:center;min-height:160px;}
+    .preview img{width:100%;height:auto;display:block;}
+    .result{margin-top:12px;padding:12px;border:1px solid var(--line);border-radius:14px;background:#fff;}
+    .result strong{display:block;margin-bottom:6px;}
+    .small{font-size:12px;color:var(--muted);}
+    .footer{margin-top:12px;text-align:center;color:var(--muted);font-size:12px;}
+    #scannerModal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:18px;}
+    #scannerBox{width:min(520px,100%);background:#fff;border-radius:16px;padding:14px;border:1px solid var(--line);}
+    #scannerVideoWrap{border-radius:14px;overflow:hidden;background:#000;min-height:260px;display:grid;place-items:center;}
+    #scannerVideo{width:100%;height:auto;}
+    .modalTop{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+    .x{border:0;background:#fff;font-size:18px;cursor:pointer;}
   </style>
 </head>
-
 <body>
   <div class="wrap">
     <div class="card">
       <div class="top">
-        <div class="brand">
+        <div>
           <h1>✅ Tatak JPD</h1>
-          <p>Cap Packing & AWB Proof System</p>
-          <div id="userPill" class="pill" style="display:none;"></div>
+          <p class="sub">Cap Packing & AWB Proof System</p>
         </div>
-        <div class="right">
-          <button id="logoutBtn" class="btn black">Logout</button>
-        </div>
+        <button id="logoutBtn" class="logout">Logout</button>
+      </div>
+
+      <div id="userPill" class="pill" style="display:none;"></div>
+
+      <hr />
+
+      <h2>Scan / Type AWB</h2>
+      <label>AWB Number</label>
+      <input id="awbInput" type="text" placeholder="Scan will fill this… or paste/type AWB" />
+
+      <div class="tip">Tip: scan barcode para mabilis. Pwede rin paste/type kung kailangan.</div>
+
+      <div class="row" style="margin-top:12px;">
+        <button id="scanBtn" class="btn">📷 Scan AWB Barcode</button>
+        <button id="searchBtn" class="btn secondary">Search</button>
       </div>
 
       <hr />
 
-      <div class="grid">
-        <!-- LEFT: CREATE LOG -->
-        <div>
-          <h2 style="margin:0 0 6px;">Create Packing Log</h2>
-          <div class="muted" style="margin-bottom:10px;">
-            Option A: <b>Firestore only</b> — photo proof is <b>URL</b> (no Firebase Storage).
-          </div>
+      <h2>Upload Picture Proof</h2>
+      <label>Choose photo</label>
+      <input id="photoInput" type="file" accept="image/*" />
 
-          <label>AWB Number</label>
-          <input id="awbInput" placeholder="Scan / type AWB (JNT / SPX / Flash etc.)" />
-
-          <div class="row" style="margin-top:10px;">
-            <button id="openScanBtn" class="btn black">📷 Scan AWB (Camera)</button>
-            <button id="focusBtn" class="btn gray">⌨️ Focus AWB Field</button>
-          </div>
-
-          <div id="scanWrap" class="scanBox" style="display:none;">
-            <div class="row" style="margin:0 0 10px;">
-              <b>Camera Scanner</b>
-              <div class="right"><button id="closeScanBtn" class="btn gray" style="padding:8px 10px;">Close</button></div>
-            </div>
-            <div id="scanner"></div>
-            <div class="small" style="margin-top:8px;">
-              Tip: itapat sa barcode (JNT/SPX/Flash). Pag na-detect, auto fill AWB.
-            </div>
-          </div>
-
-          <label style="margin-top:14px;">Photo Proof URL</label>
-          <input id="photoUrlInput" placeholder="Paste image link (ex: https://i.ibb.co/...jpg)" />
-          <div class="hint">
-            Upload photo mo sa <b>ImgBB</b> (recommended) then copy <b>Direct link</b>:
-            <span class="small">https://imgbb.com</span>
-          </div>
-
-          <div class="row" style="margin-top:12px;">
-            <button id="saveBtn" class="btn black">💾 Save Packing Log</button>
-            <button id="clearBtn" class="btn gray">Clear</button>
-          </div>
-
-          <div id="statusBox" class="status" style="display:none;"></div>
-        </div>
-
-        <!-- RIGHT: SEARCH / VIEW -->
-        <div>
-          <h2 style="margin:0 0 6px;">Search / View Logs</h2>
-          <div class="muted" style="margin-bottom:10px;">
-            Search is always available kahit wala pang scan ✅
-          </div>
-
-          <label>Search by AWB</label>
-          <input id="searchInput" placeholder="Type AWB then Search" />
-
-          <div class="row" style="margin-top:12px;">
-            <button id="searchBtn" class="btn black">🔎 Search</button>
-            <button id="latestBtn" class="btn gray">🕒 Latest 20</button>
-          </div>
-
-          <div id="results" style="margin-top:14px;"></div>
-        </div>
+      <div class="preview" id="previewBox">
+        <div class="small">Preview will appear here</div>
       </div>
 
-      <div class="footer">
-        Private system — login required • Stored in Firebase (Auth + Firestore)
+      <div class="row" style="margin-top:12px;">
+        <button id="saveBtn" class="btn">Save Packing Log</button>
       </div>
+
+      <div id="status" class="status"></div>
+      <div id="error" class="err" style="display:none;"></div>
+
+      <hr />
+
+      <h2>Search / View Logs</h2>
+      <div class="tip">You can search anytime — kahit wala pang scan.</div>
+
+      <div id="resultBox" class="result" style="display:none;"></div>
+
+      <div class="footer">Private system — login required • Stored in Firebase (Auth + Firestore + Storage)</div>
     </div>
   </div>
 
-  <!-- html5-qrcode (camera barcode/QR scanner) -->
-  <script src="https://unpkg.com/html5-qrcode"></script>
+  <!-- Scanner Modal -->
+  <div id="scannerModal">
+    <div id="scannerBox">
+      <div class="modalTop">
+        <strong>Scan Barcode</strong>
+        <button class="x" id="closeScan">✕</button>
+      </div>
+      <div id="scannerVideoWrap">
+        <video id="scannerVideo" playsinline></video>
+      </div>
+      <div class="tip" style="margin-top:10px;">Itutok sa barcode (J&T / SPX). Kapag nabasa, auto-fill na yung AWB.</div>
+    </div>
+  </div>
 
-  <!-- Firebase SDK (modular) -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-    import {
-      getFirestore,
-      collection,
-      addDoc,
-      getDocs,
-      query,
-      where,
-      orderBy,
-      limit,
-      serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
-    // ✅ Your Firebase config (from you)
+    // ✅ YOUR FIREBASE CONFIG
     const firebaseConfig = {
       apiKey: "AIzaSyCMuFIBYcEWJCknOsA-hRctc6I7v4Sr_gU",
       authDomain: "cap-proof.firebaseapp.com",
@@ -184,251 +127,242 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+    const storage = getStorage(app);
 
-    // UI refs
-    const userPill = document.getElementById("userPill");
     const logoutBtn = document.getElementById("logoutBtn");
-
-    const awbInput = document.getElementById("awbInput");
-    const photoUrlInput = document.getElementById("photoUrlInput");
-    const saveBtn = document.getElementById("saveBtn");
-    const clearBtn = document.getElementById("clearBtn");
-    const statusBox = document.getElementById("statusBox");
-
-    const searchInput = document.getElementById("searchInput");
+    const userPill  = document.getElementById("userPill");
+    const awbInput  = document.getElementById("awbInput");
     const searchBtn = document.getElementById("searchBtn");
-    const latestBtn = document.getElementById("latestBtn");
-    const results = document.getElementById("results");
+    const scanBtn   = document.getElementById("scanBtn");
+    const photoInput= document.getElementById("photoInput");
+    const previewBox= document.getElementById("previewBox");
+    const saveBtn   = document.getElementById("saveBtn");
+    const statusEl  = document.getElementById("status");
+    const errBox    = document.getElementById("error");
+    const resultBox = document.getElementById("resultBox");
 
-    const focusBtn = document.getElementById("focusBtn");
+    const scannerModal = document.getElementById("scannerModal");
+    const closeScanBtn = document.getElementById("closeScan");
+    const videoEl = document.getElementById("scannerVideo");
 
-    // Scanner UI
-    const openScanBtn = document.getElementById("openScanBtn");
-    const closeScanBtn = document.getElementById("closeScanBtn");
-    const scanWrap = document.getElementById("scanWrap");
-    const scannerEl = document.getElementById("scanner");
-    let qrScanner = null;
+    let currentUser = null;
+    let selectedFile = null;
+    let scanStream = null;
+    let scanLoopRunning = false;
 
-    function setStatus(msg, type="warn"){
-      statusBox.style.display = "block";
-      statusBox.className = "status" + (type === "danger" ? " danger" : "");
-      statusBox.textContent = msg;
+    function showError(msg){
+      errBox.style.display="block";
+      errBox.textContent = msg;
     }
-    function clearStatus(){ statusBox.style.display = "none"; statusBox.textContent=""; }
-
-    function normAwb(v){
-      return (v || "").trim().toUpperCase();
+    function clearError(){
+      errBox.style.display="none";
+      errBox.textContent = "";
     }
-
-    function renderLogs(logs){
-      if (!logs.length){
-        results.innerHTML = `<div class="muted">No results.</div>`;
-        return;
-      }
-      results.innerHTML = logs.map(l => {
-        const dateStr = l.createdAt?.toDate ? l.createdAt.toDate().toLocaleString() : (l.createdAtText || "—");
-        const url = l.photoUrl || "";
-        return `
-          <div class="logCard">
-            <div class="logTop">
-              <div>
-                <b>AWB: ${escapeHtml(l.awb || "—")}</b>
-                <div class="logMeta">By: ${escapeHtml(l.createdByEmail || l.createdBy || "—")} • ${escapeHtml(dateStr)}</div>
-              </div>
-              ${url ? `<a class="linkBtn" href="${url}" target="_blank" rel="noopener">Open</a>` : ""}
-            </div>
-            <div class="img">
-              ${
-                url
-                  ? `<img src="${url}" alt="proof" loading="lazy" />`
-                  : `<div class="muted">No photo URL</div>`
-              }
-            </div>
-            ${url ? `<div class="small" style="margin-top:8px; word-break:break-all;">${escapeHtml(url)}</div>` : ``}
-          </div>
-        `;
-      }).join("");
+    function setStatus(msg){
+      statusEl.textContent = msg || "";
     }
 
-    function escapeHtml(str){
-      return String(str).replace(/[&<>"']/g, m => ({
-        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-      }[m]));
-    }
-
-    // Auth gate
+    // ✅ Require login
     onAuthStateChanged(auth, (user) => {
       if (!user) {
-        // if not logged in, go back to login page
         window.location.href = "./login.html";
         return;
       }
+      currentUser = user;
       userPill.style.display = "block";
-      userPill.textContent = `Logged in as: ${user.email || user.uid}`;
-      // load latest on start
-      loadLatest();
+      userPill.textContent = `Logged in as: ${user.email}`;
     });
 
     logoutBtn.addEventListener("click", async () => {
       try {
         await signOut(auth);
+        window.location.href = "./login.html";
       } catch (e) {
-        alert("Logout failed: " + e.message);
+        showError(e?.message || String(e));
       }
     });
 
-    focusBtn.addEventListener("click", () => {
-      awbInput.focus();
+    // ✅ Preview image
+    photoInput.addEventListener("change", () => {
+      clearError();
+      setStatus("");
+      selectedFile = photoInput.files?.[0] || null;
+      previewBox.innerHTML = "";
+
+      if (!selectedFile) {
+        previewBox.innerHTML = `<div class="small">Preview will appear here</div>`;
+        return;
+      }
+      const url = URL.createObjectURL(selectedFile);
+      const img = document.createElement("img");
+      img.src = url;
+      img.onload = () => URL.revokeObjectURL(url);
+      previewBox.appendChild(img);
     });
 
-    clearBtn.addEventListener("click", () => {
-      awbInput.value = "";
-      photoUrlInput.value = "";
-      clearStatus();
-      awbInput.focus();
-    });
+    // ✅ Normalize AWB
+    function normalizeAwb(s){
+      return (s || "")
+        .trim()
+        .replace(/\s+/g,"")
+        .replace(/[^\w-]/g,"")
+        .toUpperCase();
+    }
 
-    // Save log (Firestore only)
+    // ✅ Save packing log (picture only)
     saveBtn.addEventListener("click", async () => {
-      clearStatus();
-      const user = auth.currentUser;
-      if (!user) return;
+      clearError();
+      resultBox.style.display = "none";
 
-      const awb = normAwb(awbInput.value);
-      const photoUrl = photoUrlInput.value.trim();
-
-      if (!awb) return setStatus("Lagyan muna ng AWB.", "danger");
-      if (!photoUrl) return setStatus("Paste mo muna yung Photo URL (ex: ImgBB direct link).", "danger");
-
-      // very light validation
-      if (!/^https?:\/\//i.test(photoUrl)) {
-        return setStatus("Mukhang hindi link yung Photo URL. Dapat nagsisimula sa http/https.", "danger");
-      }
+      const awb = normalizeAwb(awbInput.value);
+      if (!awb) return showError("Please enter/scan AWB first.");
+      if (!selectedFile) return showError("Please choose a photo proof.");
 
       saveBtn.disabled = true;
-      saveBtn.textContent = "Saving...";
-      try {
-        await addDoc(collection(db, "packingLogs"), {
-          awb,
-          photoUrl,
-          createdAt: serverTimestamp(),
-          createdBy: user.uid,
-          createdByEmail: user.email || null
-        });
+      setStatus("Uploading photo + saving...");
 
-        setStatus("Saved ✅");
-        // refresh list
-        await searchByAwb(awb);
+      try {
+        // Upload to Storage
+        const uid = currentUser.uid;
+        const ext = (selectedFile.name.split(".").pop() || "jpg").toLowerCase();
+        const safeExt = ["jpg","jpeg","png","webp","heic"].includes(ext) ? ext : "jpg";
+        const path = `packingProofs/${uid}/${awb}/${Date.now()}.${safeExt}`;
+
+        const fileRef = ref(storage, path);
+        await uploadBytes(fileRef, selectedFile, { contentType: selectedFile.type || "image/jpeg" });
+        const imageUrl = await getDownloadURL(fileRef);
+
+        // Save to Firestore (doc id = AWB)
+        await setDoc(doc(db, "packingLogs", awb), {
+          awb,
+          imageUrl,
+          storagePath: path,
+          createdAt: serverTimestamp(),
+          createdByUid: uid,
+          createdByEmail: currentUser.email || null,
+          courierHint: "J&T / SPX / Flash Express"
+        }, { merge: true });
+
+        setStatus("✅ Saved! You can search it below.");
+        // Auto show result
+        await runSearch(awb);
+
+        // reset file
+        selectedFile = null;
+        photoInput.value = "";
       } catch (e) {
-        console.error(e);
-        setStatus("Save failed: " + e.message, "danger");
+        showError(e?.message || String(e));
+        setStatus("");
       } finally {
         saveBtn.disabled = false;
-        saveBtn.textContent = "💾 Save Packing Log";
       }
     });
 
-    // Search
+    // ✅ Search anytime
+    async function runSearch(awb){
+      clearError();
+      setStatus("Searching...");
+      resultBox.style.display = "none";
+      const snap = await getDoc(doc(db, "packingLogs", awb));
+
+      if (!snap.exists()) {
+        setStatus("");
+        resultBox.style.display = "block";
+        resultBox.innerHTML = `
+          <strong>No log found</strong>
+          <div class="small">AWB: ${awb}</div>
+          <div class="small">Try again or save a new proof.</div>
+        `;
+        return;
+      }
+
+      const data = snap.data();
+      setStatus("");
+      resultBox.style.display = "block";
+      resultBox.innerHTML = `
+        <strong>FOUND ✅</strong>
+        <div class="small"><b>AWB:</b> ${data.awb || awb}</div>
+        <div class="small"><b>By:</b> ${data.createdByEmail || "-"}</div>
+        <div class="small" style="margin-top:8px;">
+          <img src="${data.imageUrl}" alt="proof" style="width:100%;border-radius:12px;border:1px solid #eee;" />
+        </div>
+      `;
+    }
+
     searchBtn.addEventListener("click", async () => {
-      const awb = normAwb(searchInput.value);
-      if (!awb) return setStatus("Type muna ng AWB sa search box.", "danger");
-      await searchByAwb(awb);
-    });
-
-    // Enter to search
-    searchInput.addEventListener("keydown", async (e) => {
-      if (e.key === "Enter") {
-        const awb = normAwb(searchInput.value);
-        if (!awb) return;
-        await searchByAwb(awb);
-      }
-    });
-
-    latestBtn.addEventListener("click", loadLatest);
-
-    async function searchByAwb(awb){
-      clearStatus();
-      results.innerHTML = `<div class="muted">Searching…</div>`;
+      clearError();
+      const awb = normalizeAwb(awbInput.value);
+      if(!awb) return showError("Type/paste AWB to search.");
       try {
-        const q = query(
-          collection(db, "packingLogs"),
-          where("awb", "==", awb),
-          orderBy("createdAt", "desc"),
-          limit(20)
-        );
-        const snap = await getDocs(q);
-        const logs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        renderLogs(logs);
+        await runSearch(awb);
       } catch (e) {
-        console.error(e);
-        setStatus("Search failed: " + e.message, "danger");
+        showError(e?.message || String(e));
+        setStatus("");
       }
+    });
+
+    // =========================
+    // SIMPLE BARCODE SCAN (camera)
+    // =========================
+    // NOTE: iOS Safari can be picky. If scan fails, manual paste still works.
+
+    function openScanner(){
+      scannerModal.style.display="flex";
     }
-
-    async function loadLatest(){
-      clearStatus();
-      results.innerHTML = `<div class="muted">Loading latest…</div>`;
-      try {
-        const q = query(
-          collection(db, "packingLogs"),
-          orderBy("createdAt", "desc"),
-          limit(20)
-        );
-        const snap = await getDocs(q);
-        const logs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        renderLogs(logs);
-      } catch (e) {
-        console.error(e);
-        setStatus("Load latest failed: " + e.message, "danger");
+    async function closeScanner(){
+      scannerModal.style.display="none";
+      scanLoopRunning = false;
+      if (scanStream) {
+        scanStream.getTracks().forEach(t => t.stop());
+        scanStream = null;
       }
+      videoEl.srcObject = null;
     }
-
-    // --- Camera Scan (html5-qrcode) ---
-    openScanBtn.addEventListener("click", async () => {
-      scanWrap.style.display = "block";
-      if (qrScanner) return;
-
-      // Note: html5-qrcode supports QR and some barcodes depending on device/browser.
-      // We still try; kung di ma-detect sa iPhone, pwede ka mag-type or use scanner keyboard.
-      qrScanner = new Html5Qrcode("scanner");
-
-      try {
-        await qrScanner.start(
-          { facingMode: "environment" },
-          { fps: 10, qrbox: { width: 280, height: 160 } },
-          (decodedText) => {
-            // decodedText might include spaces/newlines
-            const awb = normAwb(decodedText);
-            awbInput.value = awb;
-            searchInput.value = awb;
-            // stop scanning after first hit
-            closeScanner();
-          },
-          (err) => {
-            // ignore scan errors (continuous)
-          }
-        );
-      } catch (e) {
-        console.error(e);
-        setStatus("Scanner error (pwede mo na lang i-type/paste AWB): " + e.message, "danger");
-      }
-    });
 
     closeScanBtn.addEventListener("click", closeScanner);
 
-    async function closeScanner(){
-      scanWrap.style.display = "none";
-      if (!qrScanner) return;
+    scanBtn.addEventListener("click", async () => {
+      clearError();
       try {
-        await qrScanner.stop();
-        await qrScanner.clear();
-      } catch {}
-      qrScanner = null;
-    }
+        openScanner();
+        const constraints = { video: { facingMode: "environment" }, audio: false };
+        scanStream = await navigator.mediaDevices.getUserMedia(constraints);
+        videoEl.srcObject = scanStream;
+        await videoEl.play();
 
-    // Convenience: if AWB field changes, also update search field
-    awbInput.addEventListener("input", () => {
-      searchInput.value = normAwb(awbInput.value);
+        // try BarcodeDetector if available
+        if ("BarcodeDetector" in window) {
+          const detector = new BarcodeDetector({ formats: ["code_128","code_39","ean_13","ean_8","upc_a","upc_e","itf","qr_code"] });
+          scanLoopRunning = true;
+
+          const loop = async () => {
+            if (!scanLoopRunning) return;
+            try {
+              const barcodes = await detector.detect(videoEl);
+              if (barcodes && barcodes.length) {
+                const raw = barcodes[0].rawValue || "";
+                const awb = normalizeAwb(raw);
+                if (awb) {
+                  awbInput.value = awb;
+                  await closeScanner();
+                  setStatus(`Scanned: ${awb}`);
+                  return;
+                }
+              }
+            } catch (e) {
+              // ignore detection errors and continue
+            }
+            requestAnimationFrame(loop);
+          };
+          requestAnimationFrame(loop);
+        } else {
+          // Fallback message
+          setStatus("Scanner not supported on this browser. Please type/paste AWB.");
+        }
+      } catch (e) {
+        await closeScanner();
+        showError("Camera error: " + (e?.message || String(e)));
+      }
     });
 
   </script>
