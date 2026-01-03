@@ -2,83 +2,87 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <title>Tatak JPD – Login</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tatak JPD Login</title>
+
   <style>
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont;
-      background:#f5f5f5;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      min-height:100vh;
-      margin:0;
-      padding:24px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #f5f5f5;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
     }
+
     .card {
-      background:white;
-      padding:24px;
-      border-radius:16px;
-      width:min(360px, 92vw);
-      box-shadow:0 10px 30px rgba(0,0,0,.10);
-      text-align:center;
+      background: #fff;
+      padding: 24px;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 360px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.1);
+      text-align: center;
     }
-    label {
-      display:block;
-      text-align:left;
-      font-size:14px;
-      margin:12px 0 6px;
+
+    h1 {
+      margin: 0;
+      font-size: 20px;
     }
+
+    p {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 20px;
+    }
+
     input {
-      width:100%;
-      padding:12px;
-      border-radius:10px;
-      border:1px solid #ddd;
-      font-size:16px;
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 12px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      font-size: 14px;
     }
+
     button {
-      width:100%;
-      padding:12px;
-      margin-top:16px;
-      border-radius:12px;
-      border:none;
-      background:black;
-      color:white;
-      font-weight:700;
-      font-size:16px;
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 12px;
+      background: #000;
+      color: #fff;
+      font-size: 15px;
+      cursor: pointer;
     }
-    .msg {
-      margin-top:12px;
-      font-size:13px;
-      color:#b00020;
+
+    .error {
+      color: red;
+      font-size: 13px;
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
 
   <div class="card">
-    <h2>🔐 Tatak JPD</h2>
+    <h1>🔐 Tatak JPD</h1>
     <p>Cap Packing & AWB Proof System</p>
 
-    <label>Email</label>
-    <input id="email" type="email" placeholder="you@email.com" />
-
-    <label>Password</label>
-    <input id="password" type="password" placeholder="••••••••" />
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Password" />
 
     <button onclick="login()">Login</button>
-    <div id="msg" class="msg"></div>
 
-    <p style="font-size:12px;color:#777;margin-top:10px;">
-      Private system — login required
-    </p>
+    <div class="error" id="error"></div>
   </div>
 
-  <!-- Firebase CDN -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js"></script>
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCMuFIBYcEWJCknOsA-hRctc6I7v4Sr_gU",
       authDomain: "cap-proof.firebaseapp.com",
@@ -88,22 +92,24 @@
       appId: "1:722260489486:web:e4c8111afb86586f2fd35f"
     };
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
 
-    function login() {
+    window.login = function () {
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
-      const msg = document.getElementById("msg");
+      const errorBox = document.getElementById("error");
 
-      auth.signInWithEmailAndPassword(email, password)
+      errorBox.textContent = "";
+
+      signInWithEmailAndPassword(auth, email, password)
         .then(() => {
           window.location.href = "index.html";
         })
-        .catch(err => {
-          msg.textContent = err.message;
+        .catch((error) => {
+          errorBox.textContent = error.message;
         });
-    }
+    };
   </script>
 
 </body>
