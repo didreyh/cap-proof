@@ -66,41 +66,55 @@
     </div>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+ <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import {
+    getAuth,
+    setPersistence,
+    browserLocalPersistence,
+    signInWithEmailAndPassword,
+    onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCMuFIBYcEWJCknOsA-hRctc6I7v4Sr_gU",
-      authDomain: "cap-proof.firebaseapp.com",
-      projectId: "cap-proof",
-      storageBucket: "cap-proof.firebasestorage.app",
-      messagingSenderId: "722260489486",
-      appId: "1:722260489486:web:e4c8111afb86586f2fd35f"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyCMuFIBYcEWJCknOsA-hRctc6I7v4Sr_gU",
+    authDomain: "cap-proof.firebaseapp.com",
+    projectId: "cap-proof",
+    storageBucket: "cap-proof.firebasestorage.app",
+    messagingSenderId: "722260489486",
+    appId: "1:722260489486:web:e4c8111afb86586f2fd35f"
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
 
-    const loading = document.getElementById("loading");
-    const appDiv = document.getElementById("app");
-    const userEmail = document.getElementById("userEmail");
+  // ✅ force persistence so session survives page navigation
+  await setPersistence(auth, browserLocalPersistence);
 
-    onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        window.location.replace("login.html");
-        return;
-      }
+  const email = document.getElementById("email");
+  const password = document.getElementById("password");
+  const msg = document.getElementById("msg");
+  const btn = document.getElementById("loginBtn");
 
-      loading.classList.add("hide");
-      appDiv.classList.remove("hide");
-      userEmail.textContent = "Logged in as: " + user.email;
-    });
+  btn.addEventListener("click", async () => {
+    msg.textContent = "";
+    btn.disabled = true;
+    btn.textContent = "Logging in…";
+    try {
+      await signInWithEmailAndPassword(auth, email.value.trim(), password.value);
+      window.location.href = "index.html";
+    } catch (e) {
+      msg.textContent = e?.message || "Login failed";
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Login";
+    }
+  });
 
-    document.getElementById("logoutBtn").addEventListener("click", async () => {
-      await signOut(auth);
-      window.location.replace("login.html");
-    });
-  </script>
+  // if already logged in → skip login page
+  onAuthStateChanged(auth, (user) => {
+    if (user) window.location.href = "index.html";
+  });
+</script>
 </body>
 </html>
