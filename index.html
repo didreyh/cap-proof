@@ -1,105 +1,82 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Tatak JPD – Cap Proof System</title>
+  <meta charset="UTF-8" />
+  <title>Tatak JPD – Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body{font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;margin:0;background:#f5f5f5;padding:18px}
+    .card{background:#fff;border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.08);max-width:520px;margin:0 auto}
+    .top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+    .btn{border:0;border-radius:12px;padding:10px 12px;font-weight:700}
+    .btn-black{background:#000;color:#fff}
+    .muted{color:#666;font-size:13px;margin-top:6px}
+    .hide{display:none}
+  </style>
+</head>
+<body>
 
-  <script src="https://unpkg.com/html5-qrcode@2.3.10/html5-qrcode.min.js"></script>
+  <div class="card">
+    <div class="top">
+      <div>
+        <div style="font-weight:800;font-size:18px">✅ Tatak JPD</div>
+        <div class="muted">Cap Packing & AWB Proof System</div>
+      </div>
+      <button id="logoutBtn" class="btn btn-black">Logout</button>
+    </div>
+
+    <hr style="border:none;border-top:1px solid #eee;margin:16px 0">
+
+    <div id="loading">Checking login…</div>
+
+    <div id="app" class="hide">
+      <div style="font-weight:800">Welcome! 🎉</div>
+      <div class="muted" id="userEmail"></div>
+
+      <div style="margin-top:14px">
+        Next step natin dito: packing form + photo proof 😄
+      </div>
+    </div>
+  </div>
 
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut }
-      from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
-    import {
-      getFirestore, doc, getDoc, setDoc, updateDoc,
-      serverTimestamp, collection, query, orderBy, limit, getDocs
-    } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL }
-      from "https://www.gstatic.com/firebasejs/10.13.0/firebase-storage.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-    // 🔑 FIREBASE CONFIG (SAME AS LOGIN)
     const firebaseConfig = {
-      apiKey: "AIzaSyA9bjM96aB_HZ3Y7UXfSxbafi3lErGDB0c",
-      authDomain: "cap-management---didreyh.firebaseapp.com",
-      projectId: "cap-management---didreyh",
-      storageBucket: "cap-management---didreyh.firebasestorage.app",
-      messagingSenderId: "647273060104",
-      appId: "1:647273060104:web:9419c250c8d06a4584febd"
+      apiKey: "AIzaSyCMuFIBYcEWJCknOsA-hRctc6I7v4Sr_gU",
+      authDomain: "cap-proof.firebaseapp.com",
+      projectId: "cap-proof",
+      storageBucket: "cap-proof.firebasestorage.app",
+      messagingSenderId: "722260489486",
+      appId: "1:722260489486:web:e4c8111afb86586f2fd35f"
     };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    // 🔐 PROTECT PAGE
+    const loading = document.getElementById("loading");
+    const appDiv = document.getElementById("app");
+    const userEmail = document.getElementById("userEmail");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    // ✅ Protect page: if NOT logged in -> back to login.html
     onAuthStateChanged(auth, (user) => {
       if (!user) {
-        window.location.href = "login.html";
+        window.location.replace("login.html");
+        return;
       }
+
+      // logged in
+      loading.classList.add("hide");
+      appDiv.classList.remove("hide");
+      userEmail.textContent = "Logged in as: " + (user.email || "");
     });
 
-    window.logout = async () => {
+    logoutBtn.addEventListener("click", async () => {
       await signOut(auth);
-      window.location.href = "login.html";
-    };
+      window.location.replace("login.html");
+    });
   </script>
-
-  <style>
-    body{
-      margin:0;
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
-      background:#f6f6f7;
-      color:#111;
-    }
-    .wrap{max-width:900px;margin:auto;padding:16px}
-    .card{
-      background:#fff;
-      border-radius:16px;
-      padding:16px;
-      margin-bottom:12px;
-      box-shadow:0 6px 18px rgba(0,0,0,.06);
-    }
-    h1{margin:0 0 6px;font-size:18px}
-    .muted{font-size:12px;opacity:.7}
-    button{
-      padding:10px 14px;
-      border-radius:12px;
-      border:none;
-      background:#111;
-      color:#fff;
-      font-weight:800;
-      cursor:pointer;
-    }
-    button.secondary{
-      background:#e9e9ec;
-      color:#111;
-      border:1px solid #ddd;
-    }
-  </style>
-</head>
-
-<body>
-  <div class="wrap">
-    <div class="card">
-      <h1>🧢 Tatak JPD – Cap Proof System</h1>
-      <div class="muted">
-        Logged in • 
-        <button class="secondary" onclick="logout()">Logout</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2>✅ System Ready</h2>
-      <p class="muted">
-        Login successful 🎉<br>
-        Next steps (we will add gradually):
-        <br>• Scan AWB
-        <br>• Add Kinder / Elem / SHS
-        <br>• Upload photo proof (watermarked)
-        <br>• Copy image + message
-        <br>• Daily summary
-      </p>
-    </div>
-  </div>
 </body>
 </html>
