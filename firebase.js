@@ -1,4 +1,4 @@
-// firebase.js (Firebase v8 compat - simplest for static sites)
+// firebase.js (v8 compat, simplest for GitHub Pages)
 
 const firebaseConfig = {
   apiKey: "AIzaSyCMuFIBYcEWJCknOsA-hRctc6I7v4Sr_gU",
