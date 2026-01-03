@@ -1,103 +1,40 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tatak JPD • Login</title>
-  <style>
-    :root { --bg:#f6f7fb; --card:#fff; --text:#111; --muted:#666; --btn:#111; --btnText:#fff; --line:#e8e8ef; }
-    *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;}
-    body{margin:0;min-height:100vh;display:grid;place-items:center;background:var(--bg);padding:24px;}
-    .card{width:min(520px,100%);background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.06);padding:26px;}
-    h1{margin:0 0 4px;font-size:26px;display:flex;gap:10px;align-items:center;}
-    .sub{margin:0 0 18px;color:var(--muted);}
-    label{display:block;margin:12px 0 6px;color:var(--text);font-weight:600;}
-    input{width:100%;padding:14px 14px;border:1px solid var(--line);border-radius:12px;font-size:16px;}
-    button{width:100%;margin-top:14px;padding:14px 14px;border:0;border-radius:14px;background:var(--btn);color:var(--btnText);font-size:16px;font-weight:700;cursor:pointer;}
-    button:disabled{opacity:.6;cursor:not-allowed;}
-    .hint{margin-top:12px;color:var(--muted);font-size:13px;text-align:center;}
-    .err{margin-top:12px;color:#b00020;font-size:14px;white-space:pre-wrap;}
-    .ok{margin-top:12px;color:#0a7a2f;font-size:14px;}
-  </style>
+  <meta charset="UTF-8">
+  <title>Tatak JPD Login</title>
 </head>
 <body>
-  <div class="card">
-    <h1>🔐 Tatak JPD</h1>
-    <p class="sub">Cap Packing & AWB Proof System</p>
 
-    <label>Email</label>
-    <input id="email" type="email" placeholder="you@email.com" autocomplete="email" />
+<h2>Login</h2>
 
-    <label>Password</label>
-    <input id="pass" type="password" placeholder="••••••••" autocomplete="current-password" />
+<input id="email" type="email" placeholder="Email"><br><br>
+<input id="password" type="password" placeholder="Password"><br><br>
+<button onclick="login()">Login</button>
 
-    <button id="loginBtn">Login</button>
+<script src="firebase.js"></script>
 
-    <div id="msg" class="hint">Private system — login required</div>
-    <div id="error" class="err" style="display:none;"></div>
-    <div id="success" class="ok" style="display:none;"></div>
-  </div>
+<script type="module">
+  import { signInWithEmailAndPassword, onAuthStateChanged } 
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, setPersistence, browserLocalPersistence, signInWithEmailAndPassword, onAuthStateChanged } 
-      from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  window.login = function () {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
 
-    // ✅ YOUR FIREBASE CONFIG (yours na mismo)
-    const firebaseConfig = {
-      apiKey: "AIzaSyCMuFIBYcEWJCknOsA-hRctc6I7v4Sr_gU",
-      authDomain: "cap-proof.firebaseapp.com",
-      projectId: "cap-proof",
-      storageBucket: "cap-proof.firebasestorage.app",
-      messagingSenderId: "722260489486",
-      appId: "1:722260489486:web:e4c8111afb86586f2fd35f"
-    };
+    signInWithEmailAndPassword(auth, email, password)
+      .then(() => {
+        window.location.href = "index.html";
+      })
+      .catch(err => alert(err.message));
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-
-    const emailEl = document.getElementById("email");
-    const passEl  = document.getElementById("pass");
-    const btn     = document.getElementById("loginBtn");
-    const errBox  = document.getElementById("error");
-    const okBox   = document.getElementById("success");
-
-    function showError(msg){
-      errBox.style.display="block";
-      errBox.textContent = msg;
-      okBox.style.display="none";
+  onAuthStateChanged(auth, user => {
+    if (user) {
+      window.location.href = "index.html";
     }
-    function showOk(msg){
-      okBox.style.display="block";
-      okBox.textContent = msg;
-      errBox.style.display="none";
-    }
+  });
+</script>
 
-    onAuthStateChanged(auth, (user) => {
-      if (user) window.location.href = "./index.html";
-    });
-
-    btn.addEventListener("click", async () => {
-      errBox.style.display="none";
-      okBox.style.display="none";
-      btn.disabled = true;
-      btn.textContent = "Logging in...";
-
-      try {
-        await setPersistence(auth, browserLocalPersistence);
-        const email = emailEl.value.trim();
-        const pass  = passEl.value;
-        if(!email || !pass) throw new Error("Please enter email and password.");
-        await signInWithEmailAndPassword(auth, email, pass);
-        showOk("Login success! Redirecting...");
-        window.location.href = "./index.html";
-      } catch (e) {
-        showError(e?.message || String(e));
-      } finally {
-        btn.disabled = false;
-        btn.textContent = "Login";
-      }
-    });
-  </script>
 </body>
 </html>
