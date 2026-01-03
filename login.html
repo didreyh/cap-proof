@@ -1,84 +1,156 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Tatak JPD – Login</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Tatak JPD - Login</title>
 
   <style>
-    *{box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;}
-    body{margin:0;min-height:100vh;display:flex;justify-content:center;background:#f4f4f4;padding:24px 0;align-items:flex-start;}
-    @media (min-width:768px){body{align-items:center;padding:0;}}
-    .login-card{width:92%;max-width:380px;background:#fff;border-radius:18px;padding:22px;box-shadow:0 10px 30px rgba(0,0,0,0.12);text-align:center;}
-    .logo{font-size:34px;margin-bottom:6px;}
-    h1{font-size:20px;margin:0;font-weight:700;}
-    .subtitle{font-size:13px;color:#777;margin-bottom:18px;}
-    label{display:block;text-align:left;font-size:13px;margin-bottom:6px;margin-top:14px;font-weight:500;}
-    input{width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;font-size:14px;}
-    input:focus{outline:none;border-color:#000;}
-    button{width:100%;margin-top:20px;padding:14px;background:#000;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;}
-    button:disabled{opacity:.6;cursor:not-allowed;}
-    .footer{margin-top:16px;font-size:11px;color:#999;}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: #f3f4f6;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
+    .card{
+      width:min(520px, 100%);
+      background:white;
+      border-radius:24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.08);
+      padding:28px;
+    }
+    .logo{
+      text-align:center;
+      margin-bottom:10px;
+      font-size:34px;
+    }
+    h1{
+      text-align:center;
+      margin:0;
+      font-size:32px;
+      font-weight:800;
+    }
+    .sub{
+      text-align:center;
+      color:#6b7280;
+      margin:6px 0 22px;
+      font-size:15px;
+    }
+    label{
+      display:block;
+      font-weight:700;
+      margin:14px 0 6px;
+    }
+    input{
+      width:100%;
+      box-sizing:border-box;
+      border:1px solid #d1d5db;
+      border-radius:14px;
+      padding:14px 14px;
+      font-size:16px;
+      outline:none;
+    }
+    input:focus{
+      border-color:#111827;
+      box-shadow:0 0 0 4px rgba(17,24,39,.08);
+    }
+    button{
+      width:100%;
+      margin-top:18px;
+      border:none;
+      border-radius:18px;
+      padding:16px;
+      font-size:18px;
+      font-weight:800;
+      background:#0b0b0b;
+      color:white;
+      cursor:pointer;
+    }
+    button:active{ transform: scale(.99); }
+    .hint{
+      text-align:center;
+      color:#9ca3af;
+      margin-top:14px;
+      font-size:13px;
+    }
+    .status{
+      margin-top:12px;
+      text-align:center;
+      font-size:14px;
+      color:#111827;
+      min-height:18px;
+    }
+    .error{ color:#b91c1c; }
   </style>
+
+  <!-- Firebase v8 compat -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+  <script src="./firebase.js"></script>
 </head>
 
 <body>
-  <div class="login-card">
+  <div class="card">
     <div class="logo">🔐</div>
     <h1>Tatak JPD</h1>
-    <div class="subtitle">Cap Packing & AWB Proof System</div>
+    <div class="sub">Cap Packing & AWB Proof System</div>
 
     <label>Email</label>
-    <input type="email" id="email" placeholder="you@email.com" />
+    <input id="email" type="email" placeholder="you@email.com" autocomplete="username" />
 
     <label>Password</label>
-    <input type="password" id="password" placeholder="••••••••" />
+    <input id="password" type="password" placeholder="••••••••" autocomplete="current-password" />
 
     <button id="loginBtn">Login</button>
-
-    <div class="footer">Private system — login required</div>
+    <div class="status" id="status"></div>
+    <div class="hint">Private system — login required</div>
   </div>
 
-  <!-- Firebase (compat = pinaka-safe sa static sites) -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-
   <script>
-    // ✅ YOUR Firebase config (same as sinend mo)
-    const firebaseConfig = {
-      apiKey: "AIzaSyCMuFIBYcEWJCknOsA-hRctc6I7v4Sr_gU",
-      authDomain: "cap-proof.firebaseapp.com",
-      projectId: "cap-proof",
-      storageBucket: "cap-proof.firebasestorage.app",
-      messagingSenderId: "722260489486",
-      appId: "1:722260489486:web:e4c8111afb86586f2fd35f"
-    };
+    const statusEl = document.getElementById("status");
+    const loginBtn = document.getElementById("loginBtn");
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
+    auth.onAuthStateChanged(user=>{
+      if(user){
+        // already logged in
+        window.location.href = "./index.html";
+      }
+    });
 
-    const btn = document.getElementById("loginBtn");
+    function setStatus(msg, isError=false){
+      statusEl.textContent = msg || "";
+      statusEl.className = "status" + (isError ? " error" : "");
+    }
 
-    btn.addEventListener("click", async () => {
+    async function doLogin(){
       const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
+      const pass  = document.getElementById("password").value;
 
-      if (!email || !password) {
-        alert("Please enter email and password");
-        return;
+      if(!email || !pass) return setStatus("Please enter email & password.", true);
+
+      setStatus("Logging in...");
+      loginBtn.disabled = true;
+
+      try{
+        await auth.signInWithEmailAndPassword(email, pass);
+        setStatus("Success!");
+        window.location.href = "./index.html";
+      }catch(err){
+        setStatus(err.message || "Login failed.", true);
+      }finally{
+        loginBtn.disabled = false;
       }
+    }
 
-      btn.disabled = true;
-      btn.textContent = "Logging in...";
-
-      try {
-        await auth.signInWithEmailAndPassword(email, password);
-        window.location.href = "index.html";
-      } catch (err) {
-        alert(err.message);
-        btn.disabled = false;
-        btn.textContent = "Login";
-      }
+    loginBtn.addEventListener("click", doLogin);
+    document.getElementById("password").addEventListener("keydown", (e)=>{
+      if(e.key === "Enter"){ e.preventDefault(); doLogin(); }
     });
   </script>
 </body>
