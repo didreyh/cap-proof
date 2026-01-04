@@ -406,7 +406,8 @@
         label.appendChild(input);
         label.appendChild(document.createTextNode(opt));
 
-        label.addEventListener("click", () => {
+        label.addEventListener("click", (e) => {
+  e.preventDefault(); // ✅ IMPORTANT: stop double-toggle
           if (!multiple){
             // clear all active in same group
             wrap.querySelectorAll(".pill").forEach(p => p.classList.remove("active"));
