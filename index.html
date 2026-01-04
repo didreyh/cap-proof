@@ -1,222 +1,370 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<title>Tatak JPD – Packing Proof</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<style>
-body{font-family:system-ui;background:#f5f6f8;padding:20px}
-.card{background:#fff;padding:20px;border-radius:20px;max-width:900px;margin:auto;box-shadow:0 10px 30px rgba(0,0,0,.1)}
-button,input{padding:12px;border-radius:10px;border:1px solid #ddd;font-size:16px}
-button{background:#000;color:#fff;border:none;cursor:pointer}
-button.secondary{background:#fff;color:#000;border:1px solid #ccc}
-.status{margin:10px 0;padding:10px;border-radius:10px}
-.ok{background:#ecfdf5}
-.bad{background:#fef2f2}
-.warn{background:#fffbeb}
-.hidden{display:none}
-.pill{display:inline-block;padding:8px 12px;border:1px solid #ccc;border-radius:20px;margin:4px;cursor:pointer}
-.pill.active{background:#000;color:#fff}
-.orderBox{border:1px dashed #ccc;padding:12px;border-radius:12px;margin-top:10px}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tatak JPD • Packing Logs</title>
+  <style>
+    :root { --bg:#f6f7fb; --card:#fff; --text:#111; --muted:#666; --btn:#111; --btnText:#fff; --line:#e8e8ef; --soft:#eef8f1; }
+    *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;}
+    body{margin:0;min-height:100vh;background:var(--bg);padding:18px;}
+    .wrap{max-width:780px;margin:0 auto;}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.06);padding:18px 18px 14px;}
+    .top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
+    h1{margin:0 0 2px;font-size:24px;display:flex;gap:10px;align-items:center;}
+    .sub{margin:0;color:var(--muted);font-size:13px;}
+    .logout{padding:10px 14px;border:0;border-radius:14px;background:var(--btn);color:var(--btnText);font-weight:800;cursor:pointer;}
+    .pill{margin-top:10px;background:var(--soft);border:1px solid #cfe9d7;border-radius:12px;padding:10px 12px;color:#0a7a2f;font-size:13px;}
+    hr{border:0;border-top:1px solid var(--line);margin:14px 0;}
+    h2{margin:0 0 10px;font-size:22px;}
+    label{display:block;margin:10px 0 6px;font-weight:700;}
+    input[type="text"]{width:100%;padding:14px;border:1px solid var(--line);border-radius:12px;font-size:16px;}
+    .row{display:flex;gap:10px;flex-wrap:wrap;}
+    .btn{padding:12px 14px;border:0;border-radius:14px;background:var(--btn);color:var(--btnText);font-weight:800;cursor:pointer;}
+    .btn.secondary{background:#fff;color:#111;border:1px solid var(--line);}
+    .btn:disabled{opacity:.6;cursor:not-allowed;}
+    .tip{color:var(--muted);font-size:13px;margin-top:8px;}
+    .status{margin-top:10px;font-size:14px;color:var(--muted);}
+    .err{margin-top:10px;color:#b00020;font-size:14px;white-space:pre-wrap;}
+    .preview{margin-top:12px;border:1px dashed var(--line);border-radius:14px;overflow:hidden;background:#fafafa;display:grid;place-items:center;min-height:160px;}
+    .preview img{width:100%;height:auto;display:block;}
+    .result{margin-top:12px;padding:12px;border:1px solid var(--line);border-radius:14px;background:#fff;}
+    .result strong{display:block;margin-bottom:6px;}
+    .small{font-size:12px;color:var(--muted);}
+    .footer{margin-top:12px;text-align:center;color:var(--muted);font-size:12px;}
+    #scannerModal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:18px;}
+    #scannerBox{width:min(520px,100%);background:#fff;border-radius:16px;padding:14px;border:1px solid var(--line);}
+    #scannerVideoWrap{border-radius:14px;overflow:hidden;background:#000;min-height:260px;display:grid;place-items:center;}
+    #scannerVideo{width:100%;height:auto;}
+    .modalTop{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+    .x{border:0;background:#fff;font-size:18px;cursor:pointer;}
+  </style>
 </head>
-
 <body>
+  <div class="wrap">
+    <div class="card">
+      <div class="top">
+        <div>
+          <h1>✅ Tatak JPD</h1>
+          <p class="sub">Cap Packing & AWB Proof System</p>
+        </div>
+        <button id="logoutBtn" class="logout">Logout</button>
+      </div>
 
-<div class="card">
-<h2>📦 Tatak JPD – Packing Proof</h2>
+      <div id="userPill" class="pill" style="display:none;"></div>
 
-<div id="status" class="status ok">Checking login…</div>
+      <hr />
 
-<!-- AWB -->
-<input id="awbInput" placeholder="Enter AWB then press Enter">
-<button id="btnContinue">Continue</button>
+      <h2>Scan / Type AWB</h2>
+      <label>AWB Number</label>
+      <input id="awbInput" type="text" placeholder="Scan will fill this… or paste/type AWB" />
 
-<hr>
+      <div class="tip">Tip: scan barcode para mabilis. Pwede rin paste/type kung kailangan.</div>
 
-<!-- CREATE -->
-<div id="createSection" class="hidden">
-<h3>Create Order</h3>
+      <div class="row" style="margin-top:12px;">
+        <button id="scanBtn" class="btn">📷 Scan AWB Barcode</button>
+        <button id="searchBtn" class="btn secondary">Search</button>
+      </div>
 
-<div id="ordersWrap"></div>
+      <hr />
 
-<button id="addOrder" class="secondary">+ Add Order</button>
+      <h2>Upload Picture Proof</h2>
+      <label>Choose photo</label>
+      <input id="photoInput" type="file" accept="image/*" />
 
-<br><br>
-<label>Photo Proof (required)</label>
-<input type="file" id="photoInput" accept="image/*">
+      <div class="preview" id="previewBox">
+        <div class="small">Preview will appear here</div>
+      </div>
 
-<br><br>
-<button id="saveBtn">Save</button>
-</div>
+      <div class="row" style="margin-top:12px;">
+        <button id="saveBtn" class="btn">Save Packing Log</button>
+      </div>
 
-<!-- VIEW -->
-<div id="viewSection" class="hidden">
-<h3>Record Found</h3>
-<img id="previewImg" style="max-width:100%;border-radius:10px"><br><br>
+      <div id="status" class="status"></div>
+      <div id="error" class="err" style="display:none;"></div>
 
-<textarea id="messageBox" style="width:100%;height:120px"></textarea><br><br>
-<button id="copyMsg">Copy Message</button>
-</div>
+      <hr />
 
-<hr>
+      <h2>Search / View Logs</h2>
+      <div class="tip">You can search anytime — kahit wala pang scan.</div>
 
-<!-- DAILY SUMMARY -->
-<h3>📊 Daily Summary</h3>
-<button id="loadDaily" class="secondary">Load Today</button>
-<pre id="dailyOutput" class="status hidden"></pre>
+      <div id="resultBox" class="result" style="display:none;"></div>
 
-</div>
+      <div class="footer">Private system — login required • Stored in Firebase (Auth + Firestore + Storage)</div>
+    </div>
+  </div>
 
-<script type="module">
-import { firebaseConfig } from "./firebase.js";
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, serverTimestamp, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js";
+  <!-- Scanner Modal -->
+  <div id="scannerModal">
+    <div id="scannerBox">
+      <div class="modalTop">
+        <strong>Scan Barcode</strong>
+        <button class="x" id="closeScan">✕</button>
+      </div>
+      <div id="scannerVideoWrap">
+        <video id="scannerVideo" playsinline></video>
+      </div>
+      <div class="tip" style="margin-top:10px;">Itutok sa barcode (J&T / SPX). Kapag nabasa, auto-fill na yung AWB.</div>
+    </div>
+  </div>
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const storage = getStorage(app);
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
-const LEVELS = ["Kinder","Elem","SHS"];
-const COLORS = ["White","Light Blue","Fuchsia Pink","Royal Blue","Black","Yellow Gold","Emerald Green","Red","Maroon","Apple Green"];
+    // ✅ YOUR FIREBASE CONFIG
+    const firebaseConfig = {
+      apiKey: "AIzaSyCMuFIBYcEWJCknOsA-hRctc6I7v4Sr_gU",
+      authDomain: "cap-proof.firebaseapp.com",
+      projectId: "cap-proof",
+      storageBucket: "cap-proof.firebasestorage.app",
+      messagingSenderId: "722260489486",
+      appId: "1:722260489486:web:e4c8111afb86586f2fd35f"
+    };
 
-const ordersWrap = document.getElementById("ordersWrap");
-const status = document.getElementById("status");
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
 
-function createOrderBox(i){
-  const box=document.createElement("div");
-  box.className="orderBox";
-  box.dataset.i=i;
+    const logoutBtn = document.getElementById("logoutBtn");
+    const userPill  = document.getElementById("userPill");
+    const awbInput  = document.getElementById("awbInput");
+    const searchBtn = document.getElementById("searchBtn");
+    const scanBtn   = document.getElementById("scanBtn");
+    const photoInput= document.getElementById("photoInput");
+    const previewBox= document.getElementById("previewBox");
+    const saveBtn   = document.getElementById("saveBtn");
+    const statusEl  = document.getElementById("status");
+    const errBox    = document.getElementById("error");
+    const resultBox = document.getElementById("resultBox");
 
-  box.innerHTML=`
-  <b>Order #${i+1}</b><br><br>
+    const scannerModal = document.getElementById("scannerModal");
+    const closeScanBtn = document.getElementById("closeScan");
+    const videoEl = document.getElementById("scannerVideo");
 
-  <b>Level (one)</b><br>
-  ${LEVELS.map(l=>`<span class="pill level">${l}</span>`).join("")}
+    let currentUser = null;
+    let selectedFile = null;
+    let scanStream = null;
+    let scanLoopRunning = false;
 
-  <br><br><b>Color (one)</b><br>
-  ${COLORS.map(c=>`<span class="pill color">${c}</span>`).join("")}
-
-  <br><br>
-  <input type="number" min="1" placeholder="Quantity (required)" class="qty">
-  `;
-
-  box.querySelectorAll(".level").forEach(p=>{
-    p.onclick=()=>{
-      box.querySelectorAll(".level").forEach(x=>x.classList.remove("active"));
-      p.classList.add("active");
+    function showError(msg){
+      errBox.style.display="block";
+      errBox.textContent = msg;
     }
-  });
-
-  box.querySelectorAll(".color").forEach(p=>{
-    p.onclick=()=>{
-      box.querySelectorAll(".color").forEach(x=>x.classList.remove("active"));
-      p.classList.add("active");
+    function clearError(){
+      errBox.style.display="none";
+      errBox.textContent = "";
     }
-  });
-
-  return box;
-}
-
-function readOrders(){
-  const orders=[];
-  ordersWrap.querySelectorAll(".orderBox").forEach(b=>{
-    const level=b.querySelector(".level.active")?.textContent;
-    const color=b.querySelector(".color.active")?.textContent;
-    const qty=Number(b.querySelector(".qty").value);
-
-    if(!level||!color||!qty){
-      throw "All orders must have level, color, and quantity.";
+    function setStatus(msg){
+      statusEl.textContent = msg || "";
     }
 
-    orders.push({level,color,qty});
-  });
-  return orders;
-}
-
-ordersWrap.appendChild(createOrderBox(0));
-
-document.getElementById("addOrder").onclick=()=>{
-  ordersWrap.appendChild(createOrderBox(ordersWrap.children.length));
-};
-
-document.getElementById("btnContinue").onclick=async()=>{
-  const awb=awbInput.value.trim();
-  if(!awb) return;
-
-  const refDoc=doc(db,"packingLogs",awb);
-  const snap=await getDoc(refDoc);
-
-  if(snap.exists()){
-    const d=snap.data();
-    viewSection.classList.remove("hidden");
-    createSection.classList.add("hidden");
-    previewImg.src=d.photoUrl;
-    messageBox.value=`Hi po! Ready to ship na po ang order nyo.\nAWB: ${awb}`;
-  }else{
-    createSection.classList.remove("hidden");
-    viewSection.classList.add("hidden");
-  }
-};
-
-document.getElementById("saveBtn").onclick=async()=>{
-  try{
-    const awb=awbInput.value.trim();
-    const orders=readOrders();
-    const file=photoInput.files[0];
-    if(!file) throw "Photo is required";
-
-    const sref=ref(storage,`proofs/${awb}.jpg`);
-    await uploadBytes(sref,file);
-    const url=await getDownloadURL(sref);
-
-    await setDoc(doc(db,"packingLogs",awb),{
-      awb,orders,photoUrl:url,updatedAt:serverTimestamp()
+    // ✅ Require login
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = "./login.html";
+        return;
+      }
+      currentUser = user;
+      userPill.style.display = "block";
+      userPill.textContent = `Logged in as: ${user.email}`;
     });
 
-    status.textContent="Saved successfully";
-    status.className="status ok";
-  }catch(e){
-    status.textContent=e;
-    status.className="status bad";
-  }
-};
-
-document.getElementById("loadDaily").onclick=async()=>{
-  const start=new Date();start.setHours(0,0,0,0);
-  const end=new Date();end.setHours(23,59,59,999);
-
-  const q=query(collection(db,"packingLogs"),
-    where("updatedAt",">=",start),
-    where("updatedAt","<=",end));
-
-  const snap=await getDocs(q);
-
-  const lvl={Kinder:0,Elem:0,SHS:0};
-  const col={};
-
-  COLORS.forEach(c=>col[c]=0);
-
-  snap.forEach(d=>{
-    d.data().orders.forEach(o=>{
-      lvl[o.level]+=o.qty;
-      col[o.color]+=o.qty;
+    logoutBtn.addEventListener("click", async () => {
+      try {
+        await signOut(auth);
+        window.location.href = "./login.html";
+      } catch (e) {
+        showError(e?.message || String(e));
+      }
     });
-  });
 
-  dailyOutput.textContent=
-`LEVELS
-${Object.entries(lvl).map(([k,v])=>`${k}: ${v}`).join("\n")}
+    // ✅ Preview image
+    photoInput.addEventListener("change", () => {
+      clearError();
+      setStatus("");
+      selectedFile = photoInput.files?.[0] || null;
+      previewBox.innerHTML = "";
 
-COLORS
-${Object.entries(col).map(([k,v])=>`${k}: ${v}`).join("\n")}`;
+      if (!selectedFile) {
+        previewBox.innerHTML = `<div class="small">Preview will appear here</div>`;
+        return;
+      }
+      const url = URL.createObjectURL(selectedFile);
+      const img = document.createElement("img");
+      img.src = url;
+      img.onload = () => URL.revokeObjectURL(url);
+      previewBox.appendChild(img);
+    });
 
-  dailyOutput.classList.remove("hidden");
-};
-</script>
+    // ✅ Normalize AWB
+    function normalizeAwb(s){
+      return (s || "")
+        .trim()
+        .replace(/\s+/g,"")
+        .replace(/[^\w-]/g,"")
+        .toUpperCase();
+    }
+
+    // ✅ Save packing log (picture only)
+    saveBtn.addEventListener("click", async () => {
+      clearError();
+      resultBox.style.display = "none";
+
+      const awb = normalizeAwb(awbInput.value);
+      if (!awb) return showError("Please enter/scan AWB first.");
+      if (!selectedFile) return showError("Please choose a photo proof.");
+
+      saveBtn.disabled = true;
+      setStatus("Uploading photo + saving...");
+
+      try {
+        // Upload to Storage
+        const uid = currentUser.uid;
+        const ext = (selectedFile.name.split(".").pop() || "jpg").toLowerCase();
+        const safeExt = ["jpg","jpeg","png","webp","heic"].includes(ext) ? ext : "jpg";
+        const path = `packingProofs/${uid}/${awb}/${Date.now()}.${safeExt}`;
+
+        const fileRef = ref(storage, path);
+        await uploadBytes(fileRef, selectedFile, { contentType: selectedFile.type || "image/jpeg" });
+        const imageUrl = await getDownloadURL(fileRef);
+
+        // Save to Firestore (doc id = AWB)
+        await setDoc(doc(db, "packingLogs", awb), {
+          awb,
+          imageUrl,
+          storagePath: path,
+          createdAt: serverTimestamp(),
+          createdByUid: uid,
+          createdByEmail: currentUser.email || null,
+          courierHint: "J&T / SPX / Flash Express"
+        }, { merge: true });
+
+        setStatus("✅ Saved! You can search it below.");
+        // Auto show result
+        await runSearch(awb);
+
+        // reset file
+        selectedFile = null;
+        photoInput.value = "";
+      } catch (e) {
+        showError(e?.message || String(e));
+        setStatus("");
+      } finally {
+        saveBtn.disabled = false;
+      }
+    });
+
+    // ✅ Search anytime
+    async function runSearch(awb){
+      clearError();
+      setStatus("Searching...");
+      resultBox.style.display = "none";
+      const snap = await getDoc(doc(db, "packingLogs", awb));
+
+      if (!snap.exists()) {
+        setStatus("");
+        resultBox.style.display = "block";
+        resultBox.innerHTML = `
+          <strong>No log found</strong>
+          <div class="small">AWB: ${awb}</div>
+          <div class="small">Try again or save a new proof.</div>
+        `;
+        return;
+      }
+
+      const data = snap.data();
+      setStatus("");
+      resultBox.style.display = "block";
+      resultBox.innerHTML = `
+        <strong>FOUND ✅</strong>
+        <div class="small"><b>AWB:</b> ${data.awb || awb}</div>
+        <div class="small"><b>By:</b> ${data.createdByEmail || "-"}</div>
+        <div class="small" style="margin-top:8px;">
+          <img src="${data.imageUrl}" alt="proof" style="width:100%;border-radius:12px;border:1px solid #eee;" />
+        </div>
+      `;
+    }
+
+    searchBtn.addEventListener("click", async () => {
+      clearError();
+      const awb = normalizeAwb(awbInput.value);
+      if(!awb) return showError("Type/paste AWB to search.");
+      try {
+        await runSearch(awb);
+      } catch (e) {
+        showError(e?.message || String(e));
+        setStatus("");
+      }
+    });
+
+    // =========================
+    // SIMPLE BARCODE SCAN (camera)
+    // =========================
+    // NOTE: iOS Safari can be picky. If scan fails, manual paste still works.
+
+    function openScanner(){
+      scannerModal.style.display="flex";
+    }
+    async function closeScanner(){
+      scannerModal.style.display="none";
+      scanLoopRunning = false;
+      if (scanStream) {
+        scanStream.getTracks().forEach(t => t.stop());
+        scanStream = null;
+      }
+      videoEl.srcObject = null;
+    }
+
+    closeScanBtn.addEventListener("click", closeScanner);
+
+    scanBtn.addEventListener("click", async () => {
+      clearError();
+      try {
+        openScanner();
+        const constraints = { video: { facingMode: "environment" }, audio: false };
+        scanStream = await navigator.mediaDevices.getUserMedia(constraints);
+        videoEl.srcObject = scanStream;
+        await videoEl.play();
+
+        // try BarcodeDetector if available
+        if ("BarcodeDetector" in window) {
+          const detector = new BarcodeDetector({ formats: ["code_128","code_39","ean_13","ean_8","upc_a","upc_e","itf","qr_code"] });
+          scanLoopRunning = true;
+
+          const loop = async () => {
+            if (!scanLoopRunning) return;
+            try {
+              const barcodes = await detector.detect(videoEl);
+              if (barcodes && barcodes.length) {
+                const raw = barcodes[0].rawValue || "";
+                const awb = normalizeAwb(raw);
+                if (awb) {
+                  awbInput.value = awb;
+                  await closeScanner();
+                  setStatus(`Scanned: ${awb}`);
+                  return;
+                }
+              }
+            } catch (e) {
+              // ignore detection errors and continue
+            }
+            requestAnimationFrame(loop);
+          };
+          requestAnimationFrame(loop);
+        } else {
+          // Fallback message
+          setStatus("Scanner not supported on this browser. Please type/paste AWB.");
+        }
+      } catch (e) {
+        await closeScanner();
+        showError("Camera error: " + (e?.message || String(e)));
+      }
+    });
+
+  </script>
 </body>
 </html>
