@@ -1,3 +1,5 @@
+// firebase.js
+// Only stores your Firebase config (safe for client-side use)
 export const firebaseConfig = {
   apiKey: "AIzaSyCMuFIBYcEWJCknOsA-hRctc6I7v4Sr_gU",
   authDomain: "cap-proof.firebaseapp.com",
