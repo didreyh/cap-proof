@@ -1,6 +1,3 @@
-// firebase.js (Firebase v10 modular via CDN-friendly imports happen in the HTML files)
-// This file only exports your config so you can reuse it.
-
 export const firebaseConfig = {
   apiKey: "AIzaSyCMuFIBYcEWJCknOsA-hRctc6I7v4Sr_gU",
   authDomain: "cap-proof.firebaseapp.com",
