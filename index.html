@@ -272,6 +272,19 @@
           </div>
         </div>
       </div>
+<hr>
+
+<!-- DAILY SUMMARY -->
+<div id="dailySection">
+  <div class="sectionTitle">📊 Daily Summary</div>
+  <div class="hint">Today totals (Kinder/Elem/SHS + Colors)</div>
+
+  <div class="row" style="margin-top:10px">
+    <button id="btnDaily" class="btn secondary">Load Today Summary</button>
+  </div>
+
+  <div id="dailyOutput" class="status" style="margin-top:12px; display:none"></div>
+</div>
 
       <div class="foot">Private system — login required • Stored in Firebase (Auth + Firestore + Storage)</div>
     </div>
@@ -338,7 +351,9 @@
     const btnCopyMsg = document.getElementById("btnCopyMsg");
     const btnNewEntry = document.getElementById("btnNewEntry");
     const ordersPreview = document.getElementById("ordersPreview");
-
+    const btnDaily = document.getElementById("btnDaily");
+    const dailyOutput = document.getElementById("dailyOutput");
+    
     // Scanner modal
     const scanBack = document.getElementById("scanBack");
     const btnCloseScan = document.getElementById("btnCloseScan");
@@ -748,6 +763,89 @@ Maraming salamat po! — Tatak JPD`;
     scanBack.addEventListener("click", (e) => {
       if (e.target === scanBack) closeScanner();
     });
+import { collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+// NOTE: if may error sa import duplicate, sabihin mo sakin — aayusin natin by merging imports.
+
+function showDaily(text, type="ok"){
+  dailyOutput.style.display = "block";
+  dailyOutput.className = "status " + type;
+  dailyOutput.textContent = text;
+}
+
+// counts helper
+function inc(map, key, n=1){
+  map[key] = (map[key] || 0) + n;
+}
+
+// Load Today's Summary
+btnDaily.addEventListener("click", async () => {
+  try{
+    btnDaily.disabled = true;
+    btnDaily.textContent = "Loading...";
+
+    // Today range (local time)
+    const start = new Date();
+    start.setHours(0,0,0,0);
+    const end = new Date();
+    end.setHours(23,59,59,999);
+
+    // Query packingLogs where updatedAt is today
+    const logsRef = collection(db, "packingLogs");
+    const q = query(
+      logsRef,
+      where("updatedAt", ">=", start),
+      where("updatedAt", "<=", end)
+    );
+
+    const snap = await getDocs(q);
+
+    const levelCounts = {};   // Kinder/Elem/SHS totals
+    const colorCounts = {};   // color totals
+    let totalRecords = 0;
+
+    snap.forEach((docu) => {
+      const d = docu.data();
+      totalRecords++;
+
+      const orders = d.orders || [];
+      orders.forEach(o => {
+        const qty = o.qty && Number.isFinite(o.qty) ? o.qty : 1;
+
+        // levels can be multiple
+        (o.levels || []).forEach(lvl => inc(levelCounts, lvl, qty));
+
+        // one color
+        if (o.color) inc(colorCounts, o.color, qty);
+      });
+    });
+
+    // build output
+    const dateStr = new Date().toLocaleDateString([], {year:"numeric", month:"short", day:"2-digit"});
+    const lvlLines = ["Kinder","Elem","SHS"].map(k => `• ${k}: ${levelCounts[k] || 0}`).join("\n");
+    const colorLines = [
+      "White","Light Blue","Fuchsia Pink","Royal Blue","Black","Yellow Gold",
+      "Emerald Green","Red","Maroon","Apple Green"
+    ].map(c => `• ${c}: ${colorCounts[c] || 0}`).join("\n");
+
+    showDaily(
+`📅 Today: ${dateStr}
+📦 Records saved today: ${totalRecords}
+
+🏫 LEVEL TOTALS (any color)
+${lvlLines}
+
+🎨 COLOR TOTALS (any level)
+${colorLines}`
+    , "ok");
+
+  }catch(err){
+    console.error(err);
+    showDaily("❌ Daily summary error:\n" + (err?.message || err), "bad");
+  }finally{
+    btnDaily.disabled = false;
+    btnDaily.textContent = "Load Today Summary";
+  }
+});
 
   </script>
 </body>
