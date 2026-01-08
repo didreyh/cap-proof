@@ -598,6 +598,22 @@
         const orders = readOrdersFromUI();
         const ordersText = summarizeOrders(orders);
 
+// ✅ REQUIRED: must choose 1 level + 1 color for every order
+for (let i = 0; i < orders.length; i++) {
+  const o = orders[i];
+
+  // level required (after A change, levels will be 0 or 1 item)
+  if (!o.levels || o.levels.length !== 1) {
+    setStatus(`❌ Order #${i + 1}: Please select ONE level (Kinder/Elem/SHS).`, "bad");
+    return;
+  }
+
+  // color required (radio)
+  if (!o.color) {
+    setStatus(`❌ Order #${i + 1}: Please select ONE color.`, "bad");
+    return;
+  }
+}
         // validate at least one color chosen per order (optional strict)
         // We'll allow but warn:
         const missingColor = orders.some(o => !o.color);
