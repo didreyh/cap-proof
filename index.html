@@ -456,12 +456,12 @@ if (m) autoFocusQtyIfReady(Number(m[3]));
       grid.className = "grid2";
 
       const left = document.createElement("div");
-      left.innerHTML = `<label>Level (one choice)</label>`;
+      left.innerHTML = `<label>LEVEL</label>`;
       const levelGroup = pillGroup(LEVELS, { multiple:false, name:`level_${orderIndex}` });
       left.appendChild(levelGroup);
 
       const right = document.createElement("div");
-      right.innerHTML = `<label>Color (one choice)</label>`;
+      right.innerHTML = `<label>COLOR</label>`;
       const colorGroup = pillGroup(COLORS, { multiple:false, name:`color_${orderIndex}` });
       right.appendChild(colorGroup);
 
