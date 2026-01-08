@@ -636,11 +636,7 @@ for (let i = 0; i < orders.length; i++) {
 
         // validate at least one color chosen per order (optional strict)
         // We'll allow but warn:
-        const missingColor = orders.some(o => !o.color);
-        if (missingColor){
-          if (!confirm("May order na walang color selected. Save pa rin?")) return;
-        }
-
+        
         btnSave.disabled = true;
         btnSave.textContent = "Saving...";
 
