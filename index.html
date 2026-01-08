@@ -613,30 +613,27 @@ if (m) autoFocusQtyIfReady(Number(m[3]));
 
         const orders = readOrdersFromUI();
         const ordersText = summarizeOrders(orders);
+clearSaveError(); // clear old errors before validating
 
-// ✅ REQUIRED: must choose 1 level + 1 color for every order
-// ✅ REQUIRED: level + color + qty
 for (let i = 0; i < orders.length; i++) {
   const o = orders[i];
 
-  // level: exactly one
   if (!o.levels || o.levels.length !== 1) {
-    setStatus(`❌ Order #${i + 1}: Please select ONE level (Kinder / Elem / SHS).`, "bad");
+    showSaveError(`❌ Order #${i + 1}: Please select ONE level (Kinder / Elem / SHS).`);
     return;
   }
 
-  // color: required
   if (!o.color) {
-    setStatus(`❌ Order #${i + 1}: Please select ONE color.`, "bad");
+    showSaveError(`❌ Order #${i + 1}: Please select ONE color.`);
     return;
   }
 
-  // qty: required + must be > 0
   if (!o.qty || !Number.isFinite(o.qty) || o.qty < 1) {
-    setStatus(`❌ Order #${i + 1}: Quantity is required (minimum 1).`, "bad");
+    showSaveError(`❌ Order #${i + 1}: Quantity is required (minimum 1).`);
     return;
   }
 }
+
         // validate at least one color chosen per order (optional strict)
         // We'll allow but warn:
         const missingColor = orders.some(o => !o.color);
