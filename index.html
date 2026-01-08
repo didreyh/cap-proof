@@ -417,6 +417,9 @@
             input.checked = !input.checked;
             label.classList.toggle("active", input.checked);
           }
+          // ✅ auto focus qty when level+color selected
+const m = String(name || "").match(/^((level|color))_(\d+)$/);
+if (m) autoFocusQtyIfReady(Number(m[3]));
         });
 
         wrap.appendChild(label);
