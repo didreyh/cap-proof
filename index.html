@@ -370,7 +370,19 @@
       statusEl.className = "status " + type;
       statusEl.textContent = msg;
     }
-    function show(el){ el.classList.remove("hidden"); }
+    const saveError = document.getElementById("saveError");
+
+function showSaveError(msg){
+  if (typeof playErrorSound === "function") playErrorSound();
+  saveError.textContent = msg;
+  saveError.style.display = "block";
+}
+function clearSaveError(){
+  saveError.style.display = "none";
+  saveError.textContent = "";
+}
+
+function show(el){ el.classList.remove("hidden"); }
     function hide(el){ el.classList.add("hidden"); }
     function cleanAWB(s){
       return (s || "").trim().replace(/\s+/g,"");
