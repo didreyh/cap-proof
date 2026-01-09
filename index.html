@@ -366,6 +366,18 @@
     let currentUser = null;
     let currentAWB = "";
     let currentRecord = null;
+let photoOnlyMode = false;
+
+function setOrdersDisabled(disabled){
+  // disable all inputs inside ordersWrap
+  ordersWrap.querySelectorAll("input").forEach(inp => {
+    inp.disabled = disabled;
+  });
+
+  // hide add/remove buttons para di magulo
+  btnAddOrder.style.display = disabled ? "none" : "inline-block";
+  btnRemoveOrder.style.display = disabled ? "none" : "inline-block";
+}
 
     // ---------- helpers ----------
     function setStatus(msg, type="ok"){
@@ -555,16 +567,38 @@ if (m) autoFocusQtyIfReady(Number(m[3]));
       const snap = await getDoc(docRef);
 
       if (snap.exists()){
-        currentRecord = snap.data();
-        setStatus("⚠️ Existing record found (double entry warning). Showing existing record.", "warn");
-        await renderRecord(currentAWB, currentRecord);
-        show(viewSection);
-      } else {
-        currentRecord = null;
-        setStatus("No record found → creating new entry.", "ok");
-        resetCreateForm();
-        show(createSection);
-      }
+  currentRecord = snap.data();
+  await renderRecord(currentAWB, currentRecord);
+
+  // ✅ If may photo na → view only
+  if (currentRecord?.photoUrl) {
+    photoOnlyMode = false;
+    setOrdersDisabled(false);
+    setStatus("⚠️ Existing record found (photo already saved). View only.", "warn");
+    hide(createSection);
+    show(viewSection);
+    return;
+  }
+
+  // ✅ Existing record but NO photo → allow add photo ONLY
+  photoOnlyMode = true;
+  setOrdersDisabled(true);
+  setStatus("✅ Existing record found but NO photo yet → Upload photo then Save.", "ok");
+  resetCreateForm();
+  show(createSection);
+  hide(viewSection);
+  setTimeout(() => photoInput?.scrollIntoView?.({ behavior: "smooth", block: "center" }), 150);
+  return;
+
+} else {
+  currentRecord = null;
+  photoOnlyMode = false;
+  setOrdersDisabled(false);
+  setStatus("No record found → creating new entry.", "ok");
+  resetCreateForm();
+  show(createSection);
+}
+
     }
 
     function resetCreateForm(){
@@ -581,20 +615,14 @@ if (m) autoFocusQtyIfReady(Number(m[3]));
     });
 
     btnNewEntry.addEventListener("click", () => {
-  // If may photo na, bawal palitan
-  if (currentRecord?.photoUrl) {
-    setStatus("⚠️ Photo already exists for this AWB. Bawal na palitan.", "warn");
-    return;
-  }
-
-  // If wala pang photo, allow add photo
-  setStatus("📸 No photo yet. You can add a photo now, then Save.", "ok");
+  // allow create even if record exists (overwrite)
+  photoOnlyMode = false;
+  setOrdersDisabled(false);
+  setStatus("⚠️ Creating new entry anyway (will overwrite same AWB).", "warn");
   show(createSection);
   hide(viewSection);
-
-  // optional: scroll to photo input
-  setTimeout(() => photoInput?.scrollIntoView?.({ behavior: "smooth", block: "center" }), 150);
 });
+
 
 
     btnCancelCreate.addEventListener("click", () => {
@@ -627,24 +655,35 @@ if (m) autoFocusQtyIfReady(Number(m[3]));
         const ordersText = summarizeOrders(orders);
 clearSaveError(); // clear old errors before validating
 
-for (let i = 0; i < orders.length; i++) {
-  const o = orders[i];
+clearSaveError(); // clear old errors before validating
 
-  if (!o.levels || o.levels.length !== 1) {
-    showSaveError(`❌ Order #${i + 1}: Please select ONE level (Kinder / Elem / SHS).`);
-    return;
+if (!photoOnlyMode) {
+  for (let i = 0; i < orders.length; i++) {
+    const o = orders[i];
+
+    if (!o.levels || o.levels.length !== 1) {
+      showSaveError(`❌ Order #${i + 1}: Please select ONE level (Kinder / Elem / SHS).`);
+      return;
+    }
+
+    if (!o.color) {
+      showSaveError(`❌ Order #${i + 1}: Please select ONE color.`);
+      return;
+    }
+
+    if (!o.qty || !Number.isFinite(o.qty) || o.qty < 1) {
+      showSaveError(`❌ Order #${i + 1}: Quantity is required (minimum 1).`);
+      return;
+    }
   }
-
-  if (!o.color) {
-    showSaveError(`❌ Order #${i + 1}: Please select ONE color.`);
-    return;
-  }
-
-  if (!o.qty || !Number.isFinite(o.qty) || o.qty < 1) {
-    showSaveError(`❌ Order #${i + 1}: Quantity is required (minimum 1).`);
+} else {
+  // ✅ photo-only mode: require photo
+  if (!file) {
+    showSaveError("❌ Please upload a photo proof first.");
     return;
   }
 }
+
 
         // validate at least one color chosen per order (optional strict)
         // We'll allow but warn:
@@ -656,6 +695,7 @@ for (let i = 0; i < orders.length; i++) {
         let photoUrl = "";
         const file = photoInput.files?.[0] || null;
   // ✅ If may existing photo na, bawal mag-upload ng bago
+// ✅ If may photo na already, bawal palitan
 if (currentRecord?.photoUrl && file) {
   showSaveError("❌ May photo na itong AWB. Bawal na palitan.");
   return;
@@ -671,17 +711,23 @@ if (currentRecord?.photoUrl && file) {
         }
 
         // write firestore
-        const docRef = doc(db, "packingLogs", awb);
         const payload = {
-          awb,
-          orders,
-          ordersText,
-          photoUrl: photoUrl || (currentRecord?.photoUrl || ""),
-          createdAt: serverTimestamp(),
-          createdByUid: currentUser.uid,
-          createdByEmail: currentUser.email || "",
-          updatedAt: serverTimestamp()
-        };
+  awb,
+
+  // ✅ keep old orders if photo-only
+  orders: photoOnlyMode ? (currentRecord?.orders || []) : orders,
+  ordersText: photoOnlyMode ? (currentRecord?.ordersText || "") : ordersText,
+
+  photoUrl: photoUrl || (currentRecord?.photoUrl || ""),
+
+  // ✅ preserve original creator + createdAt if already exists
+  createdAt: currentRecord?.createdAt || serverTimestamp(),
+  createdByUid: currentRecord?.createdByUid || currentUser.uid,
+  createdByEmail: currentRecord?.createdByEmail || (currentUser.email || ""),
+
+  updatedAt: serverTimestamp()
+};
+
         await setDoc(docRef, payload, { merge: true });
 
         setStatus("✅ Saved! Opening record…", "ok");
@@ -690,6 +736,8 @@ if (currentRecord?.photoUrl && file) {
         const snap = await getDoc(docRef);
         currentRecord = snap.data();
         await renderRecord(awb, currentRecord);
+        photoOnlyMode = false;
+setOrdersDisabled(false);
 
         hide(createSection);
         show(viewSection);
