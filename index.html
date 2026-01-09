@@ -598,24 +598,31 @@ if (m) autoFocusQtyIfReady(Number(m[3]));
   await renderRecord(currentAWB, currentRecord);
 
   // ✅ If may photo na → view only
-  if (currentRecord?.photoUrl) {
-    photoOnlyMode = false;
-    setOrdersDisabled(false);
-    setStatus("⚠️ Existing record found (photo already saved). View only.", "warn");
-    hide(createSection);
-    show(viewSection);
-    return;
-  }
+ if (currentRecord?.photoUrl) {
+  photoOnlyMode = false;
+  setOrdersDisabled(true); // ✅ LOCK orders
+  setStatus("⚠️ Existing record found (photo already saved). View only.", "warn");
+  hide(createSection);
+  show(viewSection);
+  return;
+}
+
 
   // ✅ Existing record but NO photo → allow add photo ONLY
-  photoOnlyMode = true;
-  setOrdersDisabled(true);
-  setStatus("✅ Existing record found but NO photo yet → Upload photo then Save.", "ok");
-  resetCreateForm();
-  show(createSection);
-  hide(viewSection);
-  setTimeout(() => photoInput?.scrollIntoView?.({ behavior: "smooth", block: "center" }), 150);
-  return;
+photoOnlyMode = true;
+setOrdersDisabled(true);
+
+// 🔒 lock orders UI – display only
+ordersWrap.style.opacity = "0.6";
+ordersWrap.style.pointerEvents = "none";
+
+setStatus("✅ Existing record found but NO photo yet → Upload photo then Save.", "ok");
+resetCreateForm();
+show(createSection);
+hide(viewSection);
+setTimeout(() => photoInput?.scrollIntoView?.({ behavior: "smooth", block: "center" }), 150);
+return;
+
 
 } else {
   currentRecord = null;
