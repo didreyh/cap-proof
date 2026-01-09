@@ -153,6 +153,28 @@
       padding:14px;
       background:#fff;
     }
+    /* ===== ORDERS (right side) ===== */
+#ordersPreview{
+  margin-top: 14px;
+  padding: 14px 14px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: #fff;
+
+  font-size: 20px;      /* laki ng text */
+  line-height: 1.55;    /* hindi dikit-dikit */
+  font-weight: 800;
+  white-space: pre-line; /* important: respects \n line breaks */
+}
+
+#ordersPreview .hdr{
+  font-size: 26px;
+  font-weight: 1000;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  display:block;
+}
+
     textarea{
       width:100%;
       min-height:120px;
@@ -535,7 +557,7 @@ if (m) autoFocusQtyIfReady(Number(m[3]));
         const col = (o.color || "No color");
         const qty = (o.qty ? `qty ${o.qty}` : "qty -");
         return `#${i+1} ${lvl} • ${col} • ${qty}`;
-      }).join(" | ");
+      }).join("\n");
     }
 
     // ---------- Auth ----------
@@ -812,7 +834,10 @@ Maraming salamat po sa tiwala! — Tatak JPD
 `;
 
       messageBox.value = msg;
-      ordersPreview.textContent = "Orders: " + ordersText;
+      ordersPreview.innerHTML =
+  `<span class="hdr">ORDERS:</span>` +
+  (ordersText || "—");
+
     }
 
     btnCopyMsg.addEventListener("click", async () => {
