@@ -581,11 +581,21 @@ if (m) autoFocusQtyIfReady(Number(m[3]));
     });
 
     btnNewEntry.addEventListener("click", () => {
-      // allow create even if record exists (new photo / update)
-      setStatus("⚠️ Creating new entry anyway (will overwrite same AWB).", "warn");
-      show(createSection);
-      hide(viewSection);
-    });
+  // If may photo na, bawal palitan
+  if (currentRecord?.photoUrl) {
+    setStatus("⚠️ Photo already exists for this AWB. Bawal na palitan.", "warn");
+    return;
+  }
+
+  // If wala pang photo, allow add photo
+  setStatus("📸 No photo yet. You can add a photo now, then Save.", "ok");
+  show(createSection);
+  hide(viewSection);
+
+  // optional: scroll to photo input
+  setTimeout(() => photoInput?.scrollIntoView?.({ behavior: "smooth", block: "center" }), 150);
+});
+
 
     btnCancelCreate.addEventListener("click", () => {
       hide(createSection);
@@ -645,6 +655,11 @@ for (let i = 0; i < orders.length; i++) {
         // upload photo (optional but recommended)
         let photoUrl = "";
         const file = photoInput.files?.[0] || null;
+  // ✅ If may existing photo na, bawal mag-upload ng bago
+if (currentRecord?.photoUrl && file) {
+  showSaveError("❌ May photo na itong AWB. Bawal na palitan.");
+  return;
+}
 
         if (file){
           const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
