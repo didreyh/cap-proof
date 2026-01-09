@@ -252,14 +252,16 @@
           <div class="preview">
             <b>Photo Proof</b>
             <div class="imgWrap" style="margin-top:10px">
-              <div id="imgPlaceholder">No image</div>
+              <div id="imgPlaceholder" style="font-weight:1000; font-size:18px; color:#6b7280;">NO IMAGE</div>
               <img id="recordImg" class="hidden" />
             </div>
             <div class="row" style="margin-top:10px">
-              <a id="openImgLink" class="smallBtn" href="#" target="_blank" rel="noopener">Open image</a>
-              <button id="btnCopyImage" class="smallBtn">Copy image</button>
-            </div>
-            <div class="hint">Note: iOS minsan di supported ang “copy image”; pag ayaw, click “Open image” then long-press → Copy/Save.</div>
+  <a id="openImgLink" class="smallBtn" href="#" target="_blank" rel="noopener">Open image</a>
+  <button id="btnCopyImage" class="smallBtn">Copy image</button>
+
+  <button id="btnInsertImage" class="smallBtn hidden">➕ Insert Image</button>
+</div>
+            <div class="hint"></div>
           </div>
 
           <div class="copyBox">
@@ -349,6 +351,7 @@
     const imgPlaceholder = document.getElementById("imgPlaceholder");
     const openImgLink = document.getElementById("openImgLink");
     const btnCopyImage = document.getElementById("btnCopyImage");
+    const btnInsertImage = document.getElementById("btnInsertImage");
     const messageBox = document.getElementById("messageBox");
     const btnCopyMsg = document.getElementById("btnCopyMsg");
     const btnNewEntry = document.getElementById("btnNewEntry");
