@@ -107,18 +107,6 @@
       border-color:#111;
       box-shadow:0 0 0 4px rgba(0,0,0,.06);
     }
-    /* ===== Locked mode styling (for existing record) ===== */
-.orderBox.locked .pill{
-  opacity: .55;
-  cursor: not-allowed;
-}
-
-.orderBox.locked .pill.active{
-  opacity: 1;
-  border-color: var(--bad); /* red */
-  box-shadow: 0 0 0 4px rgba(239,68,68,.18);
-}
-
     .orderBox{
       border:1px dashed var(--border);
       border-radius:18px;
@@ -413,16 +401,10 @@ function setOrdersDisabled(disabled){
     inp.disabled = disabled;
   });
 
-  // add/remove a "locked" class on each order box (for red active style)
-  ordersWrap.querySelectorAll(".orderBox").forEach(box => {
-    box.classList.toggle("locked", disabled);
-  });
-
   // hide add/remove buttons para di magulo
   btnAddOrder.style.display = disabled ? "none" : "inline-block";
   btnRemoveOrder.style.display = disabled ? "none" : "inline-block";
 }
-
 
     // ---------- helpers ----------
     function setStatus(msg, type="ok"){
@@ -479,22 +461,20 @@ function show(el){ el.classList.remove("hidden"); }
         label.appendChild(document.createTextNode(opt));
 
         label.addEventListener("click", (e) => {
-  e.preventDefault();
-  if (input.disabled) return; // ✅ if locked, ignore clicks
-
-  if (!multiple){
-    wrap.querySelectorAll(".pill").forEach(p => p.classList.remove("active"));
-    label.classList.add("active");
-    input.checked = true;
-  }else{
-    input.checked = !input.checked;
-    label.classList.toggle("active", input.checked);
-  }
-
-  const m = String(name || "").match(/^((level|color))_(\d+)$/);
-  if (m) autoFocusQtyIfReady(Number(m[3]));
-});
-
+  e.preventDefault(); // ✅ IMPORTANT: stop double-toggle
+          if (!multiple){
+            // clear all active in same group
+            wrap.querySelectorAll(".pill").forEach(p => p.classList.remove("active"));
+            label.classList.add("active");
+            input.checked = true;
+          }else{
+            input.checked = !input.checked;
+            label.classList.toggle("active", input.checked);
+          }
+          // ✅ auto focus qty when level+color selected
+const m = String(name || "").match(/^((level|color))_(\d+)$/);
+if (m) autoFocusQtyIfReady(Number(m[3]));
+        });
 
         wrap.appendChild(label);
       });
