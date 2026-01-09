@@ -768,17 +768,32 @@ setOrdersDisabled(false);
       recordMeta.textContent = `AWB: ${awb} • ${dt ? ("Saved: " + dt + " • ") : ""}By: ${rec?.createdByEmail || "-"}`;
 
       // image
-      const url = rec?.photoUrl || "";
-      if (url){
-        recordImg.src = url;
-        recordImg.classList.remove("hidden");
-        imgPlaceholder.classList.add("hidden");
-        openImgLink.href = url;
-      }else{
-        recordImg.classList.add("hidden");
-        imgPlaceholder.classList.remove("hidden");
-        openImgLink.href = "#";
-      }
+     const url = rec?.photoUrl || "";
+
+if (url){
+  // ✅ has image
+  recordImg.src = url;
+  recordImg.classList.remove("hidden");
+  imgPlaceholder.classList.add("hidden");
+
+  openImgLink.href = url;
+  openImgLink.classList.remove("hidden");
+  btnCopyImage.classList.remove("hidden");
+
+  btnInsertImage.classList.add("hidden");
+} else {
+  // ✅ NO IMAGE
+  recordImg.classList.add("hidden");
+  imgPlaceholder.classList.remove("hidden");
+  imgPlaceholder.textContent = "NO IMAGE";
+
+  openImgLink.href = "#";
+  openImgLink.classList.add("hidden");
+  btnCopyImage.classList.add("hidden");
+
+  btnInsertImage.classList.remove("hidden");
+}
+
 
       // message template (edit mo later bestie)
       const nowText = dt || formatDateTime(new Date());
@@ -829,6 +844,20 @@ Maraming salamat po sa tiwala! — Tatak JPD`;
         setStatus("⚠️ Copy image not supported on this browser. Click 'Open image' then long-press → Copy/Save.", "warn");
       }
     });
+btnInsertImage.addEventListener("click", () => {
+  // photo-only mode: allow upload photo for existing record that has no photo yet
+  photoOnlyMode = true; // pwede mag insert image
+setOrdersDisabled(true); // bawal galawin orders
+
+setStatus("✅ Existing record found but NO image yet → You may insert image.", "ok");
+
+hide(createSection);
+show(viewSection); // 👈 DITO ANG IMPORTANTE
+return;
+
+
+  setTimeout(() => photoInput?.scrollIntoView?.({ behavior: "smooth", block: "center" }), 150);
+});
 
     // ---------- Scanner ----------
     btnScan.addEventListener("click", async () => {
