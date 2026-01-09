@@ -780,12 +780,18 @@ setOrdersDisabled(false);
       // message template (edit mo later bestie)
       const nowText = dt || formatDateTime(new Date());
       const msg =
-`Hi po! ✅ Ready to ship na po ang order nyo.
+`Ready to ship na po ang order nyo ✅
 
-AWB: ${awb}
-Packed: ${nowText}
+📦 AWB: ${awb}
+🕒 Packed: ${nowText}
 
-Maraming salamat po! — Tatak JPD`;
+Maingat po itong na-pack at dumaan sa quality check bago i-ship.
+Please expect delivery within the courier’s timeframe.
+
+Once received po and satisfied, we truly appreciate a review with photo/video 🥰
+Nagbibigay po pala ako ng discount kung maramihan, pm lang po kayo. 
+
+Maraming salamat po sa tiwala! — Tatak JPD`;
 
       messageBox.value = msg;
       ordersPreview.textContent = "Orders: " + ordersText;
