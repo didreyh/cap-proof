@@ -675,11 +675,10 @@ if (m) autoFocusQtyIfReady(Number(m[3]));
           return;
         }
         currentAWB = awb;
-
+        
+        const file = photoInput.files?.[0] || null;
         const orders = readOrdersFromUI();
         const ordersText = summarizeOrders(orders);
-clearSaveError(); // clear old errors before validating
-
 clearSaveError(); // clear old errors before validating
 
 if (!photoOnlyMode) {
@@ -735,27 +734,19 @@ if (currentRecord?.photoUrl && file) {
           photoUrl = await getDownloadURL(storageRef);
         }
 
-// write firestore
+
+
+  // write firestore
 const docRef = doc(db, "packingLogs", awb);
 
 const payload = {
   awb,
-  orders,
-  ordersText,
-  photoUrl: photoUrl || (currentRecord?.photoUrl || ""),
-  createdAt: serverTimestamp(),
-  createdByUid: currentUser.uid,
-  createdByEmail: currentUser.email || "",
-  updatedAt: serverTimestamp()
-};
 
-await setDoc(docRef, payload, { merge: true });
-
-
-  // ✅ keep old orders if photo-only
+  // ✅ if photo-only mode, keep old orders
   orders: photoOnlyMode ? (currentRecord?.orders || []) : orders,
   ordersText: photoOnlyMode ? (currentRecord?.ordersText || "") : ordersText,
 
+  // ✅ keep existing photo if none uploaded
   photoUrl: photoUrl || (currentRecord?.photoUrl || ""),
 
   // ✅ preserve original creator + createdAt if already exists
@@ -766,7 +757,10 @@ await setDoc(docRef, payload, { merge: true });
   updatedAt: serverTimestamp()
 };
 
-        await setDoc(docRef, payload, { merge: true });
+await setDoc(docRef, payload, { merge: true });
+
+
+        
 
         setStatus("✅ Saved! Opening record…", "ok");
 
