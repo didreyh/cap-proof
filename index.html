@@ -604,24 +604,21 @@ if (m) autoFocusQtyIfReady(Number(m[3]));
   setStatus("⚠️ Existing record found (photo already saved). View only.", "warn");
   hide(createSection);
   show(viewSection);
+   
   return;
 }
 
-
-  // ✅ Existing record but NO photo → allow add photo ONLY
+// ✅ Existing record but NO photo → show VIEW template with Insert Picture
 photoOnlyMode = true;
 setOrdersDisabled(true);
-
-// 🔒 lock orders UI – display only
-ordersWrap.style.opacity = "0.6";
-ordersWrap.style.pointerEvents = "none";
-
-setStatus("✅ Existing record found but NO photo yet → Upload photo then Save.", "ok");
+clearSaveError();
 resetCreateForm();
-show(createSection);
-hide(viewSection);
-setTimeout(() => photoInput?.scrollIntoView?.({ behavior: "smooth", block: "center" }), 150);
+
+setStatus("✅ Existing record found but NO photo yet → Click 'Insert Picture' to upload.", "ok");
+hide(createSection);
+show(viewSection);
 return;
+
 
 
 } else {
@@ -886,19 +883,18 @@ Maraming salamat po sa tiwala! — Tatak JPD
       }
     });
 btnInsertImage.addEventListener("click", () => {
-  // photo-only mode: allow upload photo for existing record that has no photo yet
-  photoOnlyMode = true; // pwede mag insert image
-setOrdersDisabled(true); // bawal galawin orders
+  photoOnlyMode = true;
+  setOrdersDisabled(true);
+  clearSaveError();
 
-setStatus("✅ Existing record found but NO image yet → You may insert image.", "ok");
+  setStatus("📸 Upload photo proof then click Save Packing Log.", "ok");
 
-hide(createSection);
-show(viewSection); // 👈 DITO ANG IMPORTANTE
-return;
-
+  show(createSection);
+  hide(viewSection);
 
   setTimeout(() => photoInput?.scrollIntoView?.({ behavior: "smooth", block: "center" }), 150);
 });
+
 
     // ---------- Scanner ----------
     btnScan.addEventListener("click", async () => {
