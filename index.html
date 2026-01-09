@@ -735,9 +735,22 @@ if (currentRecord?.photoUrl && file) {
           photoUrl = await getDownloadURL(storageRef);
         }
 
-        // write firestore
-        const payload = {
+// write firestore
+const docRef = doc(db, "packingLogs", awb);
+
+const payload = {
   awb,
+  orders,
+  ordersText,
+  photoUrl: photoUrl || (currentRecord?.photoUrl || ""),
+  createdAt: serverTimestamp(),
+  createdByUid: currentUser.uid,
+  createdByEmail: currentUser.email || "",
+  updatedAt: serverTimestamp()
+};
+
+await setDoc(docRef, payload, { merge: true });
+
 
   // ✅ keep old orders if photo-only
   orders: photoOnlyMode ? (currentRecord?.orders || []) : orders,
