@@ -303,7 +303,7 @@
 <!-- DAILY SUMMARY -->
 <div id="dailySection">
   <div class="sectionTitle">📊 Daily Summary</div>
-  <div class="hint">Today totals (Kinder/Elem/SHS + Colors)</div>
+  <div class="hint">Today totals (Kinder/Elem + Colors)</div>
 
   <div class="row" style="margin-top:10px">
     <button id="btnDaily" class="btn secondary">Load Today Summary</button>
@@ -440,7 +440,7 @@ function show(el){ el.classList.remove("hidden"); }
     }
 
     // ---------- Orders UI (boxes) ----------
-    const LEVELS = ["Kinder","Elem","SHS"];
+    const LEVELS = ["Kinder","Elem"];
     const COLORS = [
       "White","Light Blue","Fuchsia Pink","Royal Blue","Black","Yellow Gold","Emerald Green","Red","Maroon","Apple Green","Navy blue"
     ];
@@ -692,7 +692,7 @@ if (!photoOnlyMode) {
     const o = orders[i];
 
     if (!o.levels || o.levels.length !== 1) {
-      showSaveError(`❌ Order #${i + 1}: Please select ONE level (Kinder / Elem / SHS).`);
+      showSaveError(`❌ Order #${i + 1}: Please select ONE level (Kinder / Elem).`);
       return;
     }
 
@@ -971,7 +971,7 @@ btnDaily.addEventListener("click", async () => {
 
     const snap = await getDocs(q);
 
-    const levelCounts = {};   // Kinder/Elem/SHS totals
+    const levelCounts = {};   // Kinder/Elem totals
     const colorCounts = {};   // color totals
     let totalRecords = 0;
 
@@ -993,7 +993,7 @@ btnDaily.addEventListener("click", async () => {
 
     // build output
     const dateStr = new Date().toLocaleDateString([], {year:"numeric", month:"short", day:"2-digit"});
-    const lvlLines = ["Kinder","Elem","SHS"].map(k => `• ${k}: ${levelCounts[k] || 0}`).join("\n");
+    const lvlLines = ["Kinder","Elem"].map(k => `• ${k}: ${levelCounts[k] || 0}`).join("\n");
     const colorLines = [
       "White","Light Blue","Fuchsia Pink","Royal Blue","Black","Yellow Gold",
       "Emerald Green","Red","Maroon","Apple Green"
