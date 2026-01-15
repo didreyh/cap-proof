@@ -990,52 +990,139 @@ function inc(map, key, n=1){
 }
 
 // Load Today's Summary
+// Load Today's Summary + Last 7 Days pcs
 btnDaily.addEventListener("click", async () => {
   try{
     btnDaily.disabled = true;
     btnDaily.textContent = "Loading...";
 
-    // Today range (local time)
-    const start = new Date();
-    start.setHours(0,0,0,0);
-    const end = new Date();
-    end.setHours(23,59,59,999);
+    // -------- TODAY range (local time) --------
+    const startToday = new Date();
+    startToday.setHours(0,0,0,0);
 
-    // Query packingLogs where updatedAt is today
+    const endToday = new Date();
+    endToday.setHours(23,59,59,999);
+
+    // -------- LAST 7 DAYS range (including today) --------
+    const start7 = new Date();
+    start7.setHours(0,0,0,0);
+    start7.setDate(start7.getDate() - 6); // today + previous 6 days = 7 days total
+
+    const end7 = new Date();
+    end7.setHours(23,59,59,999);
+
+    // Query packingLogs where updatedAt is within last 7 days
     const logsRef = collection(db, "packingLogs");
-    const q = query(
+    const q7 = query(
       logsRef,
-      where("updatedAt", ">=", start),
-      where("updatedAt", "<=", end)
+      where("updatedAt", ">=", start7),
+      where("updatedAt", "<=", end7)
     );
 
-    const snap = await getDocs(q);
+    const snap7 = await getDocs(q7);
 
-    const levelCounts = {};   // Kinder/Elem totals
-    const colorCounts = {};   // color totals
-    let totalRecords = 0;
+    // TODAY breakdown (levels + colors)
+    const levelCounts = {};   // Kinder/Elem totals today
+    const colorCounts = {};   // color totals today
+    let totalRecordsToday = 0;
 
-    snap.forEach((docu) => {
+    // LAST 7 DAYS pcs breakdown
+    const dayPcs = {};        // { "2026-01-08": 8, ... }
+    let totalPcs7 = 0;
+
+    // helpers
+    function pad2(n){ return String(n).padStart(2,"0"); }
+    function dayKey(d){
+      // d is JS Date
+      return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+    }
+    function niceDayLabel(d){
+      // "Jan 08"
+      return d.toLocaleDateString([], { month:"short", day:"2-digit" });
+    }
+
+    // iterate all last-7-days docs once
+    snap7.forEach((docu) => {
       const d = docu.data();
-      totalRecords++;
+      const upd = d?.updatedAt?.toDate ? d.updatedAt.toDate() : null;
+      if (!upd) return;
 
+      // ---- compute total pcs in this record (sum qty of all orders; qty default 1) ----
       const orders = d.orders || [];
+      let recordPcs = 0;
       orders.forEach(o => {
-        const qty = o.qty && Number.isFinite(o.qty) ? o.qty : 1;
-
-        // levels can be multiple
-        (o.levels || []).forEach(lvl => inc(levelCounts, lvl, qty));
-
-        // one color
-        if (o.color) inc(colorCounts, o.color, qty);
+        const qty = (o.qty && Number.isFinite(o.qty) && o.qty > 0) ? o.qty : 1;
+        recordPcs += qty;
       });
+
+      // ---- last 7 days total pcs per day ----
+      const k = dayKey(upd);
+      dayPcs[k] = (dayPcs[k] || 0) + recordPcs;
+      totalPcs7 += recordPcs;
+
+      // ---- if this record is TODAY, include in today breakdown ----
+      if (upd >= startToday && upd <= endToday){
+        totalRecordsToday++;
+
+        orders.forEach(o => {
+          const qty = (o.qty && Number.isFinite(o.qty) && o.qty > 0) ? o.qty : 1;
+
+          (o.levels || []).forEach(lvl => inc(levelCounts, lvl, qty));
+          if (o.color) inc(colorCounts, o.color, qty);
+        });
+      }
     });
+
+    // build TODAY output
+    const dateStr = new Date().toLocaleDateString([], {year:"numeric", month:"short", day:"2-digit"});
+    const lvlLines = ["Kinder","Elem"].map(k => `• ${k}: ${levelCounts[k] || 0}`).join("\n");
+    const colorLines = [
+      "White","Light Blue","Fuchsia Pink","Royal Blue","Black","Yellow Gold",
+      "Emerald Green","Red","Maroon","Apple Green","Navy blue"
+    ].map(c => `• ${c}: ${colorCounts[c] || 0}`).join("\n");
+
+    // build LAST 7 DAYS breakdown lines (oldest → newest)
+    const daysArr = [];
+    for (let i = 0; i < 7; i++){
+      const d = new Date(start7);
+      d.setDate(start7.getDate() + i);
+      const k = dayKey(d);
+      const pcs = dayPcs[k] || 0;
+      daysArr.push(`${niceDayLabel(d)} - ${pcs} pcs`);
+    }
+    const last7Lines = daysArr.join("\n");
+
+    showDaily(
+`📅 Today: ${dateStr}
+📦 Records saved today: ${totalRecordsToday}
+
+🏫 LEVEL TOTALS (any color)
+${lvlLines}
+
+🎨 COLOR TOTALS (any level)
+${colorLines}
+
+────────────────────────
+
+🗓️ LAST 7 DAYS TOTAL PCS: ${totalPcs7} pcs
+${last7Lines}`
+    , "ok");
+
+  }catch(err){
+    console.error(err);
+    showDaily("❌ Daily summary error:\n" + (err?.message || err), "bad");
+  }finally{
+    btnDaily.disabled = false;
+    btnDaily.textContent = "Load Today Summary";
+  }
+});
+
 
     // build output
     const dateStr = new Date().toLocaleDateString([], {year:"numeric", month:"short", day:"2-digit"});
     const lvlLines = ["Kinder","Elem"].map(k => `• ${k}: ${levelCounts[k] || 0}`).join("\n");
     const colorLines = [
-      "White","Light Blue","Fuchsia Pink","Royal Blue","Black","Yellow Gold",
+      "White","Skyblue Blue","Baby Pink","Royal Blue","Black","Yellow Gold",
       "Emerald Green","Red","Maroon","Apple Green"
     ].map(c => `• ${c}: ${colorCounts[c] || 0}`).join("\n");
 
