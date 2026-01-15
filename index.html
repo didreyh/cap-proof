@@ -1006,7 +1006,7 @@ btnDaily.addEventListener("click", async () => {
     // -------- LAST 7 DAYS range (including today) --------
     const start7 = new Date();
     start7.setHours(0,0,0,0);
-    start7.setDate(start7.getDate() - 6); // today + previous 6 days = 7 days total
+    start7.setDate(start7.getDate() - 6);
 
     const end7 = new Date();
     end7.setHours(23,59,59,999);
@@ -1026,47 +1026,62 @@ btnDaily.addEventListener("click", async () => {
     const colorCounts = {};   // color totals today
     let totalRecordsToday = 0;
 
-    // LAST 7 DAYS pcs breakdown
-    const dayPcs = {};        // { "2026-01-08": 8, ... }
+    // LAST 7 DAYS breakdown (by day + by level)
+    const dayKinder = {};     // { "YYYY-MM-DD": pcs }
+    const dayElem = {};       // { "YYYY-MM-DD": pcs }
+    let totalKinder7 = 0;
+    let totalElem7 = 0;
     let totalPcs7 = 0;
 
     // helpers
     function pad2(n){ return String(n).padStart(2,"0"); }
     function dayKey(d){
-      // d is JS Date
       return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
     }
     function niceDayLabel(d){
-      // "Jan 08"
       return d.toLocaleDateString([], { month:"short", day:"2-digit" });
     }
 
     // iterate all last-7-days docs once
     snap7.forEach((docu) => {
-      const d = docu.data();
-      const upd = d?.updatedAt?.toDate ? d.updatedAt.toDate() : null;
+      const data = docu.data();
+      const upd = data?.updatedAt?.toDate ? data.updatedAt.toDate() : null;
       if (!upd) return;
 
-      // ---- compute total pcs in this record (sum qty of all orders; qty default 1) ----
-      const orders = d.orders || [];
-      let recordPcs = 0;
+      const k = dayKey(upd);
+      const orders = data.orders || [];
+
+      // ====== compute per-order qty; assign to Kinder/Elem ======
       orders.forEach(o => {
         const qty = (o.qty && Number.isFinite(o.qty) && o.qty > 0) ? o.qty : 1;
-        recordPcs += qty;
+
+        // last 7 days grand total
+        totalPcs7 += qty;
+
+        // levels in your UI should be ONE (kinder OR elem), but handle safely
+        const lvls = Array.isArray(o.levels) ? o.levels : [];
+        if (lvls.includes("Kinder")){
+          dayKinder[k] = (dayKinder[k] || 0) + qty;
+          totalKinder7 += qty;
+        }
+        if (lvls.includes("Elem")){
+          dayElem[k] = (dayElem[k] || 0) + qty;
+          totalElem7 += qty;
+        }
+
+        // ====== TODAY breakdown (same as before) ======
+        if (upd >= startToday && upd <= endToday){
+          // count record once per doc (not per order)
+          // we'll increment later outside loop by using a flag:
+        }
       });
 
-      // ---- last 7 days total pcs per day ----
-      const k = dayKey(upd);
-      dayPcs[k] = (dayPcs[k] || 0) + recordPcs;
-      totalPcs7 += recordPcs;
-
-      // ---- if this record is TODAY, include in today breakdown ----
+      // count records saved today (per document)
       if (upd >= startToday && upd <= endToday){
         totalRecordsToday++;
 
         orders.forEach(o => {
           const qty = (o.qty && Number.isFinite(o.qty) && o.qty > 0) ? o.qty : 1;
-
           (o.levels || []).forEach(lvl => inc(levelCounts, lvl, qty));
           if (o.color) inc(colorCounts, o.color, qty);
         });
@@ -1081,16 +1096,18 @@ btnDaily.addEventListener("click", async () => {
       "Emerald Green","Red","Maroon","Apple Green","Navy blue"
     ].map(c => `• ${c}: ${colorCounts[c] || 0}`).join("\n");
 
-    // build LAST 7 DAYS breakdown lines (oldest → newest)
-    const daysArr = [];
+    // build LAST 7 DAYS lines (oldest → newest)
+    const kinderLines = [];
+    const elemLines = [];
+
     for (let i = 0; i < 7; i++){
       const d = new Date(start7);
       d.setDate(start7.getDate() + i);
       const k = dayKey(d);
-      const pcs = dayPcs[k] || 0;
-      daysArr.push(`${niceDayLabel(d)} - ${pcs} pcs`);
+
+      kinderLines.push(`${niceDayLabel(d)} - ${(dayKinder[k] || 0)} pcs`);
+      elemLines.push(`${niceDayLabel(d)} - ${(dayElem[k] || 0)} pcs`);
     }
-    const last7Lines = daysArr.join("\n");
 
     showDaily(
 `📅 Today: ${dateStr}
@@ -1105,7 +1122,12 @@ ${colorLines}
 ────────────────────────
 
 🗓️ LAST 7 DAYS TOTAL PCS: ${totalPcs7} pcs
-${last7Lines}`
+
+KINDER (7 days): ${totalKinder7} pcs
+${kinderLines.join("\n")}
+
+ELEM (7 days): ${totalElem7} pcs
+${elemLines.join("\n")}`
     , "ok");
 
   }catch(err){
@@ -1116,6 +1138,7 @@ ${last7Lines}`
     btnDaily.textContent = "Load Today Summary";
   }
 });
+
 
   </script>
 </body>
