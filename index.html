@@ -1117,35 +1117,6 @@ ${last7Lines}`
   }
 });
 
-
-    // build output
-    const dateStr = new Date().toLocaleDateString([], {year:"numeric", month:"short", day:"2-digit"});
-    const lvlLines = ["Kinder","Elem"].map(k => `• ${k}: ${levelCounts[k] || 0}`).join("\n");
-    const colorLines = [
-      "White","Skyblue Blue","Baby Pink","Royal Blue","Black","Yellow Gold",
-      "Emerald Green","Red","Maroon","Apple Green"
-    ].map(c => `• ${c}: ${colorCounts[c] || 0}`).join("\n");
-
-    showDaily(
-`📅 Today: ${dateStr}
-📦 Records saved today: ${totalRecords}
-
-🏫 LEVEL TOTALS (any color)
-${lvlLines}
-
-🎨 COLOR TOTALS (any level)
-${colorLines}`
-    , "ok");
-
-  }catch(err){
-    console.error(err);
-    showDaily("❌ Daily summary error:\n" + (err?.message || err), "bad");
-  }finally{
-    btnDaily.disabled = false;
-    btnDaily.textContent = "Load Today Summary";
-  }
-});
-
   </script>
 </body>
 </html>
