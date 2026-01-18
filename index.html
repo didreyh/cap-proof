@@ -586,7 +586,7 @@ if (m) autoFocusQtyIfReady(Number(m[3]));
 
     /* ✅ CHANGED ONLY: include tassel line only when customized */
     function summarizeOrders(orders){
-      // Example: "Order1: Kinder+Elem, Fuchsia Pink, qty 36 | Order2: SHS, Black"
+      // Example: "Order1: Kinder+Elem, Baby Pink, qty 36 | Order2: SHS, Black"
       if (!orders?.length) return "No order details.";
       return orders.map((o, i) => {
         const lvl = (o.levels?.length ? o.levels.join("+") : "No level");
@@ -1092,7 +1092,7 @@ btnDaily.addEventListener("click", async () => {
     const dateStr = new Date().toLocaleDateString([], {year:"numeric", month:"short", day:"2-digit"});
     const lvlLines = ["Kinder","Elem"].map(k => `• ${k}: ${levelCounts[k] || 0}`).join("\n");
     const colorLines = [
-      "White","Skyblue","Fuchsia Pink","Royal Blue","Black","Yellow Gold",
+      "White","Skyblue","Baby Pink","Royal Blue","Black","Yellow Gold",
       "Emerald Green","Red","Maroon","Apple Green","Navy blue"
     ].map(c => `• ${c}: ${colorCounts[c] || 0}`).join("\n");
 
