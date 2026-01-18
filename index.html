@@ -447,7 +447,7 @@ function show(el){ el.classList.remove("hidden"); }
     // ---------- Orders UI (boxes) ----------
     const LEVELS = ["Kinder","Elem"];
     const COLORS = [
-      "White","Light Blue","Fuchsia Pink","Royal Blue","Black","Yellow Gold","Emerald Green","Red","Maroon","Apple Green","Navy blue"
+      "White","Sky Blue","Baby Pink","Royal Blue","Black","Yellow Gold","Emerald Green","Red","Maroon","Apple Green","Navy blue"
     ];
 
     function pillGroup(options, {multiple=false, name="group"}){
@@ -1092,7 +1092,7 @@ btnDaily.addEventListener("click", async () => {
     const dateStr = new Date().toLocaleDateString([], {year:"numeric", month:"short", day:"2-digit"});
     const lvlLines = ["Kinder","Elem"].map(k => `• ${k}: ${levelCounts[k] || 0}`).join("\n");
     const colorLines = [
-      "White","Light Blue","Fuchsia Pink","Royal Blue","Black","Yellow Gold",
+      "White","Skyblue","Fuchsia Pink","Royal Blue","Black","Yellow Gold",
       "Emerald Green","Red","Maroon","Apple Green","Navy blue"
     ].map(c => `• ${c}: ${colorCounts[c] || 0}`).join("\n");
 
