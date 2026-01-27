@@ -873,13 +873,7 @@ if (url){
       // message template (edit mo later bestie)
       const nowText = dt || formatDateTime(new Date());
       const msg =
-`Ready to ship na po ang order nyo ✅
-
-Maingat po itong na-pack at dumaan sa quality check bago i-ship.
-Please expect delivery within the courier’s timeframe.
-
-Once received po and satisfied, we truly appreciate a review with photo/video 🥰
-Nagbibigay po pala ako ng discount kung maramihan, pm lang po kayo. 
+`Ready to ship na po ang order nyo ✅ 
 
 Maraming salamat po sa tiwala! — Tatak JPD
 📦 AWB: ${awb}
@@ -907,21 +901,60 @@ Maraming salamat po sa tiwala! — Tatak JPD
     });
 
     btnCopyImage.addEventListener("click", async () => {
-      try{
-        const url = openImgLink.href;
-        if (!url || url === "#"){ setStatus("⚠️ No image to copy.", "warn"); return; }
+  try{
+    const url = openImgLink.href;
+    if (!url || url === "#"){
+      setStatus("⚠️ No image to copy.", "warn");
+      return;
+    }
 
-        // Try ClipboardItem (not always supported)
-        const resp = await fetch(url);
-        const blob = await resp.blob();
-        if (!window.ClipboardItem) throw new Error("ClipboardItem not supported");
+    // Fetch image
+    const resp = await fetch(url, { cache: "no-store" });
+    const blob = await resp.blob();
 
-        await navigator.clipboard.write([ new ClipboardItem({ [blob.type]: blob }) ]);
-        setStatus("✅ Image copied!", "ok");
-      }catch(err){
-        setStatus("⚠️ Copy image not supported on this browser. Click 'Open image' then long-press → Copy/Save.", "warn");
-      }
+    if (!window.ClipboardItem) throw new Error("ClipboardItem not supported");
+
+    // Decode to bitmap (fast + safe)
+    const bitmap = await createImageBitmap(blob);
+
+    // ✅ resize to 30%
+    const scale = 0.30;
+    const w = Math.max(1, Math.round(bitmap.width * scale));
+    const h = Math.max(1, Math.round(bitmap.height * scale));
+
+    const canvas = document.createElement("canvas");
+    canvas.width = w;
+    canvas.height = h;
+
+    const ctx = canvas.getContext("2d");
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(bitmap, 0, 0, w, h);
+
+    // ✅ export smaller blob (JPEG usually smaller kaysa PNG)
+    const outType = "image/jpeg";
+    const quality = 0.85; // pwede mo ibaba (0.7) kung gusto mas maliit pa
+
+    const outBlob = await new Promise((resolve) => {
+      canvas.toBlob((b) => resolve(b), outType, quality);
     });
+
+    if (!outBlob) throw new Error("Resize failed");
+
+    await navigator.clipboard.write([
+      new ClipboardItem({ [outBlob.type]: outBlob })
+    ]);
+
+    setStatus("✅ Image copied (30% resized)!", "ok");
+  }catch(err){
+    console.error(err);
+    setStatus(
+      "⚠️ Copy resized image not supported on this browser. Click 'Open image' then long-press → Copy/Save.",
+      "warn"
+    );
+  }
+});
+
 btnInsertImage.addEventListener("click", () => {
   photoOnlyMode = true;
   setOrdersDisabled(true);
