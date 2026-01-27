@@ -900,56 +900,100 @@ Maraming salamat po sa tiwala! — Tatak JPD
       }
     });
 
-    btnCopyImage.addEventListener("click", async () => {
-  try{
+   btnCopyImage.addEventListener("click", async () => {
+  try {
     const url = openImgLink.href;
-    if (!url || url === "#"){
+    if (!url || url === "#") {
       setStatus("⚠️ No image to copy.", "warn");
       return;
     }
 
-    // Fetch image
+    if (!window.ClipboardItem) throw new Error("ClipboardItem not supported");
+
+    // Max size: 15MB
+    const MAX_BYTES = 15 * 1024 * 1024;
+
+    // Fetch original
     const resp = await fetch(url, { cache: "no-store" });
     const blob = await resp.blob();
 
-    if (!window.ClipboardItem) throw new Error("ClipboardItem not supported");
-
-    // Decode to bitmap (fast + safe)
     const bitmap = await createImageBitmap(blob);
 
-    // ✅ resize to 30%
-    const scale = 0.30;
-    const w = Math.max(1, Math.round(bitmap.width * scale));
-    const h = Math.max(1, Math.round(bitmap.height * scale));
+    // Start at 30%
+    let scale = 0.30;
 
-    const canvas = document.createElement("canvas");
-    canvas.width = w;
-    canvas.height = h;
-
-    const ctx = canvas.getContext("2d");
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = "high";
-    ctx.drawImage(bitmap, 0, 0, w, h);
-
-    // ✅ export smaller blob (JPEG usually smaller kaysa PNG)
+    // Prefer JPEG for smaller size
     const outType = "image/jpeg";
-    const quality = 0.85; // pwede mo ibaba (0.7) kung gusto mas maliit pa
 
-    const outBlob = await new Promise((resolve) => {
-      canvas.toBlob((b) => resolve(b), outType, quality);
-    });
+    // Try qualities from high to low
+    const qualities = [0.90, 0.85, 0.80, 0.75, 0.70, 0.65, 0.60, 0.55, 0.50];
 
-    if (!outBlob) throw new Error("Resize failed");
+    // Helper: render & export
+    async function exportWith(scale, quality) {
+      const w = Math.max(1, Math.round(bitmap.width * scale));
+      const h = Math.max(1, Math.round(bitmap.height * scale));
+
+      const canvas = document.createElement("canvas");
+      canvas.width = w;
+      canvas.height = h;
+
+      const ctx = canvas.getContext("2d");
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = "high";
+      ctx.drawImage(bitmap, 0, 0, w, h);
+
+      const outBlob = await new Promise((resolve) =>
+        canvas.toBlob((b) => resolve(b), outType, quality)
+      );
+      return outBlob;
+    }
+
+    let bestBlob = null;
+
+    // 1) Try scale=30% with decreasing quality
+    for (const q of qualities) {
+      const outBlob = await exportWith(scale, q);
+      if (!outBlob) continue;
+
+      bestBlob = outBlob; // keep last attempt
+      if (outBlob.size <= MAX_BYTES) break;
+    }
+
+    // 2) If still too big, reduce scale gradually and retry qualities
+    while (bestBlob && bestBlob.size > MAX_BYTES && scale > 0.10) {
+      scale = Math.max(0.10, +(scale - 0.05).toFixed(2)); // 0.30 -> 0.25 -> 0.20 -> 0.15 -> 0.10
+      for (const q of qualities) {
+        const outBlob = await exportWith(scale, q);
+        if (!outBlob) continue;
+
+        bestBlob = outBlob;
+        if (outBlob.size <= MAX_BYTES) break;
+      }
+      if (bestBlob.size <= MAX_BYTES) break;
+    }
+
+    if (!bestBlob) throw new Error("Resize/compress failed");
+
+    // Final check
+    if (bestBlob.size > MAX_BYTES) {
+      const mb = (bestBlob.size / (1024 * 1024)).toFixed(2);
+      setStatus(
+        `⚠️ Kahit binaba na, ${mb}MB pa rin (limit 15MB). Try lower original resolution/photo.`,
+        "warn"
+      );
+      return;
+    }
 
     await navigator.clipboard.write([
-      new ClipboardItem({ [outBlob.type]: outBlob })
+      new ClipboardItem({ [bestBlob.type]: bestBlob })
     ]);
 
-    setStatus("✅ Image copied (30% resized)!", "ok");
-  }catch(err){
+    const mb = (bestBlob.size / (1024 * 1024)).toFixed(2);
+    setStatus(`✅ Image copied! (${mb}MB, ≤ 15MB)`, "ok");
+  } catch (err) {
     console.error(err);
     setStatus(
-      "⚠️ Copy resized image not supported on this browser. Click 'Open image' then long-press → Copy/Save.",
+      "⚠️ Copy resized image not supported on this browser. Click 'Open image' then download/send instead.",
       "warn"
     );
   }
