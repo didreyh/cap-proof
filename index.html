@@ -1120,38 +1120,62 @@ btnDaily.addEventListener("click", async () => {
     }
 
     // iterate all last-7-days docs once
-    snap7.forEach((docu) => {
-      const data = docu.data();
-      const upd = data?.updatedAt?.toDate ? data.updatedAt.toDate() : null;
-      if (!upd) return;
+    // helper: choose ONLY ONE level per order (prevents double count)
+function pickOneLevel(levels){
+  if (!Array.isArray(levels)) return null;
 
-      const k = dayKey(upd);
-      const orders = data.orders || [];
+  // normal case: exactly 1
+  if (levels.length === 1) return (levels[0] === "Kinder" || levels[0] === "Elem") ? levels[0] : null;
 
-      // ====== compute per-order qty; assign to Kinder/Elem ======
-      orders.forEach(o => {
-        const qty = (o.qty && Number.isFinite(o.qty) && o.qty > 0) ? o.qty : 1;
+  // if old data has both / duplicates, pick the first valid level only
+  const firstValid = levels.find(l => l === "Kinder" || l === "Elem");
+  return firstValid || null;
+}
 
-        // last 7 days grand total
-        totalPcs7 += qty;
+// iterate all last-7-days docs once
+snap7.forEach((docu) => {
+  const data = docu.data();
+  const upd = data?.updatedAt?.toDate ? data.updatedAt.toDate() : null;
+  if (!upd) return;
 
-        // levels in your UI should be ONE (kinder OR elem), but handle safely
-        const lvls = Array.isArray(o.levels) ? o.levels : [];
-        if (lvls.includes("Kinder")){
-          dayKinder[k] = (dayKinder[k] || 0) + qty;
-          totalKinder7 += qty;
-        }
-        if (lvls.includes("Elem")){
-          dayElem[k] = (dayElem[k] || 0) + qty;
-          totalElem7 += qty;
-        }
+  const k = dayKey(upd);
+  const orders = data.orders || [];
 
-        // ====== TODAY breakdown (same as before) ======
-        if (upd >= startToday && upd <= endToday){
-          // count record once per doc (not per order)
-          // we'll increment later outside loop by using a flag:
-        }
-      });
+  // ====== per-order qty; assign to ONE level only ======
+  orders.forEach(o => {
+    const qty = (o.qty && Number.isFinite(o.qty) && o.qty > 0) ? o.qty : 1;
+
+    // last 7 days grand total (always correct)
+    totalPcs7 += qty;
+
+    // ✅ choose ONLY one level so hindi madodoble
+    const lvl = pickOneLevel(o.levels);
+
+    if (lvl === "Kinder"){
+      dayKinder[k] = (dayKinder[k] || 0) + qty;
+      totalKinder7 += qty;
+    } else if (lvl === "Elem"){
+      dayElem[k] = (dayElem[k] || 0) + qty;
+      totalElem7 += qty;
+    }
+  });
+
+  // count records saved today (per document)
+  if (upd >= startToday && upd <= endToday){
+    totalRecordsToday++;
+
+    orders.forEach(o => {
+      const qty = (o.qty && Number.isFinite(o.qty) && o.qty > 0) ? o.qty : 1;
+
+      // ✅ today level totals = ONE level only
+      const lvl = pickOneLevel(o.levels);
+      if (lvl) inc(levelCounts, lvl, qty);
+
+      if (o.color) inc(colorCounts, o.color, qty);
+    });
+  }
+});
+
 
       // count records saved today (per document)
       if (upd >= startToday && upd <= endToday){
