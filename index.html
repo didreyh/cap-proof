@@ -1054,104 +1054,50 @@ btnInsertImage.addEventListener("click", () => {
       if (e.target === scanBack) closeScanner();
     });
 
-
+  // ---------- DAILY SUMMARY ----------
 function showDaily(text, type="ok"){
   dailyOutput.style.display = "block";
   dailyOutput.className = "status " + type;
   dailyOutput.textContent = text;
 }
 
-// counts helper
-function inc(map, key, n=1){
-  map[key] = (map[key] || 0) + n;
-}
-
-// Load Today's Summary
-// Load Today's Summary + Last 7 Days pcs
-btnDaily.addEventListener("click", async () => {
-  try{
-    btnDaily.disabled = true;
-    btnDaily.textContent = "Loading...";
-
-    // -------- TODAY range (local time) --------
-    const startToday = new Date();
-    startToday.setHours(0,0,0,0);
-
-    const endToday = new Date();
-    endToday.setHours(23,59,59,999);
-
-    // -------- LAST 7 DAYS range (including today) --------
-    const start7 = new Date();
-    start7.setHours(0,0,0,0);
-    start7.setDate(start7.getDate() - 6);
-
-    const end7 = new Date();
-    end7.setHours(23,59,59,999);
-
-    // Query packingLogs where updatedAt is within last 7 days
-    const logsRef = collection(db, "packingLogs");
-    const q7 = query(
-      logsRef,
-      where("updatedAt", ">=", start7),
-      where("updatedAt", "<=", end7)
-    );
-
-    const snap7 = await getDocs(q7);
-
-    // Load Today's Summary
-// Load Today's Summary + Last 7 Days pcs
 btnDaily.addEventListener("click", async () => {
   try {
     btnDaily.disabled = true;
     btnDaily.textContent = "Loading...";
 
-    // ---------------- HELPERS ----------------
-    function inc(obj, key, by = 1) {
+    // helpers
+    function pad2(n){ return String(n).padStart(2,"0"); }
+    function dayKey(d){
+      return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+    }
+    function niceDayLabel(d){
+      return d.toLocaleDateString([], { month:"short", day:"2-digit" });
+    }
+    function inc(obj, key, by=1){
       if (!key) return;
       obj[key] = (obj[key] || 0) + by;
     }
-
-    function pad2(n) {
-      return String(n).padStart(2, "0");
-    }
-
-    function dayKey(d) {
-      return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
-    }
-
-    function niceDayLabel(d) {
-      return d.toLocaleDateString([], { month: "short", day: "2-digit" });
-    }
-
-    // Make level strictly ONE: Kinder OR Elem (defensive)
-    function normalizeLevel(o) {
+    function normalizeLevel(o){
       const lvls = Array.isArray(o?.levels) ? o.levels : [];
       if (lvls.includes("Kinder")) return "Kinder";
       if (lvls.includes("Elem")) return "Elem";
       return null;
     }
-
-    function getQty(o) {
+    function getQty(o){
       const q = Number(o?.qty);
       return Number.isFinite(q) && q > 0 ? q : 1;
     }
 
-    // -------- TODAY range (local time) --------
-    const startToday = new Date();
-    startToday.setHours(0, 0, 0, 0);
+    // TODAY
+    const startToday = new Date(); startToday.setHours(0,0,0,0);
+    const endToday = new Date(); endToday.setHours(23,59,59,999);
 
-    const endToday = new Date();
-    endToday.setHours(23, 59, 59, 999);
-
-    // -------- LAST 7 DAYS range (including today) --------
-    const start7 = new Date();
-    start7.setHours(0, 0, 0, 0);
+    // LAST 7 DAYS
+    const start7 = new Date(); start7.setHours(0,0,0,0);
     start7.setDate(start7.getDate() - 6);
+    const end7 = new Date(); end7.setHours(23,59,59,999);
 
-    const end7 = new Date();
-    end7.setHours(23, 59, 59, 999);
-
-    // Query packingLogs where updatedAt is within last 7 days
     const logsRef = collection(db, "packingLogs");
     const q7 = query(
       logsRef,
@@ -1161,19 +1107,16 @@ btnDaily.addEventListener("click", async () => {
 
     const snap7 = await getDocs(q7);
 
-    // TODAY breakdown (levels + colors)
-    const levelCounts = {}; // Kinder/Elem totals today
-    const colorCounts = {}; // color totals today
+    const levelCounts = {};
+    const colorCounts = {};
     let totalRecordsToday = 0;
 
-    // LAST 7 DAYS breakdown (by day + by level)
-    const dayKinder = {}; // { "YYYY-MM-DD": pcs }
-    const dayElem = {};   // { "YYYY-MM-DD": pcs }
+    const dayKinder = {};
+    const dayElem = {};
     let totalKinder7 = 0;
     let totalElem7 = 0;
     let totalPcs7 = 0;
 
-    // iterate all last-7-days docs once
     snap7.forEach((docu) => {
       const data = docu.data();
       const upd = data?.updatedAt?.toDate ? data.updatedAt.toDate() : null;
@@ -1182,88 +1125,57 @@ btnDaily.addEventListener("click", async () => {
       const k = dayKey(upd);
       const orders = Array.isArray(data.orders) ? data.orders : [];
 
-      // ---------- LAST 7 DAYS totals ----------
       orders.forEach((o) => {
         const qty = getQty(o);
-
-        // grand total pcs (all levels)
         totalPcs7 += qty;
 
-        // defensive: count into ONE level only
         const lvl = normalizeLevel(o);
-
-        // DEBUG: detect bad historical data (optional; safe to keep)
-        const lvls = Array.isArray(o?.levels) ? o.levels : [];
-        if (lvls.length > 1) {
-          console.log("⚠️ MULTI LEVEL ORDER DETECTED:", docu.id, lvls, o);
-        }
-
-        if (lvl === "Kinder") {
+        if (lvl === "Kinder"){
           dayKinder[k] = (dayKinder[k] || 0) + qty;
           totalKinder7 += qty;
-        } else if (lvl === "Elem") {
+        } else if (lvl === "Elem"){
           dayElem[k] = (dayElem[k] || 0) + qty;
           totalElem7 += qty;
         }
       });
 
-      // ---------- TODAY breakdown (per document) ----------
-      if (upd >= startToday && upd <= endToday) {
+      if (upd >= startToday && upd <= endToday){
         totalRecordsToday++;
-
         orders.forEach((o) => {
           const qty = getQty(o);
-
           const lvl = normalizeLevel(o);
           if (lvl) inc(levelCounts, lvl, qty);
-
           if (o?.color) inc(colorCounts, o.color, qty);
         });
       }
     });
 
-    // build TODAY output
     const dateStr = new Date().toLocaleDateString([], {
-      year: "numeric",
-      month: "short",
-      day: "2-digit",
+      year:"numeric", month:"short", day:"2-digit"
     });
 
-    const lvlLines = ["Kinder", "Elem"]
-      .map((k) => `• ${k}: ${levelCounts[k] || 0}`)
+    const lvlLines = ["Kinder","Elem"]
+      .map(k => `• ${k}: ${levelCounts[k] || 0}`)
       .join("\n");
 
     const colorLines = [
-      "White",
-      "Sky Blue",
-      "Fuchsia Pink",
-      "Royal Blue",
-      "Black",
-      "Yellow Gold",
-      "Emerald Green",
-      "Red",
-      "Maroon",
-      "Apple Green",
-      "Navy blue",
-    ]
-      .map((c) => `• ${c}: ${colorCounts[c] || 0}`)
-      .join("\n");
+      "White","Sky Blue","Fuchsia Pink","Royal Blue","Black","Yellow Gold",
+      "Emerald Green","Red","Maroon","Apple Green","Navy blue","Violet"
+    ].map(c => `• ${c}: ${colorCounts[c] || 0}`).join("\n");
 
-    // build LAST 7 DAYS lines (oldest → newest)
     const kinderLines = [];
     const elemLines = [];
 
-    for (let i = 0; i < 7; i++) {
+    for (let i=0;i<7;i++){
       const d = new Date(start7);
-      d.setDate(start7.getDate() + i);
+      d.setDate(start7.getDate()+i);
       const key = dayKey(d);
-
       kinderLines.push(`${niceDayLabel(d)} - ${(dayKinder[key] || 0)} pcs`);
       elemLines.push(`${niceDayLabel(d)} - ${(dayElem[key] || 0)} pcs`);
     }
 
     showDaily(
-      `📅 Today: ${dateStr}
+`📅 Today: ${dateStr}
 📦 Records saved today: ${totalRecordsToday}
 
 🏫 LEVEL TOTALS (any color)
@@ -1281,8 +1193,8 @@ ${kinderLines.join("\n")}
 
 ELEM (7 days): ${totalElem7} pcs
 ${elemLines.join("\n")}`,
-      "ok"
-    );
+"ok");
+
   } catch (err) {
     console.error(err);
     showDaily("❌ Daily summary error:\n" + (err?.message || err), "bad");
@@ -1291,6 +1203,9 @@ ${elemLines.join("\n")}`,
     btnDaily.textContent = "Load Today Summary";
   }
 });
+
+
+
 
 
 
