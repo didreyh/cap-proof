@@ -324,9 +324,6 @@
   collection, getDocs, query, where
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-    import {
-      getStorage, ref, uploadBytes, getDownloadURL
-    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js";
 
     // ZXing barcode scanner
     import { BrowserMultiFormatReader } from "https://cdn.jsdelivr.net/npm/@zxing/browser@0.1.5/+esm";
@@ -334,7 +331,6 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-    const storage = getStorage(app);
 
     // UI
     const statusEl = document.getElementById("status");
@@ -351,17 +347,11 @@
     const btnAddOrder = document.getElementById("btnAddOrder");
     const btnRemoveOrder = document.getElementById("btnRemoveOrder");
 
-    const photoInput = document.getElementById("photoInput");
     const btnSave = document.getElementById("btnSave");
     const btnCancelCreate = document.getElementById("btnCancelCreate");
 
     const recordMeta = document.getElementById("recordMeta");
-    const recordImg = document.getElementById("recordImg");
-    const imgPlaceholder = document.getElementById("imgPlaceholder");
-    const openImgLink = document.getElementById("openImgLink");
-    const btnCopyImage = document.getElementById("btnCopyImage");
-    const btnInsertImage = document.getElementById("btnInsertImage");
-    const messageBox = document.getElementById("messageBox");
+     const messageBox = document.getElementById("messageBox");
     const btnCopyMsg = document.getElementById("btnCopyMsg");
     const btnNewEntry = document.getElementById("btnNewEntry");
     const ordersPreview = document.getElementById("ordersPreview");
@@ -378,7 +368,6 @@
     let currentUser = null;
     let currentAWB = "";
     let currentRecord = null;
-let photoOnlyMode = false;
 
 function setOrdersDisabled(disabled){
   // disable all inputs inside ordersWrap
@@ -617,15 +606,15 @@ if (m) autoFocusQtyIfReady(Number(m[3]));
   currentRecord = snap.data();
   await renderRecord(currentAWB, currentRecord);
 
-  // ✅ If may photo na → view only
- if (currentRecord?.photoUrl) {
-  photoOnlyMode = false;
-  setOrdersDisabled(true); // ✅ LOCK orders
-  setStatus("⚠️ Existing record found (photo already saved). View only.", "warn");
+  setStatus("✅ Existing record found.", "ok");
   hide(createSection);
   show(viewSection);
-   
-  return;
+} else {
+  currentRecord = null;
+  setStatus("No record found → creating new entry.", "ok");
+  resetCreateForm();
+  show(createSection);
+  hide(viewSection);
 }
 
 // ✅ Existing record but NO photo → show VIEW template with Insert Picture
@@ -702,34 +691,25 @@ return;
         }
         currentAWB = awb;
         
-        const file = photoInput.files?.[0] || null;
         const orders = readOrdersFromUI();
         const ordersText = summarizeOrders(orders);
 clearSaveError(); // clear old errors before validating
 
-if (!photoOnlyMode) {
-  for (let i = 0; i < orders.length; i++) {
-    const o = orders[i];
+clearSaveError();
 
-    if (!o.levels || o.levels.length !== 1) {
-      showSaveError(`❌ Order #${i + 1}: Please select ONE level (Kinder / Elem).`);
-      return;
-    }
+for (let i = 0; i < orders.length; i++) {
+  const o = orders[i];
 
-    if (!o.color) {
-      showSaveError(`❌ Order #${i + 1}: Please select ONE color.`);
-      return;
-    }
-
-    if (!o.qty || !Number.isFinite(o.qty) || o.qty < 1) {
-      showSaveError(`❌ Order #${i + 1}: Quantity is required (minimum 1).`);
-      return;
-    }
+  if (!o.levels || o.levels.length !== 1) {
+    showSaveError(`❌ Order #${i + 1}: Please select ONE level (Kinder / Elem).`);
+    return;
   }
-} else {
-  // ✅ photo-only mode: require photo
-  if (!file) {
-    showSaveError("❌ Please upload a photo proof first.");
+  if (!o.color) {
+    showSaveError(`❌ Order #${i + 1}: Please select ONE color.`);
+    return;
+  }
+  if (!o.qty || !Number.isFinite(o.qty) || o.qty < 1) {
+    showSaveError(`❌ Order #${i + 1}: Quantity is required (minimum 1).`);
     return;
   }
 }
@@ -765,17 +745,13 @@ if (currentRecord?.photoUrl && file) {
   // write firestore
 const docRef = doc(db, "packingLogs", awb);
 
+const docRef = doc(db, "packingLogs", awb);
+
 const payload = {
   awb,
+  orders,
+  ordersText,
 
-  // ✅ if photo-only mode, keep old orders
-  orders: photoOnlyMode ? (currentRecord?.orders || []) : orders,
-  ordersText: photoOnlyMode ? (currentRecord?.ordersText || "") : ordersText,
-
-  // ✅ keep existing photo if none uploaded
-  photoUrl: photoUrl || (currentRecord?.photoUrl || ""),
-
-  // ✅ preserve original creator + createdAt if already exists
   createdAt: currentRecord?.createdAt || serverTimestamp(),
   createdByUid: currentRecord?.createdByUid || currentUser.uid,
   createdByEmail: currentRecord?.createdByEmail || (currentUser.email || ""),
@@ -810,49 +786,19 @@ setOrdersDisabled(false);
     });
 
     // ---------- Render record + copy ----------
-    async function renderRecord(awb, rec){
-      // timestamp display
-      let dt = "";
-      try{
-        const createdAt = rec?.createdAt?.toDate ? rec.createdAt.toDate() : null;
-        const updatedAt = rec?.updatedAt?.toDate ? rec.updatedAt.toDate() : null;
-        dt = createdAt ? formatDateTime(createdAt) : (updatedAt ? formatDateTime(updatedAt) : "");
-      }catch{}
+   async function renderRecord(awb, rec){
+  let dt = "";
+  try{
+    const createdAt = rec?.createdAt?.toDate ? rec.createdAt.toDate() : null;
+    const updatedAt = rec?.updatedAt?.toDate ? rec.updatedAt.toDate() : null;
+    dt = createdAt ? formatDateTime(createdAt) : (updatedAt ? formatDateTime(updatedAt) : "");
+  }catch{}
 
-      const ordersText = rec?.ordersText || summarizeOrders(rec?.orders || []);
-      recordMeta.textContent = `AWB: ${awb} • ${dt ? ("Saved: " + dt + " • ") : ""}By: ${rec?.createdByEmail || "-"}`;
+  const ordersText = rec?.ordersText || summarizeOrders(rec?.orders || []);
+  recordMeta.textContent = `AWB: ${awb} • ${dt ? ("Saved: " + dt + " • ") : ""}By: ${rec?.createdByEmail || "-"}`;
 
-      // image
-     const url = rec?.photoUrl || "";
-
-if (url){
-  // ✅ has image
-  recordImg.src = url;
-  recordImg.classList.remove("hidden");
-  imgPlaceholder.classList.add("hidden");
-
-  openImgLink.href = url;
-  openImgLink.classList.remove("hidden");
-  btnCopyImage.classList.remove("hidden");
-
-  btnInsertImage.classList.add("hidden");
-} else {
-  // ✅ NO IMAGE
-  recordImg.classList.add("hidden");
-  imgPlaceholder.classList.remove("hidden");
-  imgPlaceholder.textContent = "NO IMAGE";
-
-  openImgLink.href = "#";
-  openImgLink.classList.add("hidden");
-  btnCopyImage.classList.add("hidden");
-
-  btnInsertImage.classList.remove("hidden");
-}
-
-
-      // message template (edit mo later bestie)
-      const nowText = dt || formatDateTime(new Date());
-      const msg =
+  const nowText = dt || formatDateTime(new Date());
+  const msg =
 `Ready to ship na po ang order nyo ✅ 
 
 Maraming salamat po sa tiwala! — Tatak JPD
@@ -860,12 +806,11 @@ Maraming salamat po sa tiwala! — Tatak JPD
 🕒 Packed: ${nowText}
 `;
 
-      messageBox.value = msg;
-      ordersPreview.innerHTML =
-  `<span class="hdr">ORDERS:</span>` +
-  (ordersText || "—");
+  messageBox.value = msg;
 
-    }
+  ordersPreview.innerHTML =
+    `<span class="hdr">ORDERS:</span>` + (ordersText || "—");
+}
 
     btnCopyMsg.addEventListener("click", async () => {
       try{
