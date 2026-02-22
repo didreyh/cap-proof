@@ -256,12 +256,6 @@
           <button id="btnRemoveOrder" class="smallBtn">🗑️ Remove Last</button>
         </div>
 
-        <div style="margin-top:16px">
-          <label>Upload Photo Proof (JPEG/PNG)</label>
-          <input id="photoInput" type="file" accept="image/*" />
-          <div class="hint">Tip: mas mabilis kung photo muna (video mabigat). Pwede natin timelapse later.</div>
-        </div>
-
      <div id="createError" class="status bad" style="display:none; margin-top:12px;"></div>
 
 <div class="row" style="margin-top:14px">
@@ -275,34 +269,20 @@
         <div class="sectionTitle">Record Found</div>
         <div id="recordMeta" class="hint"></div>
 
-        <div class="grid2" style="margin-top:12px">
-          <div class="preview">
-            <b>Photo Proof</b>
-            <div class="imgWrap" style="margin-top:10px">
-              <div id="imgPlaceholder" style="font-weight:1000; font-size:18px; color:#6b7280;">NO IMAGE</div>
-              <img id="recordImg" class="hidden" />
-            </div>
-            <div class="row" style="margin-top:10px">
-  <a id="openImgLink" class="smallBtn" href="#" target="_blank" rel="noopener">Open image</a>
-  <button id="btnCopyImage" class="smallBtn">Copy image</button>
+       <div style="margin-top:12px">
+  <div class="copyBox">
+    <b>Ready-to-copy message</b>
+    <div class="hint" style="margin:8px 0 10px">Click the button para auto-copy (no drag).</div>
+    <textarea id="messageBox" readonly></textarea>
+    <div class="row" style="margin-top:10px">
+      <button id="btnCopyMsg" class="btn">Copy Message</button>
+      <button id="btnNewEntry" class="btn secondary">Create new entry anyway</button>
+    </div>
 
-  <button id="btnInsertImage" class="smallBtn hidden">➕ Insert Image</button>
+    <!-- ORDER LIST ONLY -->
+    <div class="hint" id="ordersPreview"></div>
+  </div>
 </div>
-            <div class="hint"></div>
-          </div>
-
-          <div class="copyBox">
-            <b>Ready-to-copy message</b>
-            <div class="hint" style="margin:8px 0 10px">Click the button para auto-copy (no drag).</div>
-            <textarea id="messageBox" readonly></textarea>
-            <div class="row" style="margin-top:10px">
-              <button id="btnCopyMsg" class="btn">Copy Message</button>
-              <button id="btnNewEntry" class="btn secondary">Create new entry anyway</button>
-            </div>
-            <div class="hint" id="ordersPreview"></div>
-          </div>
-        </div>
-      </div>
 <hr>
 
 <!-- DAILY SUMMARY -->
