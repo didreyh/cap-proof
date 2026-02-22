@@ -134,51 +134,34 @@
     .grid3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px}
     @media (max-width:900px){ .grid3{grid-template-columns:1fr} }
 
-    .preview{
-      border:1px solid var(--border);
-      border-radius:18px;
-      padding:12px;
-      background:#fff;
-    }
-    .imgWrap{
-      border:1px solid var(--border);
-      border-radius:18px;
-      overflow:hidden;
-      background:#fff;
-      min-height:220px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      color:var(--muted);
-    }
-    .imgWrap img{max-width:100%; display:block}
     .copyBox{
       border:1px solid var(--border);
       border-radius:18px;
       padding:14px;
       background:#fff;
     }
+
     /* ===== ORDERS (right side) ===== */
-#ordersPreview{
-  margin-top: 14px;
-  padding: 14px 14px;
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  background: #fff;
+    #ordersPreview{
+      margin-top: 14px;
+      padding: 14px 14px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: #fff;
 
-  font-size: 20px;      /* laki ng text */
-  line-height: 1.55;    /* hindi dikit-dikit */
-  font-weight: 800;
-  white-space: pre-line; /* important: respects \n line breaks */
-}
+      font-size: 20px;      /* laki ng text */
+      line-height: 1.55;    /* hindi dikit-dikit */
+      font-weight: 800;
+      white-space: pre-line; /* respects \n */
+    }
 
-#ordersPreview .hdr{
-  font-size: 26px;
-  font-weight: 1000;
-  letter-spacing: 0.5px;
-  margin-bottom: 8px;
-  display:block;
-}
+    #ordersPreview .hdr{
+      font-size: 26px;
+      font-weight: 1000;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+      display:block;
+    }
 
     textarea{
       width:100%;
@@ -218,7 +201,7 @@
             <span class="emoji">📦</span>
             <div>
               <h1>Tatak JPD — Packing Proof</h1>
-              <div class="subtitle">Enter/Scan AWB → if no record, create entry → upload photo → copy message</div>
+              <div class="subtitle">Enter/Scan AWB → if no record, create entry → copy message</div>
             </div>
           </div>
         </div>
@@ -247,7 +230,7 @@
       <!-- CREATE FORM -->
       <div id="createSection" class="hidden">
         <div class="sectionTitle">Create Packing Record</div>
-        <div class="hint" style="margin-bottom:10px">If first time ng AWB na ’to, dito ka mag-e-entry ng orders + upload photo proof.</div>
+        <div class="hint" style="margin-bottom:10px">If first time ng AWB na ’to, dito ka mag-e-entry ng orders.</div>
 
         <div id="ordersWrap"></div>
 
@@ -256,48 +239,48 @@
           <button id="btnRemoveOrder" class="smallBtn">🗑️ Remove Last</button>
         </div>
 
-     <div id="createError" class="status bad" style="display:none; margin-top:12px;"></div>
+        <div id="createError" class="status bad" style="display:none; margin-top:12px;"></div>
 
-<div class="row" style="margin-top:14px">
-  <button id="btnSave" class="btn">Save Packing Log</button>
-  <button id="btnCancelCreate" class="btn secondary">Cancel</button>
-</div>
- </div>
+        <div class="row" style="margin-top:14px">
+          <button id="btnSave" class="btn">Save Packing Log</button>
+          <button id="btnCancelCreate" class="btn secondary">Cancel</button>
+        </div>
+      </div>
 
       <!-- VIEW RECORD -->
       <div id="viewSection" class="hidden">
         <div class="sectionTitle">Record Found</div>
         <div id="recordMeta" class="hint"></div>
 
-       <div style="margin-top:12px">
-  <div class="copyBox">
-    <b>Ready-to-copy message</b>
-    <div class="hint" style="margin:8px 0 10px">Click the button para auto-copy (no drag).</div>
-    <textarea id="messageBox" readonly></textarea>
-    <div class="row" style="margin-top:10px">
-      <button id="btnCopyMsg" class="btn">Copy Message</button>
-      <button id="btnNewEntry" class="btn secondary">Create new entry anyway</button>
-    </div>
+        <div style="margin-top:12px">
+          <div class="copyBox">
+            <b>Ready-to-copy message</b>
+            <div class="hint" style="margin:8px 0 10px">Click the button para auto-copy (no drag).</div>
+            <textarea id="messageBox" readonly></textarea>
+            <div class="row" style="margin-top:10px">
+              <button id="btnCopyMsg" class="btn">Copy Message</button>
+              <button id="btnNewEntry" class="btn secondary">Create new entry anyway</button>
+            </div>
+            <div class="hint" id="ordersPreview"></div>
+          </div>
+        </div>
+      </div>
 
-    <!-- ORDER LIST ONLY -->
-    <div class="hint" id="ordersPreview"></div>
-  </div>
-</div>
-<hr>
+      <hr>
 
-<!-- DAILY SUMMARY -->
-<div id="dailySection">
-  <div class="sectionTitle">📊 Daily Summary</div>
-  <div class="hint">Today totals (Kinder/Elem + Colors)</div>
+      <!-- DAILY SUMMARY -->
+      <div id="dailySection">
+        <div class="sectionTitle">📊 Daily Summary</div>
+        <div class="hint">Today totals (Kinder/Elem + Colors)</div>
 
-  <div class="row" style="margin-top:10px">
-    <button id="btnDaily" class="btn secondary">Load Today Summary</button>
-  </div>
+        <div class="row" style="margin-top:10px">
+          <button id="btnDaily" class="btn secondary">Load Today Summary</button>
+        </div>
 
-  <div id="dailyOutput" class="status" style="margin-top:12px; display:none"></div>
-</div>
+        <div id="dailyOutput" class="status" style="margin-top:12px; display:none"></div>
+      </div>
 
-      <div class="foot">Private system — login required • Stored in Firebase (Auth + Firestore + Storage)</div>
+      <div class="foot">Private system — login required • Stored in Firebase (Auth + Firestore)</div>
     </div>
   </div>
 
@@ -316,14 +299,11 @@
   <script type="module">
     import { firebaseConfig } from "./firebase.js";
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
     import {
-      getAuth, onAuthStateChanged, signOut
-    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-    import {
-  getFirestore, doc, getDoc, setDoc, serverTimestamp,
-  collection, getDocs, query, where
-} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-
+      getFirestore, doc, getDoc, setDoc, serverTimestamp,
+      collection, getDocs, query, where
+    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
     // ZXing barcode scanner
     import { BrowserMultiFormatReader } from "https://cdn.jsdelivr.net/npm/@zxing/browser@0.1.5/+esm";
@@ -351,13 +331,14 @@
     const btnCancelCreate = document.getElementById("btnCancelCreate");
 
     const recordMeta = document.getElementById("recordMeta");
-     const messageBox = document.getElementById("messageBox");
+    const messageBox = document.getElementById("messageBox");
     const btnCopyMsg = document.getElementById("btnCopyMsg");
     const btnNewEntry = document.getElementById("btnNewEntry");
     const ordersPreview = document.getElementById("ordersPreview");
+
     const btnDaily = document.getElementById("btnDaily");
     const dailyOutput = document.getElementById("dailyOutput");
-    
+
     // Scanner modal
     const scanBack = document.getElementById("scanBack");
     const btnCloseScan = document.getElementById("btnCloseScan");
@@ -369,36 +350,23 @@
     let currentAWB = "";
     let currentRecord = null;
 
-function setOrdersDisabled(disabled){
-  // disable all inputs inside ordersWrap
-  ordersWrap.querySelectorAll("input").forEach(inp => {
-    inp.disabled = disabled;
-  });
-
-  // hide add/remove buttons para di magulo
-  btnAddOrder.style.display = disabled ? "none" : "inline-block";
-  btnRemoveOrder.style.display = disabled ? "none" : "inline-block";
-}
-
     // ---------- helpers ----------
     function setStatus(msg, type="ok"){
       statusEl.className = "status " + type;
       statusEl.textContent = msg;
     }
+
     const saveError = document.getElementById("createError");
+    function showSaveError(msg){
+      saveError.textContent = msg;
+      saveError.style.display = "block";
+    }
+    function clearSaveError(){
+      saveError.style.display = "none";
+      saveError.textContent = "";
+    }
 
-function showSaveError(msg){
-  if (typeof playErrorSound === "function") playErrorSound();
-  saveError.textContent = msg;
-  saveError.style.display = "block";
-}
-
-function clearSaveError(){
-  saveError.style.display = "none";
-  saveError.textContent = "";
-}
-
-function show(el){ el.classList.remove("hidden"); }
+    function show(el){ el.classList.remove("hidden"); }
     function hide(el){ el.classList.add("hidden"); }
     function cleanAWB(s){
       return (s || "").trim().replace(/\s+/g,"");
@@ -408,9 +376,6 @@ function show(el){ el.classList.remove("hidden"); }
         const d = ts instanceof Date ? ts : new Date(ts);
         return d.toLocaleString([], { year:"numeric", month:"short", day:"2-digit", hour:"2-digit", minute:"2-digit" });
       }catch{ return ""; }
-    }
-    function escapeHtml(s){
-      return (s||"").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
     }
 
     // ---------- Orders UI (boxes) ----------
@@ -423,7 +388,7 @@ function show(el){ el.classList.remove("hidden"); }
       const wrap = document.createElement("div");
       wrap.className = "pillRow";
 
-      options.forEach((opt, idx) => {
+      options.forEach((opt) => {
         const label = document.createElement("label");
         label.className = "pill";
         const input = document.createElement("input");
@@ -435,9 +400,8 @@ function show(el){ el.classList.remove("hidden"); }
         label.appendChild(document.createTextNode(opt));
 
         label.addEventListener("click", (e) => {
-  e.preventDefault(); // ✅ IMPORTANT: stop double-toggle
+          e.preventDefault(); // stop double-toggle
           if (!multiple){
-            // clear all active in same group
             wrap.querySelectorAll(".pill").forEach(p => p.classList.remove("active"));
             label.classList.add("active");
             input.checked = true;
@@ -445,9 +409,8 @@ function show(el){ el.classList.remove("hidden"); }
             input.checked = !input.checked;
             label.classList.toggle("active", input.checked);
           }
-          // ✅ auto focus qty when level+color selected
-const m = String(name || "").match(/^((level|color))_(\d+)$/);
-if (m) autoFocusQtyIfReady(Number(m[3]));
+          const m = String(name || "").match(/^((level|color))_(\d+)$/);
+          if (m) autoFocusQtyIfReady(Number(m[3]));
         });
 
         wrap.appendChild(label);
@@ -465,7 +428,6 @@ if (m) autoFocusQtyIfReady(Number(m[3]));
       header.innerHTML = `<div>Order #${orderIndex + 1}</div><div style="color:#6b7280;font-weight:900">pick level(s) + 1 color</div>`;
       box.appendChild(header);
 
-      /* ✅ CHANGED ONLY: grid3 with TASSEL COLOR (Optional) */
       const grid = document.createElement("div");
       grid.className = "grid3";
 
@@ -491,7 +453,6 @@ if (m) autoFocusQtyIfReady(Number(m[3]));
       grid.appendChild(mid);
       grid.appendChild(right);
       box.appendChild(grid);
-      /* ✅ END CHANGE */
 
       // quantity
       const qtyWrap = document.createElement("div");
@@ -512,7 +473,18 @@ if (m) autoFocusQtyIfReady(Number(m[3]));
       }
     }
 
-    /* ✅ CHANGED ONLY: read tassel + default to cap */
+    function autoFocusQtyIfReady(orderIndex){
+      const box = ordersWrap.querySelector(`.orderBox[data-order-index="${orderIndex}"]`);
+      if (!box) return;
+
+      const lvl = box.querySelector(`input[name="level_${orderIndex}"]:checked`);
+      const col = box.querySelector(`input[name="color_${orderIndex}"]:checked`);
+      if (lvl && col){
+        const qtyInput = box.querySelector('input[data-role="qty"]');
+        qtyInput?.focus?.();
+      }
+    }
+
     function readOrdersFromUI(){
       const orders = [];
       [...ordersWrap.children].forEach((box) => {
@@ -551,11 +523,8 @@ if (m) autoFocusQtyIfReady(Number(m[3]));
 
       return orders;
     }
-    /* ✅ END CHANGE */
 
-    /* ✅ CHANGED ONLY: include tassel line only when customized */
     function summarizeOrders(orders){
-      // Example: "Order1: Kinder+Elem, Baby Pink, qty 36 | Order2: SHS, Black"
       if (!orders?.length) return "No order details.";
       return orders.map((o, i) => {
         const lvl = (o.levels?.length ? o.levels.join("+") : "No level");
@@ -569,7 +538,6 @@ if (m) autoFocusQtyIfReady(Number(m[3]));
         return `#${i+1} ${lvl} • Cap: ${cap}${tasselPart} • ${qty}`;
       }).join("\n");
     }
-    /* ✅ END CHANGE */
 
     // ---------- Auth ----------
     onAuthStateChanged(auth, (user) => {
@@ -603,47 +571,23 @@ if (m) autoFocusQtyIfReady(Number(m[3]));
       const snap = await getDoc(docRef);
 
       if (snap.exists()){
-  currentRecord = snap.data();
-  await renderRecord(currentAWB, currentRecord);
+        currentRecord = snap.data();
+        await renderRecord(currentAWB, currentRecord);
 
-  setStatus("✅ Existing record found.", "ok");
-  hide(createSection);
-  show(viewSection);
-} else {
-  currentRecord = null;
-  setStatus("No record found → creating new entry.", "ok");
-  resetCreateForm();
-  show(createSection);
-  hide(viewSection);
-}
-
-// ✅ Existing record but NO photo → show VIEW template with Insert Picture
-photoOnlyMode = true;
-setOrdersDisabled(true);
-clearSaveError();
-resetCreateForm();
-
-setStatus("✅ Existing record found but NO photo yet → Click 'Insert Picture' to upload.", "ok");
-hide(createSection);
-show(viewSection);
-return;
-
-
-
-} else {
-  currentRecord = null;
-  photoOnlyMode = false;
-  setOrdersDisabled(false);
-  setStatus("No record found → creating new entry.", "ok");
-  resetCreateForm();
-  show(createSection);
-}
-
+        setStatus("✅ Existing record found.", "ok");
+        hide(createSection);
+        show(viewSection);
+      } else {
+        currentRecord = null;
+        setStatus("No record found → creating new entry.", "ok");
+        resetCreateForm();
+        show(createSection);
+        hide(viewSection);
+      }
     }
 
     function resetCreateForm(){
       // Keep orders as-is (so mabilis)
-      photoInput.value = "";
     }
 
     btnContinue.addEventListener("click", () => findOrCreateFlow(awbInput.value));
@@ -655,15 +599,10 @@ return;
     });
 
     btnNewEntry.addEventListener("click", () => {
-  // allow create even if record exists (overwrite)
-  photoOnlyMode = false;
-  setOrdersDisabled(false);
-  setStatus("⚠️ Creating new entry anyway (will overwrite same AWB).", "warn");
-  show(createSection);
-  hide(viewSection);
-});
-
-
+      setStatus("⚠️ Creating new entry anyway (will overwrite same AWB).", "warn");
+      show(createSection);
+      hide(viewSection);
+    });
 
     btnCancelCreate.addEventListener("click", () => {
       hide(createSection);
@@ -681,7 +620,7 @@ return;
       }
     });
 
-    // ---------- Save (Firestore + Storage) ----------
+    // ---------- Save (Firestore) ----------
     btnSave.addEventListener("click", async () => {
       try{
         const awb = cleanAWB(awbInput.value || currentAWB);
@@ -690,88 +629,54 @@ return;
           return;
         }
         currentAWB = awb;
-        
+
         const orders = readOrdersFromUI();
         const ordersText = summarizeOrders(orders);
-clearSaveError(); // clear old errors before validating
 
-clearSaveError();
+        clearSaveError();
 
-for (let i = 0; i < orders.length; i++) {
-  const o = orders[i];
+        // ✅ strict validation (same as your rules)
+        for (let i = 0; i < orders.length; i++) {
+          const o = orders[i];
 
-  if (!o.levels || o.levels.length !== 1) {
-    showSaveError(`❌ Order #${i + 1}: Please select ONE level (Kinder / Elem).`);
-    return;
-  }
-  if (!o.color) {
-    showSaveError(`❌ Order #${i + 1}: Please select ONE color.`);
-    return;
-  }
-  if (!o.qty || !Number.isFinite(o.qty) || o.qty < 1) {
-    showSaveError(`❌ Order #${i + 1}: Quantity is required (minimum 1).`);
-    return;
-  }
-}
-
-
-        // validate at least one color chosen per order (optional strict)
-        // We'll allow but warn:
-        
-        btnSave.disabled = true;
-        btnSave.textContent = "Saving...";
-        
-        // upload photo (optional but recommended)
-let photoUrl = "";
-
-  // ✅ If may existing photo na, bawal mag-upload ng bago
-// ✅ If may photo na already, bawal palitan
-if (currentRecord?.photoUrl && file) {
-  showSaveError("❌ May photo na itong AWB. Bawal na palitan.");
-  return;
-}
-
-        if (file){
-          const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
-          const path = `packingProofs/${currentUser.uid}/${awb}.${ext}`;
-          const storageRef = ref(storage, path);
-
-          await uploadBytes(storageRef, file, { contentType: file.type || "image/jpeg" });
-          photoUrl = await getDownloadURL(storageRef);
+          if (!o.levels || o.levels.length !== 1) {
+            showSaveError(`❌ Order #${i + 1}: Please select ONE level (Kinder / Elem).`);
+            return;
+          }
+          if (!o.color) {
+            showSaveError(`❌ Order #${i + 1}: Please select ONE color.`);
+            return;
+          }
+          if (!o.qty || !Number.isFinite(o.qty) || o.qty < 1) {
+            showSaveError(`❌ Order #${i + 1}: Quantity is required (minimum 1).`);
+            return;
+          }
         }
 
+        btnSave.disabled = true;
+        btnSave.textContent = "Saving...";
 
+        const docRef = doc(db, "packingLogs", awb);
 
-  // write firestore
-const docRef = doc(db, "packingLogs", awb);
+        const payload = {
+          awb,
+          orders,
+          ordersText,
 
-const docRef = doc(db, "packingLogs", awb);
+          createdAt: currentRecord?.createdAt || serverTimestamp(),
+          createdByUid: currentRecord?.createdByUid || currentUser.uid,
+          createdByEmail: currentRecord?.createdByEmail || (currentUser.email || ""),
 
-const payload = {
-  awb,
-  orders,
-  ordersText,
+          updatedAt: serverTimestamp()
+        };
 
-  createdAt: currentRecord?.createdAt || serverTimestamp(),
-  createdByUid: currentRecord?.createdByUid || currentUser.uid,
-  createdByEmail: currentRecord?.createdByEmail || (currentUser.email || ""),
-
-  updatedAt: serverTimestamp()
-};
-
-await setDoc(docRef, payload, { merge: true });
-
-
-        
+        await setDoc(docRef, payload, { merge: true });
 
         setStatus("✅ Saved! Opening record…", "ok");
 
-        // read back (so we can show timestamps)
         const snap = await getDoc(docRef);
         currentRecord = snap.data();
         await renderRecord(awb, currentRecord);
-        photoOnlyMode = false;
-setOrdersDisabled(false);
 
         hide(createSection);
         show(viewSection);
@@ -786,19 +691,19 @@ setOrdersDisabled(false);
     });
 
     // ---------- Render record + copy ----------
-   async function renderRecord(awb, rec){
-  let dt = "";
-  try{
-    const createdAt = rec?.createdAt?.toDate ? rec.createdAt.toDate() : null;
-    const updatedAt = rec?.updatedAt?.toDate ? rec.updatedAt.toDate() : null;
-    dt = createdAt ? formatDateTime(createdAt) : (updatedAt ? formatDateTime(updatedAt) : "");
-  }catch{}
+    async function renderRecord(awb, rec){
+      let dt = "";
+      try{
+        const createdAt = rec?.createdAt?.toDate ? rec.createdAt.toDate() : null;
+        const updatedAt = rec?.updatedAt?.toDate ? rec.updatedAt.toDate() : null;
+        dt = createdAt ? formatDateTime(createdAt) : (updatedAt ? formatDateTime(updatedAt) : "");
+      }catch{}
 
-  const ordersText = rec?.ordersText || summarizeOrders(rec?.orders || []);
-  recordMeta.textContent = `AWB: ${awb} • ${dt ? ("Saved: " + dt + " • ") : ""}By: ${rec?.createdByEmail || "-"}`;
+      const ordersText = rec?.ordersText || summarizeOrders(rec?.orders || []);
+      recordMeta.textContent = `AWB: ${awb} • ${dt ? ("Saved: " + dt + " • ") : ""}By: ${rec?.createdByEmail || "-"}`;
 
-  const nowText = dt || formatDateTime(new Date());
-  const msg =
+      const nowText = dt || formatDateTime(new Date());
+      const msg =
 `Ready to ship na po ang order nyo ✅ 
 
 Maraming salamat po sa tiwala! — Tatak JPD
@@ -806,18 +711,17 @@ Maraming salamat po sa tiwala! — Tatak JPD
 🕒 Packed: ${nowText}
 `;
 
-  messageBox.value = msg;
+      messageBox.value = msg;
 
-  ordersPreview.innerHTML =
-    `<span class="hdr">ORDERS:</span>` + (ordersText || "—");
-}
+      ordersPreview.innerHTML =
+        `<span class="hdr">ORDERS:</span>` + (ordersText || "—");
+    }
 
     btnCopyMsg.addEventListener("click", async () => {
       try{
         await navigator.clipboard.writeText(messageBox.value);
         setStatus("✅ Message copied!", "ok");
       }catch{
-        // fallback
         messageBox.focus();
         messageBox.select();
         document.execCommand("copy");
@@ -825,127 +729,13 @@ Maraming salamat po sa tiwala! — Tatak JPD
       }
     });
 
-   btnCopyImage.addEventListener("click", async () => {
-  try {
-    const url = openImgLink.href;
-    if (!url || url === "#") {
-      setStatus("⚠️ No image to copy.", "warn");
-      return;
-    }
-
-    if (!window.ClipboardItem) throw new Error("ClipboardItem not supported");
-
-    // Max size: 15MB
-    const MAX_BYTES = 15 * 1024 * 1024;
-
-    // Fetch original
-    const resp = await fetch(url, { cache: "no-store" });
-    const blob = await resp.blob();
-
-    const bitmap = await createImageBitmap(blob);
-
-    // Start at 30%
-    let scale = 0.30;
-
-    // Prefer JPEG for smaller size
-    const outType = "image/jpeg";
-
-    // Try qualities from high to low
-    const qualities = [0.90, 0.85, 0.80, 0.75, 0.70, 0.65, 0.60, 0.55, 0.50];
-
-    // Helper: render & export
-    async function exportWith(scale, quality) {
-      const w = Math.max(1, Math.round(bitmap.width * scale));
-      const h = Math.max(1, Math.round(bitmap.height * scale));
-
-      const canvas = document.createElement("canvas");
-      canvas.width = w;
-      canvas.height = h;
-
-      const ctx = canvas.getContext("2d");
-      ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = "high";
-      ctx.drawImage(bitmap, 0, 0, w, h);
-
-      const outBlob = await new Promise((resolve) =>
-        canvas.toBlob((b) => resolve(b), outType, quality)
-      );
-      return outBlob;
-    }
-
-    let bestBlob = null;
-
-    // 1) Try scale=30% with decreasing quality
-    for (const q of qualities) {
-      const outBlob = await exportWith(scale, q);
-      if (!outBlob) continue;
-
-      bestBlob = outBlob; // keep last attempt
-      if (outBlob.size <= MAX_BYTES) break;
-    }
-
-    // 2) If still too big, reduce scale gradually and retry qualities
-    while (bestBlob && bestBlob.size > MAX_BYTES && scale > 0.10) {
-      scale = Math.max(0.10, +(scale - 0.05).toFixed(2)); // 0.30 -> 0.25 -> 0.20 -> 0.15 -> 0.10
-      for (const q of qualities) {
-        const outBlob = await exportWith(scale, q);
-        if (!outBlob) continue;
-
-        bestBlob = outBlob;
-        if (outBlob.size <= MAX_BYTES) break;
-      }
-      if (bestBlob.size <= MAX_BYTES) break;
-    }
-
-    if (!bestBlob) throw new Error("Resize/compress failed");
-
-    // Final check
-    if (bestBlob.size > MAX_BYTES) {
-      const mb = (bestBlob.size / (1024 * 1024)).toFixed(2);
-      setStatus(
-        `⚠️ Kahit binaba na, ${mb}MB pa rin (limit 15MB). Try lower original resolution/photo.`,
-        "warn"
-      );
-      return;
-    }
-
-    await navigator.clipboard.write([
-      new ClipboardItem({ [bestBlob.type]: bestBlob })
-    ]);
-
-    const mb = (bestBlob.size / (1024 * 1024)).toFixed(2);
-    setStatus(`✅ Image copied! (${mb}MB, ≤ 15MB)`, "ok");
-  } catch (err) {
-    console.error(err);
-    setStatus(
-      "⚠️ Copy resized image not supported on this browser. Click 'Open image' then download/send instead.",
-      "warn"
-    );
-  }
-});
-
-btnInsertImage.addEventListener("click", () => {
-  photoOnlyMode = true;
-  setOrdersDisabled(true);
-  clearSaveError();
-
-  setStatus("📸 Upload photo proof then click Save Packing Log.", "ok");
-
-  show(createSection);
-  hide(viewSection);
-
-  setTimeout(() => photoInput?.scrollIntoView?.({ behavior: "smooth", block: "center" }), 150);
-});
-
-
     // ---------- Scanner ----------
     btnScan.addEventListener("click", async () => {
       try{
         scanBack.style.display = "flex";
         setStatus("Scanning…", "ok");
 
-        // Start scanning
-        const result = await reader.decodeFromVideoDevice(
+        await reader.decodeFromVideoDevice(
           undefined,
           scanVideo,
           (res, err, controls) => {
@@ -979,127 +769,124 @@ btnInsertImage.addEventListener("click", () => {
       if (e.target === scanBack) closeScanner();
     });
 
-  // ---------- DAILY SUMMARY ----------
-function showDaily(text, type="ok"){
-  dailyOutput.style.display = "block";
-  dailyOutput.className = "status " + type;
-  dailyOutput.textContent = text;
-}
-
-btnDaily.addEventListener("click", async () => {
-  try {
-    btnDaily.disabled = true;
-    btnDaily.textContent = "Loading...";
-
-    // helpers
-    function pad2(n){ return String(n).padStart(2,"0"); }
-    function dayKey(d){
-      return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
-    }
-    function niceDayLabel(d){
-      return d.toLocaleDateString([], { month:"short", day:"2-digit" });
-    }
-    function inc(obj, key, by=1){
-      if (!key) return;
-      obj[key] = (obj[key] || 0) + by;
-    }
-    function normalizeLevel(o){
-      const lvls = Array.isArray(o?.levels) ? o.levels : [];
-      if (lvls.includes("Kinder")) return "Kinder";
-      if (lvls.includes("Elem")) return "Elem";
-      return null;
-    }
-    function getQty(o){
-      const q = Number(o?.qty);
-      return Number.isFinite(q) && q > 0 ? q : 1;
+    // ---------- DAILY SUMMARY ----------
+    function showDaily(text, type="ok"){
+      dailyOutput.style.display = "block";
+      dailyOutput.className = "status " + type;
+      dailyOutput.textContent = text;
     }
 
-    // TODAY
-    const startToday = new Date(); startToday.setHours(0,0,0,0);
-    const endToday = new Date(); endToday.setHours(23,59,59,999);
+    btnDaily.addEventListener("click", async () => {
+      try {
+        btnDaily.disabled = true;
+        btnDaily.textContent = "Loading...";
 
-    // LAST 7 DAYS
-    const start7 = new Date(); start7.setHours(0,0,0,0);
-    start7.setDate(start7.getDate() - 6);
-    const end7 = new Date(); end7.setHours(23,59,59,999);
-
-    const logsRef = collection(db, "packingLogs");
-    const q7 = query(
-      logsRef,
-      where("updatedAt", ">=", start7),
-      where("updatedAt", "<=", end7)
-    );
-
-    const snap7 = await getDocs(q7);
-
-    const levelCounts = {};
-    const colorCounts = {};
-    let totalRecordsToday = 0;
-
-    const dayKinder = {};
-    const dayElem = {};
-    let totalKinder7 = 0;
-    let totalElem7 = 0;
-    let totalPcs7 = 0;
-
-    snap7.forEach((docu) => {
-      const data = docu.data();
-      const upd = data?.updatedAt?.toDate ? data.updatedAt.toDate() : null;
-      if (!upd) return;
-
-      const k = dayKey(upd);
-      const orders = Array.isArray(data.orders) ? data.orders : [];
-
-      orders.forEach((o) => {
-        const qty = getQty(o);
-        totalPcs7 += qty;
-
-        const lvl = normalizeLevel(o);
-        if (lvl === "Kinder"){
-          dayKinder[k] = (dayKinder[k] || 0) + qty;
-          totalKinder7 += qty;
-        } else if (lvl === "Elem"){
-          dayElem[k] = (dayElem[k] || 0) + qty;
-          totalElem7 += qty;
+        function pad2(n){ return String(n).padStart(2,"0"); }
+        function dayKey(d){
+          return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
         }
-      });
+        function niceDayLabel(d){
+          return d.toLocaleDateString([], { month:"short", day:"2-digit" });
+        }
+        function inc(obj, key, by=1){
+          if (!key) return;
+          obj[key] = (obj[key] || 0) + by;
+        }
+        function normalizeLevel(o){
+          const lvls = Array.isArray(o?.levels) ? o.levels : [];
+          if (lvls.includes("Kinder")) return "Kinder";
+          if (lvls.includes("Elem")) return "Elem";
+          return null;
+        }
+        function getQty(o){
+          const q = Number(o?.qty);
+          return Number.isFinite(q) && q > 0 ? q : 1;
+        }
 
-      if (upd >= startToday && upd <= endToday){
-        totalRecordsToday++;
-        orders.forEach((o) => {
-          const qty = getQty(o);
-          const lvl = normalizeLevel(o);
-          if (lvl) inc(levelCounts, lvl, qty);
-          if (o?.color) inc(colorCounts, o.color, qty);
+        const startToday = new Date(); startToday.setHours(0,0,0,0);
+        const endToday = new Date(); endToday.setHours(23,59,59,999);
+
+        const start7 = new Date(); start7.setHours(0,0,0,0);
+        start7.setDate(start7.getDate() - 6);
+        const end7 = new Date(); end7.setHours(23,59,59,999);
+
+        const logsRef = collection(db, "packingLogs");
+        const q7 = query(
+          logsRef,
+          where("updatedAt", ">=", start7),
+          where("updatedAt", "<=", end7)
+        );
+
+        const snap7 = await getDocs(q7);
+
+        const levelCounts = {};
+        const colorCounts = {};
+        let totalRecordsToday = 0;
+
+        const dayKinder = {};
+        const dayElem = {};
+        let totalKinder7 = 0;
+        let totalElem7 = 0;
+        let totalPcs7 = 0;
+
+        snap7.forEach((docu) => {
+          const data = docu.data();
+          const upd = data?.updatedAt?.toDate ? data.updatedAt.toDate() : null;
+          if (!upd) return;
+
+          const k = dayKey(upd);
+          const orders = Array.isArray(data.orders) ? data.orders : [];
+
+          orders.forEach((o) => {
+            const qty = getQty(o);
+            totalPcs7 += qty;
+
+            const lvl = normalizeLevel(o);
+            if (lvl === "Kinder"){
+              dayKinder[k] = (dayKinder[k] || 0) + qty;
+              totalKinder7 += qty;
+            } else if (lvl === "Elem"){
+              dayElem[k] = (dayElem[k] || 0) + qty;
+              totalElem7 += qty;
+            }
+          });
+
+          if (upd >= startToday && upd <= endToday){
+            totalRecordsToday++;
+            orders.forEach((o) => {
+              const qty = getQty(o);
+              const lvl = normalizeLevel(o);
+              if (lvl) inc(levelCounts, lvl, qty);
+              if (o?.color) inc(colorCounts, o.color, qty);
+            });
+          }
         });
-      }
-    });
 
-    const dateStr = new Date().toLocaleDateString([], {
-      year:"numeric", month:"short", day:"2-digit"
-    });
+        const dateStr = new Date().toLocaleDateString([], {
+          year:"numeric", month:"short", day:"2-digit"
+        });
 
-    const lvlLines = ["Kinder","Elem"]
-      .map(k => `• ${k}: ${levelCounts[k] || 0}`)
-      .join("\n");
+        const lvlLines = ["Kinder","Elem"]
+          .map(k => `• ${k}: ${levelCounts[k] || 0}`)
+          .join("\n");
 
-    const colorLines = [
-      "White","Sky Blue","Fuchsia Pink","Royal Blue","Black","Yellow Gold",
-      "Emerald Green","Red","Maroon","Apple Green","Navy blue","Violet"
-    ].map(c => `• ${c}: ${colorCounts[c] || 0}`).join("\n");
+        const colorLines = [
+          "White","Sky Blue","Fuchsia Pink","Royal Blue","Black","Yellow Gold",
+          "Emerald Green","Red","Maroon","Apple Green","Navy blue","Violet"
+        ].map(c => `• ${c}: ${colorCounts[c] || 0}`).join("\n");
 
-    const kinderLines = [];
-    const elemLines = [];
+        const kinderLines = [];
+        const elemLines = [];
 
-    for (let i=0;i<7;i++){
-      const d = new Date(start7);
-      d.setDate(start7.getDate()+i);
-      const key = dayKey(d);
-      kinderLines.push(`${niceDayLabel(d)} - ${(dayKinder[key] || 0)} pcs`);
-      elemLines.push(`${niceDayLabel(d)} - ${(dayElem[key] || 0)} pcs`);
-    }
+        for (let i=0;i<7;i++){
+          const d = new Date(start7);
+          d.setDate(start7.getDate()+i);
+          const key = dayKey(d);
+          kinderLines.push(`${niceDayLabel(d)} - ${(dayKinder[key] || 0)} pcs`);
+          elemLines.push(`${niceDayLabel(d)} - ${(dayElem[key] || 0)} pcs`);
+        }
 
-    showDaily(
+        showDaily(
 `📅 Today: ${dateStr}
 📦 Records saved today: ${totalRecordsToday}
 
@@ -1120,20 +907,14 @@ ELEM (7 days): ${totalElem7} pcs
 ${elemLines.join("\n")}`,
 "ok");
 
-  } catch (err) {
-    console.error(err);
-    showDaily("❌ Daily summary error:\n" + (err?.message || err), "bad");
-  } finally {
-    btnDaily.disabled = false;
-    btnDaily.textContent = "Load Today Summary";
-  }
-});
-
-
-
-
-
-
+      } catch (err) {
+        console.error(err);
+        showDaily("❌ Daily summary error:\n" + (err?.message || err), "bad");
+      } finally {
+        btnDaily.disabled = false;
+        btnDaily.textContent = "Load Today Summary";
+      }
+    });
   </script>
 </body>
 </html>
