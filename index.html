@@ -535,8 +535,6 @@
     function summarizeOrders(orders){
   if (!orders?.length) return "No order details.";
 
-
-
   return orders.map((o, i) => {
     const qty = o?.qty ? `${o.qty} qty.` : "qty.";
 
@@ -555,7 +553,7 @@
       colorText = `${capColor} Cap --- ${tasselColor} Tassel`;
     }
 
-    return `${qty} ${level}, ${colorText} }`;
+    return `${qty} ${level}, ${colorText} `;
   }).join("\n");
 }
 
