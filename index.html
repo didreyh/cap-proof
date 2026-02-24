@@ -535,26 +535,27 @@
     function summarizeOrders(orders){
   if (!orders?.length) return "No order details.";
 
-  const ord = (n) => {
-    const words = ["First","Second","Third","Fourth","Fifth","Sixth","Seventh","Eighth","Ninth","Tenth"];
-    return words[n-1] || `${n}th`;
-  };
+
 
   return orders.map((o, i) => {
     const qty = o?.qty ? `${o.qty} qty.` : "qty.";
+
+    // LEVEL uppercase
+    let level = (Array.isArray(o?.levels) && o.levels[0]) ? o.levels[0].toUpperCase() : "NO LEVEL";
+
     const capColor = o?.color || "No Color";
     const tasselColor = o?.tasselColor || capColor;
 
     let colorText = "";
 
-    // If tassel is same as cap (no custom click)
+    // If tassel same as cap OR not customized
     if (!o?.tasselCustomized || tasselColor === capColor) {
-      colorText = `${capColor}`;
+      colorText = capColor;
     } else {
-      colorText = `${capColor} Cap ---- ${tasselColor} Tassel`;
+      colorText = `${capColor} Cap --- ${tasselColor} Tassel`;
     }
 
-    return `${qty} ${colorText} // #${ord(i+1)}`;
+    return `${qty} ${level}, ${colorText} }`;
   }).join("\n");
 }
 
