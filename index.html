@@ -536,7 +536,7 @@
   if (!orders?.length) return "No order details.";
 
   return orders.map((o, i) => {
-    const qty = o?.qty ? `${o.qty} qty.` : "qty.";
+    const qty = o?.qty ? `${o.qty} qty.` : ;
 
     // LEVEL uppercase
     let level = (Array.isArray(o?.levels) && o.levels[0]) ? o.levels[0].toUpperCase() : "NO LEVEL";
