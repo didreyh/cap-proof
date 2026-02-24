@@ -717,7 +717,7 @@
         dt = createdAt ? formatDateTime(createdAt) : (updatedAt ? formatDateTime(updatedAt) : "");
       }catch{}
 
-      const ordersText = rec?.ordersText || summarizeOrders(rec?.orders || []);
+      const ordersText = summarizeOrders(rec?.orders || []);
       recordMeta.textContent = `AWB: ${awb} • ${dt ? ("Saved: " + dt + " • ") : ""}By: ${rec?.createdByEmail || "-"}`;
 
       const nowText = dt || formatDateTime(new Date());
