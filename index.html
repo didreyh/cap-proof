@@ -533,19 +533,30 @@
     }
 
     function summarizeOrders(orders){
-      if (!orders?.length) return "No order details.";
-      return orders.map((o, i) => {
-        const lvl = (o.levels?.length ? o.levels.join("+") : "No level");
-        const cap = (o.color || "No cap color");
-        const qty = (o.qty ? `qty ${o.qty}` : "qty -");
+  if (!orders?.length) return "No order details.";
 
-        const tasselPart = (o.tasselCustomized && o.tasselColor)
-          ? ` • Tassel: ${o.tasselColor}`
-          : "";
+  const ord = (n) => {
+    const words = ["First","Second","Third","Fourth","Fifth","Sixth","Seventh","Eighth","Ninth","Tenth"];
+    return words[n-1] || `${n}th`;
+  };
 
-        return `#${i+1} ${lvl} • Cap: ${cap}${tasselPart} • ${qty}`;
-      }).join("\n");
+  return orders.map((o, i) => {
+    const qty = o?.qty ? `${o.qty} qty.` : "qty.";
+    const capColor = o?.color || "No Color";
+    const tasselColor = o?.tasselColor || capColor;
+
+    let colorText = "";
+
+    // If tassel is same as cap (no custom click)
+    if (!o?.tasselCustomized || tasselColor === capColor) {
+      colorText = `${capColor} Cap and Tassel`;
+    } else {
+      colorText = `${capColor} Cap ---- ${tasselColor} Tassel`;
     }
+
+    return `${qty} ${colorText} // #${ord(i+1)}`;
+  }).join("\n");
+}
 
     // ---------- Auth ----------
     onAuthStateChanged(auth, (user) => {
