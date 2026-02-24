@@ -254,13 +254,21 @@
 
         <div style="margin-top:12px">
           <div class="copyBox">
-            <b>Ready-to-copy message</b>
-            <div class="hint" style="margin:8px 0 10px">Click the button para auto-copy (no drag).</div>
-            <textarea id="messageBox" readonly></textarea>
-            <div class="row" style="margin-top:10px">
-              <button id="btnCopyMsg" class="btn">Copy Message</button>
-              <button id="btnNewEntry" class="btn secondary">Create new entry anyway</button>
-            </div>
+
+  <!-- ORDERS FIRST -->
+  <div class="hint" id="ordersPreview"></div>
+
+  <b style="margin-top:12px; display:block;">Ready-to-copy message</b>
+  <div class="hint" style="margin:8px 0 10px">Click the button para auto-copy (no drag).</div>
+
+  <textarea id="messageBox" readonly></textarea>
+
+  <div class="row" style="margin-top:10px">
+    <button id="btnCopyMsg" class="btn">Copy Message</button>
+    <button id="btnNewEntry" class="btn secondary">Create new entry anyway</button>
+  </div>
+
+</div>
             <div class="hint" id="ordersPreview"></div>
           </div>
         </div>
