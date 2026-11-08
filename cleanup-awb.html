@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AWB Cleanup | Affiliate Content HQ</title>
+<style>body{font:15px/1.6 system-ui,sans-serif;background:#faf7f8;color:#332738;margin:0}main{max-width:650px;margin:7vh auto;padding:25px}section{background:white;border:1px solid #ecdee7;padding:26px;border-radius:18px}h1{margin:0 0 10px}p{color:#766e78}button,input{font:inherit;padding:11px;border-radius:9px}button{background:#70375e;color:white;border:none;cursor:pointer}button:disabled{background:#d4c7d1;cursor:not-allowed}button.danger{background:#a22b3a}input{border:1px solid #d0c4ce;max-width:140px}#status{background:#f8eef5;padding:15px;border-radius:9px;margin:18px 0;white-space:pre-wrap;overflow-wrap:anywhere}.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:15px}</style></head>
+<body><main><section><h1>Old AWB records cleanup</h1>
+<p>Only the legacy <code>packingLogs</code> Firestore collection will be deleted. The new affiliate dashboard in <code>affiliateHQ</code> will NOT be touched.</p>
+<p>We recommend downloading the JSON backup before deletion. Deleting is irreversible after completion.</p>
+<div id="status" role="status">Checking Firebase login...</div>
+<div class="actions"><button id="backup" disabled>↓ Download AWB backup</button><button id="reload">Refresh count</button></div>
+<div class="actions"><label>Type <b>DELETE</b> to confirm <input id="confirmText" placeholder="DELETE" autocomplete="off"></label><button id="delete" class="danger" disabled>Delete all AWB records</button></div>
+<p><a href="./index.html">Back to Affiliate Content HQ</a></p></section></main>
+<script type="module">
+import {firebaseConfig} from './firebase.js';
+import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
+import {getAuth,onAuthStateChanged} from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
+import {getFirestore,collection,getDocs,writeBatch} from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
+const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app),col=collection(db,'packingLogs');
+let docs=[],busy=false,loggedIn=false;
+const status=document.getElementById('status'),backup=document.getElementById('backup'),del=document.getElementById('delete'),input=document.getElementById('confirmText');
+function setStatus(message){status.textContent=message;}
+function setReady(){backup.disabled=busy||!loggedIn||docs.length===0;del.disabled=busy||!loggedIn||docs.length===0||input.value!=='DELETE'}
+async function refresh(){if(!loggedIn)return;busy=true;setReady();setStatus('Reading legacy AWB collection...');try{const snapshot=await getDocs(col);docs=snapshot.docs;setStatus(`Found ${docs.length} old AWB records in packingLogs. Your new affiliate records are separate.`)}catch(err){setStatus(`Cannot read AWB records: ${err.message}\nYou may need to delete from Firebase Console.`);docs=[]}finally{busy=false;setReady()}}
+onAuthStateChanged(auth,user=>{if(!user){window.location.href='./login.html';return;}loggedIn=true;refresh()});
+document.getElementById('reload').addEventListener('click',refresh);
+input.addEventListener('input',setReady);
+backup.addEventListener('click',()=>{if(!docs.length)return;const data=docs.map(s=>({id:s.id,data:s.data()}));const link=document.createElement('a');const url=URL.createObjectURL(new Blob([JSON.stringify({collection:'packingLogs',downloadedAt:new Date().toISOString(),records:data},null,2)],{type:'application/json'}));link.href=url;link.download='old-awb-records-backup.json';link.click();URL.revokeObjectURL(url);setStatus(`Downloaded ${docs.length} AWB records as a JSON backup.`)});
+del.addEventListener('click',async()=>{
+ if(input.value!=='DELETE'||busy||!docs.length)return;
+ if(!confirm(`Permanently delete ALL ${docs.length} AWB records from Firebase packingLogs? This cannot be undone.`))return;
+ busy=true;setReady();let deleted=0;
+ try{
+  // Delete 300 at a time (safely under the Firestore 500-operation batch limit).
+  for(let i=0;i<docs.length;i+=300){const chunk=docs.slice(i,i+300);const batch=writeBatch(db);chunk.forEach(s=>batch.delete(s.ref));await batch.commit();deleted+=chunk.length;setStatus(`Deleted ${deleted} of ${docs.length} legacy AWB records...`)}
+  docs=[];input.value='';setStatus(`Success! Deleted ${deleted} legacy AWB records from packingLogs. The Affiliate Content HQ collection was not touched.`);
+ }catch(err){setStatus(`Deleted ${deleted} records before an error: ${err.message}\nYour Firestore rules may not permit deletion. You can delete the remaining records from Firebase Console. Refresh count to check.`)}
+ finally{busy=false;setReady()}
+});
+</script></body></html>

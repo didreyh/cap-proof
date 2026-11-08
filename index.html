@@ -1,931 +1,190 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Tatak JPD — Packing Proof</title>
-  <style>
-    :root{
-      --bg:#f5f6f8;
-      --card:#ffffff;
-      --text:#0f172a;
-      --muted:#6b7280;
-      --border:#e5e7eb;
-      --shadow: 0 18px 45px rgba(0,0,0,.12);
-      --btn:#0b0b0b;
-      --soft:#f9fafb;
-      --ok:#16a34a;
-      --warn:#f59e0b;
-      --bad:#ef4444;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-      background: radial-gradient(1200px 700px at 50% -10%, #ffffff 0%, var(--bg) 60%);
-      color:var(--text);
-      min-height:100vh;
-      padding:24px;
-    }
-    .wrap{width:min(860px, 100%); margin:0 auto;}
-    .card{
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:26px;
-      box-shadow:var(--shadow);
-      padding:26px;
-    }
-    .top{
-      display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
-      margin-bottom:10px;
-    }
-    .title{
-      display:flex; align-items:center; gap:10px;
-    }
-    .title h1{margin:0; font-size:34px; font-weight:900; line-height:1.05}
-    .title .emoji{font-size:28px}
-    .subtitle{margin:6px 0 0; color:var(--muted)}
-    .btn{
-      background:linear-gradient(180deg, #111 0%, #000 100%);
-      color:#fff;
-      border:none;
-      border-radius:16px;
-      padding:12px 14px;
-      font-weight:900;
-      cursor:pointer;
-      min-width:110px;
-    }
-    .btn.secondary{
-      background:#fff;
-      color:#111;
-      border:1px solid var(--border);
-      box-shadow:none;
-    }
-    .btn:disabled{opacity:.6; cursor:not-allowed}
-    .status{
-      margin:12px 0 18px;
-      padding:12px 14px;
-      border-radius:14px;
-      border:1px solid var(--border);
-      background:#f9fafb;
-      color:#111;
-      white-space:pre-wrap;
-    }
-    .status.ok{border-color:#bbf7d0; background:#ecfdf5;}
-    .status.warn{border-color:#fde68a; background:#fffbeb;}
-    .status.bad{border-color:#fecaca; background:#fef2f2;}
-    hr{border:none; border-top:1px solid var(--border); margin:18px 0}
-    .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
-    label{display:block; font-weight:900; margin:12px 0 8px}
-    input[type="text"]{
-      width:100%;
-      padding:14px 16px;
-      border:1px solid var(--border);
-      border-radius:14px;
-      outline:none;
-      font-size:16px;
-      background:#fff;
-    }
-    input[type="text"]:focus{border-color:#c7cbd1; box-shadow:0 0 0 4px rgba(0,0,0,.06)}
-    .hint{color:var(--muted); font-size:13px; margin-top:6px}
-    .sectionTitle{
-      font-size:22px; font-weight:1000; margin:0 0 6px;
-    }
-    .pillRow{display:flex; flex-wrap:wrap; gap:10px; margin-top:8px}
-    .pill{
-      display:inline-flex; align-items:center; gap:8px;
-      border:1px solid var(--border);
-      background:#fff;
-      padding:10px 12px;
-      border-radius:999px;
-      cursor:pointer;
-      user-select:none;
-      font-weight:900;
-    }
-    .pill input{display:none}
-    .pill.active{
-      border-color:#111;
-      box-shadow:0 0 0 4px rgba(0,0,0,.06);
-    }
-    .orderBox{
-      border:1px dashed var(--border);
-      border-radius:18px;
-      padding:14px;
-      background:var(--soft);
-      margin-top:12px;
-    }
-    .orderHeader{
-      display:flex; justify-content:space-between; align-items:center;
-      margin-bottom:8px;
-      font-weight:1000;
-    }
-    .smallBtn{
-      border:1px solid var(--border);
-      background:#fff;
-      border-radius:12px;
-      padding:8px 10px;
-      cursor:pointer;
-      font-weight:900;
-    }
-    .grid2{display:grid; grid-template-columns:1fr 1fr; gap:12px}
-    @media (max-width:700px){ .grid2{grid-template-columns:1fr} }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#612d53">
+<title>Affiliate Content HQ | Daily Planner</title>
+<style>
+:root{--bg:#faf7f8;--paper:#fff;--ink:#302532;--muted:#766f79;--purple:#70375e;--purple-dark:#4b2041;--light:#f7edf3;--line:#e9e0e7;--success:#287d63;--softgreen:#e6f6ee;--amber:#a26718;--softamber:#fff4de;--blue:#5167ad;--shadow:0 13px 34px rgba(51,25,44,.06);--radius:18px}*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--ink);line-height:1.42}button,input,select,textarea{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #cda6c2;outline-offset:2px}.container{width:min(1360px,calc(100% - 44px));margin:auto}.topbar{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}.topinner{min-height:78px;display:flex;align-items:center;gap:20px;justify-content:space-between}.brand{display:flex;align-items:center;gap:12px}.logo{background:linear-gradient(140deg,#773d66,#3c1936);height:43px;width:43px;border-radius:13px;color:white;display:grid;place-items:center;font-size:24px}.brand h1{font-size:17px;margin:0;letter-spacing:-.5px;line-height:1.2}.brand small{color:var(--muted);font-size:11px;letter-spacing:1.1px;font-weight:750}.top-actions{display:flex;gap:8px;flex-wrap:wrap}.btn{background:white;color:var(--purple-dark);border:1px solid #d9cad4;padding:10px 14px;border-radius:10px;font-size:12px;font-weight:750;display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:39px}.btn:hover{background:var(--light)}.btn.primary{background:var(--purple);border-color:var(--purple);color:white}.btn.primary:hover{background:var(--purple-dark)}.btn.subtle{border-color:transparent;color:var(--muted)}.btn.danger{color:#9e3f42;border-color:#efc9cb}.btn:disabled{opacity:.5;cursor:not-allowed}.hero{background:linear-gradient(112deg,#663054,#8d4f70);color:#fff;border-radius:22px;margin:27px 0 21px;padding:28px 30px;display:flex;justify-content:space-between;align-items:center;gap:25px;position:relative;overflow:hidden}.hero:after{content:'✦';position:absolute;right:25%;top:-85px;font-size:200px;color:#ffffff0b;pointer-events:none}.hero h2{font-size:clamp(22px,2.8vw,33px);line-height:1.2;letter-spacing:-.8px;margin:3px 0 8px}.hero p{font-size:13px;color:#f9eaf3;max-width:700px;margin:0}.eyebrow{font-size:11px;font-weight:850;letter-spacing:1.8px;text-transform:uppercase;color:#e4bcda}.hero-stats{display:flex;gap:13px;flex-shrink:0}.hero-stats>div{min-width:95px;text-align:center;border:1px solid #ffffff50;background:#ffffff14;border-radius:15px;padding:13px 16px}.hero-stats strong{display:block;font-size:28px;line-height:1.1}.hero-stats span{font-size:11px;color:#f9eaf3}.tabs{display:flex;gap:7px;border-bottom:1px solid var(--line);margin-bottom:22px;overflow-x:auto}.tab{border:0;border-bottom:3px solid transparent;background:transparent;padding:13px 18px;color:#756977;font-weight:750;white-space:nowrap;font-size:13px}.tab.active{border-bottom-color:var(--purple);color:var(--purple)}.toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:15px}.group{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.date-label{font-weight:800;font-size:18px}.date-input{background:#fff;padding:9px 11px;border:1px solid #e0d3dd;border-radius:10px;min-height:39px;color:var(--ink);font-weight:650}.stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-bottom:18px}.stat{background:#fff;border:1px solid var(--line);border-radius:15px;padding:16px;min-width:0}.stat .tag{color:var(--muted);font-size:11px;font-weight:650}.stat strong{font-size:27px;letter-spacing:-.8px;display:block;margin:4px 0 5px}.stat .track{background:#f1edf0;height:6px;border-radius:10px;overflow:hidden}.stat .track i{display:block;height:100%;background:var(--purple);border-radius:10px}.stat small{font-size:11px;color:var(--muted)}.notice{border-radius:13px;background:#fff8ec;color:#7d5827;border:1px solid #f2dfba;padding:12px 15px;font-size:12px;margin:12px 0 17px}.notice.success{background:#edf9f2;color:#26694f;border-color:#ccebd9}.section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:24px 0 13px}.section-head h3{font-size:17px;letter-spacing:-.4px;margin:0}.section-head p{font-size:12px;color:var(--muted);margin:4px 0 0}.pill{display:inline-flex;padding:5px 9px;font-size:11px;font-weight:750;border-radius:20px;white-space:nowrap;background:var(--light);color:var(--purple)}.accounts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.account{border:1px solid var(--line);border-radius:18px;background:white;overflow:hidden;min-width:0;box-shadow:var(--shadow)}.account-head{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:17px 18px 15px;border-bottom:1px solid var(--line)}.account-title{display:flex;gap:10px;align-items:center}.account-icon{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;font-size:21px}.a1{background:#f6e8ef}.a2{background:#ecf3fd}.a3{background:#e9f2f1}.a4{background:#fff1df}.account h4{font-size:15px;margin:0}.account-head p{margin:3px 0 0;color:var(--muted);font-size:11px}.account-body{padding:10px 15px 15px}.task{padding:14px 2px;border-bottom:1px solid #f1ecf0}.task:last-child{border:0}.taskrow{display:flex;align-items:center;justify-content:space-between;gap:10px}.task-no{font-size:10px;font-weight:800;color:var(--muted);letter-spacing:.7px}.task-status{font-size:10px;font-weight:800;color:var(--amber);background:var(--softamber);border-radius:6px;padding:4px 7px}.task-status.done{background:var(--softgreen);color:var(--success)}.product-select{display:block;width:100%;font-size:13px;line-height:1.3;font-weight:800;background:white;border:1px solid transparent;padding:5px 3px 5px 0;border-radius:7px;color:var(--ink);margin:2px 0 5px;text-overflow:ellipsis}.product-select:hover,.product-select:focus{border-color:#d7bbcc}.concept{width:100%;color:var(--muted);font-size:11.5px;border:0;background:transparent;padding:5px 6px 6px 0;border-bottom:1px dashed #e8dce4;border-radius:0}.concept:focus{background:#fff9fc;outline:none;border-bottom-color:var(--purple)}.checks{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:12px}.check{display:inline-flex;gap:5px;align-items:center;user-select:none;border:1px solid #e8e0e5;border-radius:9px;padding:7px 8px;font-size:11px;font-weight:650;background:white;cursor:pointer;color:#706470}.check input{accent-color:var(--success);width:15px;height:15px;margin:0;cursor:pointer}.check:has(input:checked){background:#ebf8f1;border-color:#c2e9d1;color:#236647}.check.platform{border-color:#e1cddd}.platform-label{margin-top:12px;color:#998a98;font-size:10px;text-transform:uppercase;letter-spacing:1.1px;font-weight:800}.empty{border:1px dashed #d5c9d1;background:#fff;border-radius:15px;text-align:center;padding:35px 20px;color:var(--muted);font-size:13px}.backlog{background:#fff;border:1px solid var(--line);border-radius:17px;padding:15px;margin-bottom:20px}.backlog h4{margin:0 0 8px;font-size:14px}.backlog-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.backlog-item{border:1px solid #efe5ec;background:#fffafc;border-radius:10px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;gap:12px}.backlog-item strong{display:block;font-size:11.5px}.backlog-item span{display:block;font-size:10.5px;color:var(--muted)}.backlog-item button{padding:5px 8px;flex-shrink:0}.catalog-tools{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}.field{border-radius:10px;border:1px solid #d7cbd4;background:white;padding:11px 12px;min-height:42px;max-width:100%}.search{width:min(400px,100%)}.add-form{display:flex;gap:9px;flex-wrap:wrap;background:white;border:1px solid var(--line);padding:14px;border-radius:14px;margin:15px 0}.add-form input{min-width:190px;flex:2}.add-form select{flex:1;min-width:155px}.catalog-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.catalog-item{background:#fff;border:1px solid var(--line);padding:12px 14px;border-radius:12px;display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0}.catalog-item strong{font-size:12px;display:block;overflow-wrap:anywhere}.catalog-item small{font-size:10px;color:var(--muted)}.catalog-meta{display:flex;gap:5px;align-items:center;flex-shrink:0}.cat-tag{background:var(--light);border-radius:5px;padding:4px 6px;color:var(--purple);font-size:10px;font-weight:700}.catalog-item select{font-size:10px;border:1px solid var(--line);border-radius:6px;background:white;padding:5px}.travel-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.travel-card{background:#fff;border-radius:15px;border:1px solid var(--line);padding:16px}.travel-card h4{margin:0 0 4px;font-size:14px}.travel-card p{margin:0;font-size:11px;color:var(--muted);overflow-wrap:anywhere}.travel-card .checks{margin-top:16px}.travel-form{background:#fff;padding:17px;border:1px solid var(--line);border-radius:15px;margin-bottom:20px}.travel-form h3{margin:0 0 12px;font-size:16px}.travel-inputs{display:grid;grid-template-columns:1.2fr 1fr 1.5fr 1fr auto;gap:9px}.footer{font-size:11px;color:#90818e;text-align:center;padding:32px 0 50px;line-height:1.6}.toast{position:fixed;bottom:24px;right:24px;max-width:min(420px,90vw);background:#322336;color:white;padding:13px 16px;border-radius:11px;box-shadow:0 12px 35px #0004;font-size:12px;z-index:99;opacity:0;transform:translateY(12px);transition:.2s;pointer-events:none}.toast.on{opacity:1;transform:none}a{color:var(--purple)}.hidden{display:none!important}@media(max-width:1000px){.hero{align-items:flex-start}.hero-stats>div{min-width:70px}.stats{grid-template-columns:repeat(3,minmax(0,1fr))}.travel-inputs{grid-template-columns:repeat(2,1fr)}.travel-inputs button{grid-column:span 2}.catalog-list{grid-template-columns:1fr}}@media(max-width:730px){.container{width:min(100% - 24px,600px)}.topinner{min-height:72px;gap:10px}.brand small{font-size:9px}.brand h1{font-size:14px}.logo{height:38px;width:38px}.top-actions{gap:4px}.top-actions .btn{padding:8px;font-size:10px}.hero{margin:16px 0;padding:23px 18px;display:block}.hero-stats{margin-top:18px;justify-content:flex-start;gap:8px}.hero-stats>div{padding:10px 13px;min-width:83px}.hero-stats strong{font-size:22px}.hero p{font-size:12px}.tabs{margin-bottom:18px}.tab{padding:12px;font-size:12px}.stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.stat{padding:12px}.stat strong{font-size:23px}.accounts,.backlog-list,.travel-list{grid-template-columns:1fr}.toolbar{align-items:flex-start}.account-head{padding:14px}.section-head{align-items:flex-start}.travel-inputs{grid-template-columns:1fr}.travel-inputs button{grid-column:span 1}.add-form input,.add-form select,.add-form button{width:100%}.top-actions #csvBtn{display:none}}@media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;animation:none!important}}
 
-    /* ✅ ADDED: 3-column grid for Level + Cap Color + Tassel Color */
-    .grid3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px}
-    @media (max-width:900px){ .grid3{grid-template-columns:1fr} }
-
-    .copyBox{
-      border:1px solid var(--border);
-      border-radius:18px;
-      padding:14px;
-      background:#fff;
-    }
-
-    /* ===== ORDERS (right side) ===== */
-    #ordersPreview{
-      margin-top: 14px;
-      padding: 14px 14px;
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      background: #fff;
-
-      font-size: 20px;      /* laki ng text */
-      line-height: 1.55;    /* hindi dikit-dikit */
-      font-weight: 800;
-      white-space: pre-line; /* respects \n */
-    }
-
-    #ordersPreview .hdr{
-      font-size: 26px;
-      font-weight: 1000;
-      letter-spacing: 0.5px;
-      margin-bottom: 8px;
-      display:block;
-    }
-
-    textarea{
-      width:100%;
-      min-height:120px;
-      border:1px solid var(--border);
-      border-radius:14px;
-      padding:12px 12px;
-      font-size:14px;
-      resize:vertical;
-    }
-    .foot{margin-top:14px; color:var(--muted); font-size:12px; text-align:center}
-    .hidden{display:none!important}
-
-    /* Scanner modal */
-    .modalBack{
-      position:fixed; inset:0; background:rgba(0,0,0,.55);
-      display:none; align-items:center; justify-content:center;
-      padding:18px; z-index:9999;
-    }
-    .modal{
-      width:min(680px, 100%);
-      background:#fff; border-radius:22px; padding:16px;
-      border:1px solid var(--border); box-shadow:var(--shadow);
-    }
-    .modalTop{display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:8px}
-    .modalTop b{font-size:18px}
-    video{width:100%; border-radius:16px; background:#000}
-    .modalHint{color:var(--muted); font-size:13px; margin-top:8px}
-  </style>
+.sync-status{font-size:11px;font-weight:800;color:var(--purple);background:var(--light);padding:9px 11px;border-radius:10px;max-width:250px}
+.sync-status.error{background:#fff0ef;color:#a13737}
+.sync-status.ready{background:#e9f7f1;color:#18684b}
+.loading-screen{min-height:60vh;display:flex;align-items:center;justify-content:center;padding:36px}
+.loading-card{max-width:420px;border:1px solid #e9dae2;border-radius:18px;background:white;box-shadow:var(--shadow);padding:36px;display:flex;align-items:center;flex-direction:column;gap:10px;font-size:30px;text-align:center;color:var(--purple)}
+.loading-card strong{font-size:20px}.loading-card span{font-size:13px;color:var(--muted)}
+@media(max-width:730px){.sync-status{order:10;width:100%;max-width:none;text-align:center}.top-actions{justify-content:flex-end}}
+</style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="card">
-      <div class="top">
-        <div>
-          <div class="title">
-            <span class="emoji">📦</span>
-            <div>
-              <h1>Tatak JPD — Packing Proof</h1>
-            </div>
-          </div>
-        </div>
-        <button id="btnLogout" class="btn">Logout</button>
-      </div>
+<header class="topbar"><div class="container topinner"><div class="brand"><div class="logo">✦</div><div><small>YOUR PRIVATE PLANNER</small><h1>Affiliate Content HQ</h1></div></div><div class="top-actions"><span id="syncStatus" class="sync-status" role="status">☁ Connecting...</span><button class="btn" id="csvBtn" data-action="csv" title="Download CSV of all scheduled videos">↓ CSV</button><button class="btn" data-action="backup">↓ Backup</button><button class="btn primary" data-action="restore">↑ Restore</button><button class="btn" id="btnLogout" type="button">Log out</button></div></div></header>
+<main class="container" id="mainContent" style="display:none">
+<section class="hero"><div><div class="eyebrow">Make content, track every upload</div><h2>Organized ang content. Walang maiiwang upload. ♡</h2><p>4 TikTok accounts, Shopee crossposts, at 2 FB pages. Planuhin ang shoot, edit, at upload mo sa iisang lugar.</p></div><div class="hero-stats"><div><strong id="heroProducts">83</strong><span>Products</span></div><div><strong>4</strong><span>Accounts</span></div><div><strong>16</strong><span>Videos / day</span></div></div></section>
+<nav class="tabs" aria-label="Planner sections"><button class="tab active" data-tab="daily">☑ Daily Checklist</button><button class="tab" data-tab="products">▦ 83 Products</button><button class="tab" data-tab="travel">♡ Couple Rides & Travel</button></nav>
+<div id="content" aria-live="polite"></div>
+<footer class="footer">🔒 Private affiliate dashboard with Firebase sign-in. Cloud sync happens after changes if your Firestore permissions allow it.<br>May local backup din sa browser. Gumamit ng <b>Backup</b> bago maglipat o mag-reset ng data.</footer>
+</main>
+<div id="loadingScreen" class="loading-screen" role="status"><div class="loading-card">☁ <strong>Affiliate Content HQ</strong><span>Checking your private account and cloud data...</span></div></div>
+<input id="restoreFile" type="file" accept=".json,application/json" class="hidden">
+<div id="toast" class="toast" role="status"></div>
+<script type="module">
+import { firebaseConfig } from './firebase.js';
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
+import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
+import { getFirestore, collection, doc, getDoc, getDocs, setDoc, writeBatch } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const firestore = getFirestore(app);
+(function(){'use strict';
 
-      <div id="status" class="status ok">Checking login...</div>
-
-      <hr>
-
-      <!-- AWB INPUT -->
-      <div>
-        <div class="sectionTitle">AWB</div>
-        <div class="row">
-          <div style="flex:1; min-width:240px">
-            <input id="awbInput" type="text" placeholder="Type / paste AWB then press Enter" />
-          </div>
-          <button id="btnContinue" class="btn">Continue</button>
-          <button id="btnScan" class="btn secondary">📷 Scan</button>
-        </div>
-      </div>
-
-      <hr>
-
-      <!-- CREATE FORM -->
-      <div id="createSection" class="hidden">
-        <div class="sectionTitle">Create Packing Record</div>
-        <div class="hint" style="margin-bottom:10px">If first time ng AWB na ’to, dito ka mag-e-entry ng orders.</div>
-
-        <div id="ordersWrap"></div>
-
-        <div class="row" style="margin-top:10px">
-          <button id="btnAddOrder" class="smallBtn">➕ Add Order</button>
-          <button id="btnRemoveOrder" class="smallBtn">🗑️ Remove Last</button>
-        </div>
-
-        <div id="createError" class="status bad" style="display:none; margin-top:12px;"></div>
-
-        <div class="row" style="margin-top:14px">
-          <button id="btnSave" class="btn">Save Packing Log</button>
-          <button id="btnCancelCreate" class="btn secondary">Cancel</button>
-        </div>
-      </div>
-
-      <!-- VIEW RECORD -->
-      <div id="viewSection" class="hidden">
-        <div class="sectionTitle">Record Found</div>
-        <div id="recordMeta" class="hint"></div>
-
-        <div style="margin-top:12px">
-          <div class="copyBox">
-
-  <!-- ORDERS FIRST -->
-  <div class="hint" id="ordersPreview"></div>
-
-  <b style="margin-top:12px; display:block;">Ready-to-copy message</b>
-  <div class="hint" style="margin:8px 0 10px">Click the button para auto-copy (no drag).</div>
-
-  <textarea id="messageBox" readonly></textarea>
-
-  <div class="row" style="margin-top:10px">
-    <button id="btnCopyMsg" class="btn">Copy Message</button>
-    <button id="btnNewEntry" class="btn secondary">Create new entry anyway</button>
-  </div>
-
-</div>
-            <div class="hint" id="ordersPreview"></div>
-          </div>
-        </div>
-      </div>
-
-      <hr>
-
-      <!-- DAILY SUMMARY -->
-      <div id="dailySection">
-        <div class="sectionTitle">📊 Daily Summary</div>
-        <div class="hint">Today totals (Kinder/Elem + Colors)</div>
-
-        <div class="row" style="margin-top:10px">
-          <button id="btnDaily" class="btn secondary">Load Today Summary</button>
-        </div>
-
-        <div id="dailyOutput" class="status" style="margin-top:12px; display:none"></div>
-      </div>
-
-      <div class="foot">Private system — login required • Stored in Firebase (Auth + Firestore)</div>
-    </div>
-  </div>
-
-  <!-- Scanner modal -->
-  <div id="scanBack" class="modalBack">
-    <div class="modal">
-      <div class="modalTop">
-        <b>Scan AWB Barcode</b>
-        <button id="btnCloseScan" class="smallBtn">Close</button>
-      </div>
-      <video id="scanVideo" playsinline></video>
-      <div class="modalHint">I-tutok sa barcode (J&T / SPX / Flash). Pag na-detect, auto-fill.</div>
-    </div>
-  </div>
-
-  <script type="module">
-    import { firebaseConfig } from "./firebase.js";
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-    import {
-      getFirestore, doc, getDoc, setDoc, serverTimestamp,
-      collection, getDocs, query, where
-    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-
-    // ZXing barcode scanner
-    import { BrowserMultiFormatReader } from "https://cdn.jsdelivr.net/npm/@zxing/browser@0.1.5/+esm";
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    // UI
-    const statusEl = document.getElementById("status");
-    const btnLogout = document.getElementById("btnLogout");
-
-    const awbInput = document.getElementById("awbInput");
-    const btnContinue = document.getElementById("btnContinue");
-    const btnScan = document.getElementById("btnScan");
-
-    const createSection = document.getElementById("createSection");
-    const viewSection = document.getElementById("viewSection");
-
-    const ordersWrap = document.getElementById("ordersWrap");
-    const btnAddOrder = document.getElementById("btnAddOrder");
-    const btnRemoveOrder = document.getElementById("btnRemoveOrder");
-
-    const btnSave = document.getElementById("btnSave");
-    const btnCancelCreate = document.getElementById("btnCancelCreate");
-
-    const recordMeta = document.getElementById("recordMeta");
-    const messageBox = document.getElementById("messageBox");
-    const btnCopyMsg = document.getElementById("btnCopyMsg");
-    const btnNewEntry = document.getElementById("btnNewEntry");
-    const ordersPreview = document.getElementById("ordersPreview");
-
-    const btnDaily = document.getElementById("btnDaily");
-    const dailyOutput = document.getElementById("dailyOutput");
-
-    // Scanner modal
-    const scanBack = document.getElementById("scanBack");
-    const btnCloseScan = document.getElementById("btnCloseScan");
-    const scanVideo = document.getElementById("scanVideo");
-    const reader = new BrowserMultiFormatReader();
-    let scanStopper = null;
-
-    let currentUser = null;
-    let currentAWB = "";
-    let currentRecord = null;
-
-    // ---------- helpers ----------
-    function setStatus(msg, type="ok"){
-      statusEl.className = "status " + type;
-      statusEl.textContent = msg;
+const RAW=[
+['3pcs Stainless Salaan Bowl Kadlearan','K'],['3pcs Stainless Steam Cookware','K'],['Baseball Cap SECURITY','G'],['6pcs Christmas Boxes 01 / 03','G'],['Cat Ear Pilot Cap','G'],['LCD Writing Tablet','E'],['5in1 Glass Bowl','K'],['Jovako Fashion Versatile','G'],['Heavy Multifunction Socket 01 / 02 / 03','E'],['Evamse 2in1 Glossy Chain','G'],['Poposy 5 Pairs Christmas Socks','G'],['10pcs Hanger and 2x 5m Sampayan','H'],['3pcs Stainless Lunchbox & Lunchbag','K'],['3pcs Airtight Lunchbox & Lunchbag','K'],['Mitsushi Power Extension','E'],['Beston Cordless Fan','E'],['Beston Cordless Fan Auto Swing','E'],['10pcs Green Hair Combs Set','G'],['Basketball Shorts','G'],['3pcs Kitchen Scissors','K'],['2in1 Glass Cleaning Mop ①','H'],['12pcs Spoon & Fork','K'],['Roller Skates','E'],['Curtain Rod Set','H'],['3in1 Curtain Kortina Fabric','H'],['Photolex LED Tablet Light','E'],['Phone Bracelet ①','E'],['Rice Cooker & Steam Dreeper','K'],['Push Handheld Game','E'],['Makuku Diaper','G'],['Wireless Doorbell','E'],['Round Carafe with Lid','K'],['Dinosaur Stuff Toy','E'],['Helmet for Kids ①','E'],['Suka ni Ser Rick ①','K'],['Christmas Wire Cover','H'],['Oil Strainer Container','K'],['Notebook Journal','G'],['Kitchen Multilayer 6pcs / 8pcs','K'],['6in1 Multiport Charger RFS1','E'],['Wireless Bluetooth Keyboard Black / Pink / Purple','E'],['Metal Phone Stand','E'],['Sun Visor Hat','G'],['Rechargeable LED Flashlight (C#1)','E'],['Flashlight Waterproof USB (C#3)','E'],['Super Bright (C#2)','E'],['Unbreakable Acrylic Bowls','K'],['Unbreakable Acrylic Plates','K'],['Unbreakable Acrylic Cups','K'],['Toothbrush Lipstick Style','G'],['Yuanda 5 Kitchen Utensils Wood Version','K'],['Japan Lunchbox Umitk','K'],['Hanging Magnetic LED Table Lamp','E'],['Vareeh Pink Charger','E'],['Redchef Aluminum','K'],['Foldable Dining Table','H'],['Laundry Hard Brush Bristle','H'],['300ml Cute Glass Cups','K'],['PVC Clear Gift Bag','G'],['2027 New Year Shirt','G'],['Manish Scallop Print','G'],['RGB Wireless Keyboard','E'],['Gray Blue Microfiber Towel ①','H'],['10M LED Light Ceiling w/ Remote ②','E'],['LCD Writing Tablet w/ Pen ②','E'],['Milk Frother RFS1','E,K'],['Microfiber Towels Super Soft Cannon','H'],['4pcs Food Storage','K'],['36 Grid Silicone Ice Cube','K'],['Glass Cup w/ Lid Straw','K'],['Grandcafe Matcha Latte','K'],['Key Holder ①','H'],['Redchef 7pcs Ceramic Nonstick ①','K'],['Solar Camping Lamp ①','E'],['Bluetooth Speaker w/ Dual Mic ①','E'],['5pcs A4 Magnetic Frame ②','H'],['4pcs Condiments Bottle','K'],['16 Inch LCD Writing Tablet (White) ②','E'],['Sweet Home Linoleum ①','H'],['Seasoning Bottle/Jar 4pcs','K'],['Glass Bottle Condiments 4pcs','K'],['9in1 Condiments Bottle & Jar with Racks','K'],['4pcs Condiments Plastic Bottle','K']
+];
+const CHANNELS=['tiktok','shopee','facebook'];
+const ACCOUNTS=[
+{id:1,icon:'🎥',name:'Direct Selling',short:'Account 1',desc:'30–60 sec, harap sa camera, no cut',idea:'One take: ipakita at ipaliwanag ang product'},
+{id:2,icon:'✨',name:'Faceless Finds',short:'Account 2',desc:'Close ups, demo, voiceover / text',idea:'Close up demo + voiceover, faceless'},
+{id:3,icon:'🎮',name:'Electronics & Kids',short:'Account 3',desc:'Tech demos at kids games',idea:'Test features / show how it works'},
+{id:4,icon:'🎁',name:'Gifts Kay Misis',short:'Account 4',desc:'Surprises from mister, sana all moments',idea:'POV: may surprise gift si mister ♡'}
+];
+const KEY='bestie_affiliate_hq_v1';
+const dateNow=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
+const today=dateNow();let selected=today,tab='daily',filter='all',productSearch='',notice='',toastTimer=null;
+const defaultState=()=>({version:2,products:RAW.map((x,i)=>({id:i+1,name:x[0],tags:x[1].split(','),active:true})),plans:{},travel:[]});
+let db=defaultState();
+let uid=null, cloudReady=false, flushing=false, resync=false, syncTimer=null, profileSignature=null;
+let daySignatures=new Map(), lastCloudError='';
+const profilePayload=()=>({version:2,products:db.products,travel:db.travel});
+const profileRef=()=>doc(firestore,'affiliateHQ',uid,'data','profile');
+const daysRef=()=>collection(firestore,'affiliateHQ',uid,'days');
+const localKey=()=>`bestie_affiliate_hq_cloud_${uid}`;
+const validateState=s=>s&&Array.isArray(s.products)&&s.plans&&typeof s.plans==='object'&&!Array.isArray(s.plans)&&Array.isArray(s.travel);
+function cloudStatus(message,style=''){const el=document.getElementById('syncStatus');if(el){el.textContent=message;el.className='sync-status '+style;el.title=lastCloudError||'';}}
+function localSave(){try{if(uid)localStorage.setItem(localKey(),JSON.stringify(db));}catch(e){cloudStatus('⚠ Storage full','error')}}
+function save(){localSave();try{if(uid)localStorage.setItem(localKey()+':pending','1')}catch{}queueSync()}
+function queueSync(){if(!uid||!cloudReady)return;cloudStatus('☁ Saving…');clearTimeout(syncTimer);syncTimer=setTimeout(flushCloud,650)}
+async function flushCloud(){
+ if(!uid||!cloudReady)return;
+ if(flushing){resync=true;return}
+ flushing=true;
+ const oldDays=daySignatures;
+ const nextDays=new Map();
+ const currentProfile=JSON.stringify(profilePayload());
+ const changes=[];
+ if(currentProfile!==profileSignature)changes.push({path:'profile',signature:currentProfile,ref:profileRef(),data:profilePayload()});
+ for(const [date,slots] of Object.entries(db.plans)){
+   if(!/^\d{4}-\d{2}-\d{2}$/.test(date))continue;
+   const sig=JSON.stringify(slots);
+   nextDays.set(date,sig);
+   if(oldDays.get(date)!==sig)changes.push({path:date,signature:sig,ref:doc(daysRef(),date),data:{slots}});
+ }
+ for(const date of oldDays.keys())if(!nextDays.has(date))changes.push({path:date,ref:doc(daysRef(),date),remove:true});
+ try{
+   for(let start=0;start<changes.length;start+=400){
+     const chunk=changes.slice(start,start+400);
+     const batch=writeBatch(firestore);
+     for(const c of chunk)c.remove?batch.delete(c.ref):batch.set(c.ref,c.data);
+     await batch.commit();
+     for(const c of chunk){if(c.path==='profile')profileSignature=c.signature;else if(c.remove)daySignatures.delete(c.path);else daySignatures.set(c.path,c.signature)}
+   }
+   lastCloudError='';cloudStatus('☁ Saved to cloud','ready');if(!resync){try{localStorage.removeItem(localKey()+':pending')}catch{}}
+ }catch(err){
+   lastCloudError=String(err?.message||err);
+   cloudStatus('⚠ Cloud sync failed','error');
+   console.error('Cloud sync problem:',err);
+ }finally{
+   flushing=false;
+   if(resync){resync=false;queueSync()}
+ }
+}
+async function loadCloud(user){
+ uid=user.uid;
+ cloudStatus('☁ Loading cloud data…');
+ try{
+  const [settingsSnap,daysSnap]=await Promise.all([getDoc(profileRef()),getDocs(daysRef())]);
+  const local=(()=>{try{return JSON.parse(localStorage.getItem(localKey())||localStorage.getItem(KEY)||'null')}catch{return null}})();
+  let useUnsyncedLocal=false;
+  if(settingsSnap.exists()){
+    const p=settingsSnap.data();
+    if(!Array.isArray(p.products)||!Array.isArray(p.travel))throw Error('Saved cloud profile is invalid');
+    db={version:2,products:p.products,travel:p.travel,plans:{}};
+    profileSignature=JSON.stringify(profilePayload());
+    daysSnap.forEach(s=>{const arr=s.data()?.slots;if(Array.isArray(arr)){db.plans[s.id]=arr;daySignatures.set(s.id,JSON.stringify(arr))}});
+    if(validateState(local)&&localStorage.getItem(localKey()+':pending')==='1'){
+      if(confirm('May local checklist changes ka na hindi pa na-upload. Gamitin ang local version na ito at i-sync ngayon? Cancel para gamitin ang cloud version.')){db=local;useUnsyncedLocal=true;}
     }
-
-    const saveError = document.getElementById("createError");
-    function showSaveError(msg){
-      saveError.textContent = msg;
-      saveError.style.display = "block";
-    }
-    function clearSaveError(){
-      saveError.style.display = "none";
-      saveError.textContent = "";
-    }
-
-    function show(el){ el.classList.remove("hidden"); }
-    function hide(el){ el.classList.add("hidden"); }
-    function cleanAWB(s){
-      return (s || "").trim().replace(/\s+/g,"");
-    }
-    function formatDateTime(ts){
-      try{
-        const d = ts instanceof Date ? ts : new Date(ts);
-        return d.toLocaleString([], { year:"numeric", month:"short", day:"2-digit", hour:"2-digit", minute:"2-digit" });
-      }catch{ return ""; }
-    }
-
-    // ---------- Orders UI (boxes) ----------
-    const LEVELS = ["Kinder","Elem"];
-    const COLORS = [
-      "White","Sky Blue","Fuchsia Pink","Royal Blue","Black","Yellow Gold","Emerald Green","Red","Maroon","Apple Green","Navy blue","Violet","Brown"
-    ];
-
-    function pillGroup(options, {multiple=false, name="group"}){
-      const wrap = document.createElement("div");
-      wrap.className = "pillRow";
-
-      options.forEach((opt) => {
-        const label = document.createElement("label");
-        label.className = "pill";
-        const input = document.createElement("input");
-        input.type = multiple ? "checkbox" : "radio";
-        input.name = name;
-        input.value = opt;
-
-        label.appendChild(input);
-        label.appendChild(document.createTextNode(opt));
-
-        label.addEventListener("click", (e) => {
-          e.preventDefault(); // stop double-toggle
-          if (!multiple){
-            wrap.querySelectorAll(".pill").forEach(p => p.classList.remove("active"));
-            label.classList.add("active");
-            input.checked = true;
-          }else{
-            input.checked = !input.checked;
-            label.classList.toggle("active", input.checked);
-          }
-          const m = String(name || "").match(/^((level|color))_(\d+)$/);
-          if (m) autoFocusQtyIfReady(Number(m[3]));
-        });
-
-        wrap.appendChild(label);
-      });
-      return wrap;
-    }
-
-    function createOrderBox(orderIndex){
-      const box = document.createElement("div");
-      box.className = "orderBox";
-      box.dataset.orderIndex = String(orderIndex);
-
-      const header = document.createElement("div");
-      header.className = "orderHeader";
-      header.innerHTML = `<div>Order #${orderIndex + 1}</div><div style="color:#6b7280;font-weight:900">pick level(s) + 1 color</div>`;
-      box.appendChild(header);
-
-      const grid = document.createElement("div");
-      grid.className = "grid3";
-
-      const left = document.createElement("div");
-      left.innerHTML = `<label>LEVEL</label>`;
-      const levelGroup = pillGroup(LEVELS, { multiple:false, name:`level_${orderIndex}` });
-      left.appendChild(levelGroup);
-
-      const mid = document.createElement("div");
-      mid.innerHTML = `<label>CAP COLOR</label>`;
-      const capColorGroup = pillGroup(COLORS, { multiple:false, name:`color_${orderIndex}` });
-      mid.appendChild(capColorGroup);
-
-      const right = document.createElement("div");
-      right.innerHTML = `
-        <label>TASSEL COLOR <span style="font-weight:800;color:#6b7280">(Optional)</span></label>
-        <div class="hint" style="margin:-2px 0 8px">Leave blank = same as cap color. Click only if customized.</div>
-      `;
-      const tasselGroup = pillGroup(COLORS, { multiple:false, name:`tassel_${orderIndex}` });
-      right.appendChild(tasselGroup);
-
-      grid.appendChild(left);
-      grid.appendChild(mid);
-      grid.appendChild(right);
-      box.appendChild(grid);
-
-      // quantity
-      const qtyWrap = document.createElement("div");
-      qtyWrap.style.marginTop = "12px";
-      qtyWrap.innerHTML = `
-        <label>Quantity (pairs / pcs)</label>
-        <input type="text" inputmode="numeric" placeholder="e.g. 36" data-role="qty" />
-        <div class="hint">Optional: lagay mo ilan total sa order na ’to.</div>
-      `;
-      box.appendChild(qtyWrap);
-
-      return box;
-    }
-
-    function ensureAtLeastOneOrder(){
-      if (ordersWrap.children.length === 0){
-        ordersWrap.appendChild(createOrderBox(0));
-      }
-    }
-
-    function autoFocusQtyIfReady(orderIndex){
-      const box = ordersWrap.querySelector(`.orderBox[data-order-index="${orderIndex}"]`);
-      if (!box) return;
-
-      const lvl = box.querySelector(`input[name="level_${orderIndex}"]:checked`);
-      const col = box.querySelector(`input[name="color_${orderIndex}"]:checked`);
-      if (lvl && col){
-        const qtyInput = box.querySelector('input[data-role="qty"]');
-        qtyInput?.focus?.();
-      }
-    }
-
-    function readOrdersFromUI(){
-      const orders = [];
-      [...ordersWrap.children].forEach((box) => {
-        const idx = Number(box.dataset.orderIndex || "0");
-
-        const levels = [];
-        box.querySelectorAll(`input[name="level_${idx}"]`).forEach((i) => {
-          if (i.checked) levels.push(i.value);
-        });
-
-        let capColor = "";
-        box.querySelectorAll(`input[name="color_${idx}"]`).forEach((i) => {
-          if (i.checked) capColor = i.value;
-        });
-
-        let tasselColor = "";
-        box.querySelectorAll(`input[name="tassel_${idx}"]`).forEach((i) => {
-          if (i.checked) tasselColor = i.value;
-        });
-
-        const qtyInput = box.querySelector('input[data-role="qty"]');
-        const qtyRaw = (qtyInput?.value || "").trim();
-        const qty = qtyRaw ? Number(qtyRaw.replace(/[^\d]/g,"")) : null;
-
-        const finalTassel = tasselColor || capColor;
-        const tasselCustomized = !!tasselColor && (tasselColor !== capColor);
-
-        orders.push({
-          levels,
-          color: capColor,
-          tasselColor: finalTassel,
-          tasselCustomized,
-          qty: Number.isFinite(qty) && qty > 0 ? qty : null
-        });
-      });
-
-      return orders;
-    }
-
-    function summarizeOrders(orders){
-  if (!orders?.length) return "No order details.";
-
-  return orders.map((o, i) => {
-    const qty = o?.qty ? `${o.qty}` : "qty";
-
-    // LEVEL uppercase
-    let level = (Array.isArray(o?.levels) && o.levels[0]) ? o.levels[0].toUpperCase() : "NO LEVEL";
-
-    const capColor = o?.color || "No Color";
-    const tasselColor = o?.tasselColor || capColor;
-
-    let colorText = "";
-
-    // If tassel same as cap OR not customized
-    if (!o?.tasselCustomized || tasselColor === capColor) {
-      colorText = capColor;
-    } else {
-      colorText = `${capColor} Cap --- ${tasselColor} Tassel`;
-    }
-
-    return `${qty} ${level}, ${colorText} `;
-  }).join("\n");
+  }else if(validateState(local)){
+    db=local;
+    db.version=2;
+  }else{
+    db=defaultState();
+  }
+  cloudReady=true;lastCloudError='';
+  cloudStatus('☁ Cloud connected','ready');
+  document.getElementById('loadingScreen').style.display='none';
+  document.getElementById('mainContent').style.display='block';
+  render();
+  // First sign-in initializes profile; future visits load stored data.
+  if(!settingsSnap.exists()||useUnsyncedLocal)save();
+  else{localSave();try{localStorage.removeItem(localKey()+':pending')}catch{}}
+ }catch(err){
+  lastCloudError=String(err?.message||err);
+  console.error('Could not load cloud planner:',err);
+  const local=(()=>{try{return JSON.parse(localStorage.getItem(localKey())||localStorage.getItem(KEY)||'null')}catch{return null}})();
+  db=validateState(local)?local:defaultState();
+  cloudReady=false;
+  document.getElementById('loadingScreen').style.display='none';
+  document.getElementById('mainContent').style.display='block';
+  render();
+  cloudStatus('⚠ Offline: local only','error');
+  alert('Hindi ma-access ang cloud database. Nasa browser lang muna ang edits. Check Firebase Firestore rules / connection. Details: '+lastCloudError);
+ }
 }
 
-    // ---------- Auth ----------
-    onAuthStateChanged(auth, (user) => {
-      if (!user){
-        window.location.href = "./login.html";
-        return;
-      }
-      currentUser = user;
-      setStatus(`✅ Logged in as: ${user.email}`, "ok");
-      ensureAtLeastOneOrder();
-    });
-
-    btnLogout.addEventListener("click", async () => {
-      await signOut(auth);
-      window.location.href = "./login.html";
-    });
-
-    // ---------- Core flow ----------
-    async function findOrCreateFlow(awb){
-      currentAWB = cleanAWB(awb);
-      if (!currentAWB){
-        setStatus("⚠️ Please enter an AWB.", "warn");
-        return;
-      }
-
-      hide(viewSection);
-      hide(createSection);
-      setStatus("Checking record...", "ok");
-
-      const docRef = doc(db, "packingLogs", currentAWB);
-      const snap = await getDoc(docRef);
-
-      if (snap.exists()){
-        currentRecord = snap.data();
-        await renderRecord(currentAWB, currentRecord);
-
-        setStatus("✅ Existing record found.", "ok");
-        hide(createSection);
-        show(viewSection);
-      } else {
-        currentRecord = null;
-        setStatus("No record found → creating new entry.", "ok");
-        resetCreateForm();
-        show(createSection);
-        hide(viewSection);
-      }
-    }
-
-    function resetCreateForm(){
-      // Keep orders as-is (so mabilis)
-    }
-
-    btnContinue.addEventListener("click", () => findOrCreateFlow(awbInput.value));
-    awbInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter"){
-        e.preventDefault();
-        findOrCreateFlow(awbInput.value);
-      }
-    });
-
-    btnNewEntry.addEventListener("click", () => {
-      setStatus("⚠️ Creating new entry anyway (will overwrite same AWB).", "warn");
-      show(createSection);
-      hide(viewSection);
-    });
-
-    btnCancelCreate.addEventListener("click", () => {
-      hide(createSection);
-      setStatus("Ready. Enter/Scan AWB.", "ok");
-    });
-
-    // Orders add/remove
-    btnAddOrder.addEventListener("click", () => {
-      const idx = ordersWrap.children.length;
-      ordersWrap.appendChild(createOrderBox(idx));
-    });
-    btnRemoveOrder.addEventListener("click", () => {
-      if (ordersWrap.children.length > 1){
-        ordersWrap.removeChild(ordersWrap.lastElementChild);
-      }
-    });
-
-    // ---------- Save (Firestore) ----------
-    btnSave.addEventListener("click", async () => {
-      try{
-        const awb = cleanAWB(awbInput.value || currentAWB);
-        if (!awb){
-          setStatus("⚠️ AWB required.", "warn");
-          return;
-        }
-        currentAWB = awb;
-
-        const orders = readOrdersFromUI();
-        const ordersText = summarizeOrders(orders);
-
-        clearSaveError();
-
-        // ✅ strict validation (same as your rules)
-        for (let i = 0; i < orders.length; i++) {
-          const o = orders[i];
-
-          if (!o.levels || o.levels.length !== 1) {
-            showSaveError(`❌ Order #${i + 1}: Please select ONE level (Kinder / Elem).`);
-            return;
-          }
-          if (!o.color) {
-            showSaveError(`❌ Order #${i + 1}: Please select ONE color.`);
-            return;
-          }
-          if (!o.qty || !Number.isFinite(o.qty) || o.qty < 1) {
-            showSaveError(`❌ Order #${i + 1}: Quantity is required (minimum 1).`);
-            return;
-          }
-        }
-
-        btnSave.disabled = true;
-        btnSave.textContent = "Saving...";
-
-        const docRef = doc(db, "packingLogs", awb);
-
-        const payload = {
-          awb,
-          orders,
-          ordersText,
-
-          createdAt: currentRecord?.createdAt || serverTimestamp(),
-          createdByUid: currentRecord?.createdByUid || currentUser.uid,
-          createdByEmail: currentRecord?.createdByEmail || (currentUser.email || ""),
-
-          updatedAt: serverTimestamp()
-        };
-
-        await setDoc(docRef, payload, { merge: true });
-
-        setStatus("✅ Saved! Opening record…", "ok");
-
-        const snap = await getDoc(docRef);
-        currentRecord = snap.data();
-        await renderRecord(awb, currentRecord);
-
-        hide(createSection);
-        show(viewSection);
-
-      }catch(err){
-        console.error(err);
-        setStatus("❌ Save error:\n" + (err?.message || err), "bad");
-      }finally{
-        btnSave.disabled = false;
-        btnSave.textContent = "Save Packing Log";
-      }
-    });
-
-    // ---------- Render record + copy ----------
-    async function renderRecord(awb, rec){
-      let dt = "";
-      try{
-        const createdAt = rec?.createdAt?.toDate ? rec.createdAt.toDate() : null;
-        const updatedAt = rec?.updatedAt?.toDate ? rec.updatedAt.toDate() : null;
-        dt = createdAt ? formatDateTime(createdAt) : (updatedAt ? formatDateTime(updatedAt) : "");
-      }catch{}
-
-      const ordersText = summarizeOrders(rec?.orders || []);
-      recordMeta.textContent = `AWB: ${awb} • ${dt ? ("Saved: " + dt + " • ") : ""}By: ${rec?.createdByEmail || "-"}`;
-
-      const nowText = dt || formatDateTime(new Date());
-      const msg =
-`📦 AWB: ${awb}
-🕒 Packed: ${nowText}`;
-      messageBox.value = msg;
-
-      ordersPreview.innerHTML =
-        `<span class="hdr">ORDERS:</span>` + (ordersText || "—");
-    }
-
-    btnCopyMsg.addEventListener("click", async () => {
-      try{
-        await navigator.clipboard.writeText(messageBox.value);
-        setStatus("✅ Message copied!", "ok");
-      }catch{
-        messageBox.focus();
-        messageBox.select();
-        document.execCommand("copy");
-        setStatus("✅ Message copied (fallback)!", "ok");
-      }
-    });
-
-    // ---------- Scanner ----------
-    btnScan.addEventListener("click", async () => {
-      try{
-        scanBack.style.display = "flex";
-        setStatus("Scanning…", "ok");
-
-        await reader.decodeFromVideoDevice(
-          undefined,
-          scanVideo,
-          (res, err, controls) => {
-            if (controls && !scanStopper) scanStopper = controls;
-            if (res?.getText){
-              const code = cleanAWB(res.getText());
-              if (code){
-                awbInput.value = code;
-                closeScanner();
-                findOrCreateFlow(code);
-              }
-            }
-          }
-        );
-
-      }catch(err){
-        console.error(err);
-        setStatus("⚠️ Camera scan not available. You can paste/type AWB then Enter.", "warn");
-        scanBack.style.display = "none";
-      }
-    });
-
-    function closeScanner(){
-      scanBack.style.display = "none";
-      try{ scanStopper?.stop?.(); }catch{}
-      scanStopper = null;
-      try{ reader.reset(); }catch{}
-    }
-    btnCloseScan.addEventListener("click", closeScanner);
-    scanBack.addEventListener("click", (e) => {
-      if (e.target === scanBack) closeScanner();
-    });
-
-    // ---------- DAILY SUMMARY ----------
-    function showDaily(text, type="ok"){
-      dailyOutput.style.display = "block";
-      dailyOutput.className = "status " + type;
-      dailyOutput.textContent = text;
-    }
-
-    btnDaily.addEventListener("click", async () => {
-      try {
-        btnDaily.disabled = true;
-        btnDaily.textContent = "Loading...";
-
-        function pad2(n){ return String(n).padStart(2,"0"); }
-        function dayKey(d){
-          return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
-        }
-        function niceDayLabel(d){
-          return d.toLocaleDateString([], { month:"short", day:"2-digit" });
-        }
-        function inc(obj, key, by=1){
-          if (!key) return;
-          obj[key] = (obj[key] || 0) + by;
-        }
-        function normalizeLevel(o){
-          const lvls = Array.isArray(o?.levels) ? o.levels : [];
-          if (lvls.includes("Kinder")) return "Kinder";
-          if (lvls.includes("Elem")) return "Elem";
-          return null;
-        }
-        function getQty(o){
-          const q = Number(o?.qty);
-          return Number.isFinite(q) && q > 0 ? q : 1;
-        }
-
-        const startToday = new Date(); startToday.setHours(0,0,0,0);
-        const endToday = new Date(); endToday.setHours(23,59,59,999);
-
-        const start7 = new Date(); start7.setHours(0,0,0,0);
-        start7.setDate(start7.getDate() - 6);
-        const end7 = new Date(); end7.setHours(23,59,59,999);
-
-        const logsRef = collection(db, "packingLogs");
-        const q7 = query(
-          logsRef,
-          where("updatedAt", ">=", start7),
-          where("updatedAt", "<=", end7)
-        );
-
-        const snap7 = await getDocs(q7);
-
-        const levelCounts = {};
-        const colorCounts = {};
-        let totalRecordsToday = 0;
-
-        const dayKinder = {};
-        const dayElem = {};
-        let totalKinder7 = 0;
-        let totalElem7 = 0;
-        let totalPcs7 = 0;
-
-        snap7.forEach((docu) => {
-          const data = docu.data();
-          const upd = data?.updatedAt?.toDate ? data.updatedAt.toDate() : null;
-          if (!upd) return;
-
-          const k = dayKey(upd);
-          const orders = Array.isArray(data.orders) ? data.orders : [];
-
-          orders.forEach((o) => {
-            const qty = getQty(o);
-            totalPcs7 += qty;
-
-            const lvl = normalizeLevel(o);
-            if (lvl === "Kinder"){
-              dayKinder[k] = (dayKinder[k] || 0) + qty;
-              totalKinder7 += qty;
-            } else if (lvl === "Elem"){
-              dayElem[k] = (dayElem[k] || 0) + qty;
-              totalElem7 += qty;
-            }
-          });
-
-          if (upd >= startToday && upd <= endToday){
-            totalRecordsToday++;
-            orders.forEach((o) => {
-              const qty = getQty(o);
-              const lvl = normalizeLevel(o);
-              if (lvl) inc(levelCounts, lvl, qty);
-              if (o?.color) inc(colorCounts, o.color, qty);
-            });
-          }
-        });
-
-        const dateStr = new Date().toLocaleDateString([], {
-          year:"numeric", month:"short", day:"2-digit"
-        });
-
-        const lvlLines = ["Kinder","Elem"]
-          .map(k => `• ${k}: ${levelCounts[k] || 0}`)
-          .join("\n");
-
-        const colorLines = [
-          "White","Sky Blue","Fuchsia Pink","Royal Blue","Black","Yellow Gold",
-          "Emerald Green","Red","Maroon","Apple Green","Navy blue","Violet","Brown"
-        ].map(c => `• ${c}: ${colorCounts[c] || 0}`).join("\n");
-
-        const kinderLines = [];
-        const elemLines = [];
-
-        for (let i=0;i<7;i++){
-          const d = new Date(start7);
-          d.setDate(start7.getDate()+i);
-          const key = dayKey(d);
-          kinderLines.push(`${niceDayLabel(d)} - ${(dayKinder[key] || 0)} pcs`);
-          elemLines.push(`${niceDayLabel(d)} - ${(dayElem[key] || 0)} pcs`);
-        }
-
-        showDaily(
-`📅 Today: ${dateStr}
-📦 Records saved today: ${totalRecordsToday}
-
-🏫 LEVEL TOTALS (any color)
-${lvlLines}
-
-🎨 COLOR TOTALS (any level)
-${colorLines}
-
-────────────────────────
-
-🗓️ LAST 7 DAYS TOTAL PCS: ${totalPcs7} pcs
-
-KINDER (7 days): ${totalKinder7} pcs
-${kinderLines.join("\n")}
-
-ELEM (7 days): ${totalElem7} pcs
-${elemLines.join("\n")}`,
-"ok");
-
-      } catch (err) {
-        console.error(err);
-        showDaily("❌ Daily summary error:\n" + (err?.message || err), "bad");
-      } finally {
-        btnDaily.disabled = false;
-        btnDaily.textContent = "Load Today Summary";
-      }
-    });
-  </script>
+const $=id=>document.getElementById(id);
+const e=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=date=>new Date(date+'T12:00:00').toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric',year:'numeric'});
+const shift=(date,n)=>{let d=new Date(date+'T12:00:00');d.setDate(d.getDate()+n);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
+const dayDistance=(a,b)=>Math.round(Math.abs((new Date(a+'T12:00:00')-new Date(b+'T12:00:00'))/86400000));
+const getProduct=id=>db.products.find(p=>p.id===Number(id));
+const pTags=id=>(getProduct(id)?.tags||[]);
+const labels={E:'Electronics / Kids',K:'Kitchen',H:'Home',G:'General'};
+const catOrder=['E','K','H','G'];
+function toast(message){const el=$('toast');el.textContent=message;el.classList.add('on');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('on'),3200)}
+function existingUse(productId,day,exceptSlot=null){for(const [d,slots] of Object.entries(db.plans)){if(dayDistance(d,day)>3)continue;for(const s of slots){if(s.productId===Number(productId)&&!(exceptSlot&&d===exceptSlot.day&&s.id===exceptSlot.id))return {date:d,account:s.account}}}return null}
+function allowedFor(account,p){if(account===3)return p.tags.includes('E');if(account===4)return p.tags.includes('K')||p.tags.includes('H');return true}
+function priority(account,p){const map=account===1?['G','H','K','E']:account===2?['H','G','K','E']:account===3?['E']:['K','H'];return Math.min(...p.tags.map(t=>{const i=map.indexOf(t);return i<0?8:i}))}
+function uses(id){let n=0;for(const slots of Object.values(db.plans))for(const s of slots)if(s.productId===id)n++;return n}
+function chooseProduct(account,day){let options=db.products.filter(p=>p.active!==false&&allowedFor(account,p)&&!existingUse(p.id,day));options.sort((a,b)=>priority(account,a)*100+uses(a.id)*10+a.id*.001-(priority(account,b)*100+uses(b.id)*10+b.id*.001));return options.length?options[0].id:null}
+function buildDay(day){if(db.plans[day])return false;const tasks=[];db.plans[day]=tasks; // specialized niches first, then flexible accounts
+for(const account of [3,4,1,2]){for(let i=0;i<4;i++){const a=ACCOUNTS.find(x=>x.id===account);tasks.push({id:`${day}-${account}-${i}`,account,slot:i+1,productId:chooseProduct(account,day),filmed:false,edited:false,tiktok:false,shopee:false,facebook:false,idea:a.idea})}}
+tasks.sort((a,b)=>a.account-b.account||a.slot-b.slot);save();return true}
+function slotsFor(day){if(!db.plans[day]&&day>=today)buildDay(day);return db.plans[day]||[]}
+const required=s=>s.account===4?['tiktok','shopee','facebook']:['tiktok','shopee'];
+const complete=s=>required(s).every(ch=>s[ch]);
+function overall(slots){const uploadTotal=slots.reduce((sum,s)=>sum+required(s).length,0);const uploadDone=slots.reduce((sum,s)=>sum+required(s).filter(ch=>s[ch]).length,0);return {clips:slots.filter(complete).length,filmed:slots.filter(s=>s.filmed).length,edited:slots.filter(s=>s.edited).length,uploadTotal,uploadDone};}
+function miniStat(label,done,total,sub){return `<div class="stat"><span class="tag">${e(label)}</span><strong>${done}<span style="font-size:13px;font-weight:550;color:var(--muted)"> / ${total}</span></strong><div class="track"><i style="width:${total?Math.round(done/total*100):0}%"></i></div><small>${e(sub)}</small></div>`}
+function makeOptions(account,current){let products=db.products.filter(p=>allowedFor(account,p)||p.id===current);return `<option value="">Choose a product...</option>`+products.map(p=>`<option value="${p.id}" ${p.id===current?'selected':''}>${e(p.name)}${p.active===false?' (Archived)':''}</option>`).join('')}
+function taskHTML(s){const product=getProduct(s.productId);return `<div class="task"><div class="taskrow"><span class="task-no">VIDEO ${s.slot} • PRODUCT #${product?.id||'?'}</span><span class="task-status ${complete(s)?'done':''}">${complete(s)?'✓ ALL POSTED':'○ PENDING'}</span></div><select class="product-select" aria-label="Product for Account ${s.account} video ${s.slot}" data-field="productId" data-id="${s.id}" title="Change assigned item">${makeOptions(s.account,s.productId)}</select><input class="concept" aria-label="Video concept" placeholder="Video idea or hook..." data-field="idea" data-id="${s.id}" value="${e(s.idea||'')}"><div class="checks"><label class="check"><input type="checkbox" data-id="${s.id}" data-field="filmed" ${s.filmed?'checked':''}> 🎥 Filmed</label><label class="check"><input type="checkbox" data-id="${s.id}" data-field="edited" ${s.edited?'checked':''}> ✂️ Edited</label></div><div class="platform-label">Upload checklist</div><div class="checks">${required(s).map(ch=>`<label class="check platform"><input type="checkbox" data-id="${s.id}" data-field="${ch}" ${s[ch]?'checked':''}>${ch==='facebook'?'📘 FB Page 1':ch==='shopee'?'🧡 Shopee':'🎵 TikTok'}</label>`).join('')}</div></div>`}
+function accountHTML(a,slots){const tasks=slots.filter(s=>s.account===a.id&& (filter==='all'||(filter==='pending'&&!complete(s))||(filter==='done'&&complete(s))));let count=slots.filter(s=>s.account===a.id&&complete(s)).length;return `<section class="account"><div class="account-head"><div class="account-title"><div class="account-icon a${a.id}">${a.icon}</div><div><h4>${a.short}: ${a.name}</h4><p>${a.desc}</p></div></div><span class="pill">${count} / 4 posted</span></div><div class="account-body">${tasks.length?tasks.map(taskHTML).join(''):'<div class="empty">No videos sa filter na ito. ♡</div>'}</div></section>`}
+function backlog(){const past=Object.entries(db.plans).filter(([day])=>day<today).sort((a,b)=>b[0].localeCompare(a[0]));const missing=[];for(const [day,slots] of past)for(const s of slots){let ch=required(s).filter(c=>!s[c]);if(ch.length)missing.push({day,s,ch})}if(!missing.length)return `<div class="notice success">♡ Walang overdue uploads sa mga araw na naiplano mo. Good job, bestie!</div>`;return `<section class="backlog"><div class="section-head" style="margin:0 0 12px"><div><h3>⚠️ Missed uploads from previous days</h3><p>${missing.length} videos na may kulang pang platform upload</p></div><span class="pill">${missing.length} pending</span></div><div class="backlog-list">${missing.slice(0,10).map(({day,s,ch})=>`<div class="backlog-item"><div><strong>${e(getProduct(s.productId)?.name||'Unassigned')}</strong><span>${fmt(day)} · Account ${s.account} · Kulang: ${ch.map(x=>x==='facebook'?'FB':x==='tiktok'?'TikTok':'Shopee').join(', ')}</span></div><button class="btn" data-action="goDay" data-date="${day}">View</button></div>`).join('')}</div>${missing.length>10?`<p style="font-size:11px;color:var(--muted)">Showing first 10 of ${missing.length}. Open past dates to check the rest.</p>`:''}</section>`}
+function dailyHTML(){const slots=slotsFor(selected);const m=overall(slots);const tDone=slots.filter(s=>s.tiktok).length,shDone=slots.filter(s=>s.shopee).length,fbDone=slots.filter(s=>s.account===4&&s.facebook).length;const scheduleExists=slots.length>0;return `<div class="toolbar"><div class="group"><button class="btn" data-action="moveDate" data-step="-1" aria-label="Previous day">‹</button><input class="date-input" type="date" id="dateInput" aria-label="Select date" value="${selected}"><button class="btn" data-action="moveDate" data-step="1" aria-label="Next day">›</button><span class="date-label">${selected===today?'Today · ':''}${fmt(selected)}</span></div><div class="group"><button class="btn" data-action="goToday">Today</button><button class="btn" data-action="planWeek">＋ Plan next 7 days</button></div></div>${!scheduleExists?`<div class="empty">Wala pang schedule para sa ${fmt(selected)}.<p>Hindi tayo awtomatikong gumagawa ng backdated assignments para hindi magmukhang may missed uploads ka.</p><button class="btn primary" data-action="createPast">Create schedule for this date</button></div>`:`<div class="stats">${miniStat('VIDEOS FULLY POSTED',m.clips,16,'Across required platforms')}${miniStat('FILMED',m.filmed,16,'Clips recorded')}${miniStat('EDITED',m.edited,16,'Clips edited')}${miniStat('TIKTOK + SHOPEE',tDone+shDone,32,`${tDone}/16 TikTok • ${shDone}/16 Shopee`)}${miniStat('FB PAGE 1',fbDone,4,'Gifts Kay Misis reels')}</div><div class="notice ${m.clips===16?'success':''}">${m.clips===16?'🎉 Complete ang 16 videos sa lahat ng required platforms!':`📌 ${16-m.clips} videos pa ang may pending uploads. ${m.uploadDone}/${m.uploadTotal} platform uploads completed. Account 4 lang ang kasamang FB Page 1; hiwalay ang FB Page 2.`}</div><div class="section-head"><div><h3>Your 16 video assignments</h3><p>Palitan ang product sa dropdown, sulatan ang video concept, at i-check ang natapos mo.</p></div><div class="group"><select class="date-input" id="taskFilter" aria-label="Filter assignments"><option value="all" ${filter==='all'?'selected':''}>All videos</option><option value="pending" ${filter==='pending'?'selected':''}>Pending only</option><option value="done" ${filter==='done'?'selected':''}>Fully posted only</option></select></div></div><div class="accounts">${ACCOUNTS.map(a=>accountHTML(a,slots)).join('')}</div>`}<div class="section-head"><div><h3>Missed uploads tracker</h3><p>Shows unfinished uploads from scheduled past dates only.</p></div></div>${backlog()}`}
+function productsHTML(){const active=db.products.filter(p=>p.active!==false);const results=db.products.filter(p=>p.name.toLowerCase().includes(productSearch.toLowerCase())||String(p.id)===productSearch);return `<div class="section-head"><div><h3>Product inventory</h3><p>${active.length} active of ${db.products.length} products · puwedeng magdagdag ng bagong affiliate items</p></div></div><form id="productForm" class="add-form"><input class="field" id="newProduct" name="product" placeholder="New product name..." required maxlength="200" autocomplete="off"><select class="field" id="newCategory" aria-label="Product category"><option value="G">General / Beauty / Fashion</option><option value="H">Home Essentials</option><option value="K">Kitchen Finds</option><option value="E">Electronics / Kids Games</option></select><button type="submit" class="btn primary">＋ Add product</button></form><div class="catalog-tools"><input class="field search" id="productSearch" placeholder="🔎 Search all products..." value="${e(productSearch)}" autocomplete="off"><span class="pill">${results.length} results</span></div><div class="catalog-list">${results.map(p=>`<div class="catalog-item"><div><strong>${String(p.id).padStart(2,'0')}. ${e(p.name)}</strong><small>${uses(p.id)} scheduled uses${p.active===false?' · ARCHIVED':''}</small></div><div class="catalog-meta"><select aria-label="Category for ${e(p.name)}" data-product-category="${p.id}">${catOrder.map(t=>`<option value="${t}" ${p.tags.includes(t)?'selected':''}>${e(labels[t])}</option>`).join('')}</select><button class="btn ${p.active===false?'':'subtle'}" data-action="toggleProduct" data-product="${p.id}">${p.active===false?'Restore':'Archive'}</button></div></div>`).join('')||'<div class="empty">No matching products.</div>'}</div><div class="notice">💡 Category helps auto-assign videos. Electronics & Kids get priority on Account 3, kitchen and home gifts on Account 4. Archived products stay in old schedules but won't appear in new auto assignments.</div>`}
+function travelHTML(){const items=db.travel.slice().sort((a,b)=>b.date.localeCompare(a.date));return `<div class="section-head"><div><h3>♡ Couple Rides, Resorts & Travel</h3><p>FB Page 2 only · hiwalay sa 16 daily affiliate videos</p></div><span class="pill">${items.filter(i=>i.facebook).length}/${items.length} posted</span></div><form class="travel-form" id="travelForm"><h3>Add a new rides / travel assignment</h3><div class="travel-inputs"><input class="field" name="title" maxlength="180" required placeholder="Destination or video title"><input class="field" name="product" maxlength="200" placeholder="Affiliate item (optional)"><input class="field" name="link" maxlength="600" placeholder="Affiliate link (optional)"><input class="field" name="date" type="date" value="${today}" required><button type="submit" class="btn primary">＋ Add</button></div></form>${items.length?`<div class="travel-list">${items.map(s=>`<article class="travel-card"><div class="taskrow"><span class="task-no">${fmt(s.date)} • FB PAGE 2</span><button class="btn subtle" data-action="deleteTravel" data-travel="${e(s.id)}">✕</button></div><h4>${e(s.title)}</h4><p>${s.product?'Affiliate: '+e(s.product):'Lifestyle / couple rides content'}</p>${s.link?`<p><a href="${e(/^https?:\/\//i.test(s.link)?s.link:'#')}" target="_blank" rel="noopener noreferrer">Affiliate link</a></p>`:''}<div class="checks"><label class="check"><input type="checkbox" data-travel-id="${e(s.id)}" data-travel-field="filmed" ${s.filmed?'checked':''}> 🎥 Filmed</label><label class="check"><input type="checkbox" data-travel-id="${e(s.id)}" data-travel-field="edited" ${s.edited?'checked':''}> ✂️ Edited</label><label class="check platform"><input type="checkbox" data-travel-id="${e(s.id)}" data-travel-field="facebook" ${s.facebook?'checked':''}> 📘 FB Posted</label></div></article>`).join('')}</div>`:'<div class="empty">Wala pang travel posts. Add your next couple ride or resort video here! 🛵💗</div>'}`}
+function render(){document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));$('heroProducts').textContent=db.products.filter(p=>p.active!==false).length;$('content').innerHTML=tab==='daily'?dailyHTML():tab==='products'?productsHTML():travelHTML()}
+function download(filename,text,mime){const blob=new Blob([text],{type:mime});let url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download=filename;document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),2000)}
+function backup(){download(`affiliate-content-backup-${today}.json`,JSON.stringify(db,null,2),'application/json');toast('Backup downloaded! Keep this file safe. ♡')}
+function csv(){const head=['Date','Account','Video','Product','Video Idea','Filmed','Edited','TikTok Posted','Shopee Posted','FB Page 1 Posted'];const rows=[head];for(const [day,slots] of Object.entries(db.plans).sort(([a],[b])=>a.localeCompare(b)))for(const s of slots)rows.push([day,s.account,s.slot,getProduct(s.productId)?.name||'',s.idea,s.filmed?'Yes':'No',s.edited?'Yes':'No',s.tiktok?'Yes':'No',s.shopee?'Yes':'No',s.account===4?(s.facebook?'Yes':'No'):'N/A']);let out=rows.map(r=>r.map(x=>'"'+String(x??'').replaceAll('"','""')+'"').join(',')).join('\r\n');download(`affiliate-schedule-${today}.csv`,'\ufeff'+out,'text/csv;charset=utf-8');toast('Schedule CSV downloaded!')}
+function findSlot(id){return (db.plans[selected]||[]).find(s=>s.id===id)}
+document.addEventListener('click',evt=>{const tabBtn=evt.target.closest('[data-tab]');if(tabBtn){tab=tabBtn.dataset.tab;render();return}const btn=evt.target.closest('[data-action]');if(!btn)return;const action=btn.dataset.action;if(action==='goToday'){selected=today;render()}else if(action==='moveDate'){selected=shift(selected,Number(btn.dataset.step));render()}else if(action==='goDay'){selected=btn.dataset.date;tab='daily';render();window.scrollTo({top:190,behavior:'smooth'})}else if(action==='createPast'){buildDay(selected);render()}else if(action==='planWeek'){for(let i=0;i<7;i++)buildDay(shift(selected,i));render();toast('7 days planned! Use date picker to view the assignments.')}else if(action==='backup'){backup()}else if(action==='restore'){$('restoreFile').click()}else if(action==='csv'){csv()}else if(action==='toggleProduct'){let p=getProduct(btn.dataset.product);if(!p)return;p.active=p.active===false;save();render();toast(`${p.name} ${p.active?'restored':'archived'}.`)}else if(action==='deleteTravel'){if(!confirm('Delete this FB Page 2 assignment?'))return;db.travel=db.travel.filter(s=>s.id!==btn.dataset.travel);save();render();toast('Travel post removed.')}});
+document.addEventListener('change',evt=>{const el=evt.target;if(el.id==='dateInput'){selected=el.value||today;render();return}if(el.id==='taskFilter'){filter=el.value;render();return}if(el.dataset.field&&el.dataset.id){const s=findSlot(el.dataset.id);if(!s)return;const f=el.dataset.field;if(f==='productId'){const id=el.value?Number(el.value):null;if(id&&existingUse(id,selected,{day:selected,id:s.id})){const prior=existingUse(id,selected,{day:selected,id:s.id});alert(`Naka-assign na ang product na ito sa Account ${prior.account} noong ${fmt(prior.date)}. May 3-day gap rule tayo, kaya pumili ng ibang item.`);render();return}if(id&&!allowedFor(s.account,getProduct(id))){alert('This product does not fit the niche for this account.');render();return}s.productId=id}else if(['filmed','edited','tiktok','shopee','facebook'].includes(f)){s[f]=el.checked}else if(f==='idea'){s.idea=el.value}save();render();return}if(el.dataset.productCategory){const p=getProduct(el.dataset.productCategory);if(p){p.tags=[el.value];save();render();toast('Category updated.')}}if(el.dataset.travelField){const item=db.travel.find(s=>s.id===el.dataset.travelId);if(item){item[el.dataset.travelField]=el.checked;save();render();}}});
+document.addEventListener('input',evt=>{const el=evt.target;if(el.dataset.field==='idea'&&el.dataset.id){const s=findSlot(el.dataset.id);if(s){s.idea=el.value;save()}}if(el.id==='productSearch'){productSearch=el.value;const pos=el.selectionStart;render();const input=$('productSearch');if(input){input.focus();input.setSelectionRange(pos,pos)}}});
+document.addEventListener('submit',evt=>{if(evt.target.id==='productForm'){evt.preventDefault();const n=$('newProduct').value.trim();const tag=$('newCategory').value;if(!n)return;if(db.products.some(p=>p.name.toLowerCase()===n.toLowerCase())){toast('Product already exists in your list.');return}const id=Math.max(0,...db.products.map(p=>p.id))+1;db.products.push({id,name:n,tags:[tag],active:true});save();render();toast('New product added! ♡')}else if(evt.target.id==='travelForm'){evt.preventDefault();const form=evt.target;const title=form.elements.title.value.trim();if(!title)return;db.travel.push({id:'tr-'+Date.now()+'-'+Math.random().toString(36).slice(2,6),date:form.elements.date.value,title,product:form.elements.product.value.trim(),link:form.elements.link.value.trim(),filmed:false,edited:false,facebook:false});save();render();toast('New FB Page 2 assignment added!')}});
+$('restoreFile').addEventListener('change',async evt=>{const file=evt.target.files?.[0];if(!file)return;try{const incoming=JSON.parse(await file.text());if(!incoming||!Array.isArray(incoming.products)||typeof incoming.plans!=='object'||!Array.isArray(incoming.travel))throw Error('Invalid backup');if(!confirm('Restore this backup? This replaces your current affiliate cloud planner data after syncing.'))return;db=incoming;save();render();toast('Backup restored! Cloud sync is starting. ♡')}catch(err){alert('Could not restore. Please choose a valid Affiliate Content HQ JSON backup.')}finally{evt.target.value=''}});
+document.getElementById('btnLogout').addEventListener('click',async ()=>{if(!confirm('Log out of Affiliate Content HQ?'))return;await flushCloud();await signOut(auth);window.location.href='./login.html'});
+onAuthStateChanged(auth, user=>{if(!user){window.location.href='./login.html';return;}loadCloud(user)});
+})();
+</script>
 </body>
 </html>
